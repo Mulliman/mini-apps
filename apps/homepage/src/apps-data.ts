@@ -27,5 +27,12 @@ export const appsData: AppInfo[] = [
     category: "Numbers",
     description: "A simple educational game for toddlers where they identify and type numbers on a moving London bus.",
     url: "/apps/Numbers/NumberBus/index.html",
+  },
+  {
+    id: "bingo-buddy",
+    title: "Bingo Buddy",
+    category: "Numbers",
+    description: "A colorful and interactive Bingo caller app for children with animations and voice announcements.",
+    url: "/apps/Numbers/bingo-buddy/index.html",
   }
 ];
