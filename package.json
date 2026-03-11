@@ -2,12 +2,14 @@
   "name": "miniapps-monorepo",
   "private": true,
   "scripts": {
-    "dev": "pnpm -r run dev",
+    "dev": "vite",
     "build": "pnpm -r run build",
     "lint": "pnpm -r run lint",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo .next"
   },
   "devDependencies": {
-    "prettier": "^3.0.0"
+    "@vitejs/plugin-react": "^5.1.4",
+    "prettier": "^3.0.0",
+    "vite": "^7.3.1"
   }
 }
