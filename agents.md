@@ -24,3 +24,12 @@ When asked to add a new app to the monorepo:
 
 ## 4. Homepage Responsibilities
 The homepage is responsible for displaying a grid/list of all available apps. Always ensure the design of this homepage remains visually appealing, responsive, and organized by categories.
+## 5. Avoiding 404 Errors (Path Handling)
+When adding or modifying an app, ensure that all resource links in `index.html` (e.g., `<script src="...">`, `<link href="...">`) use **relative paths** (starting with `./`) instead of absolute paths (starting with `/`). 
+- **Correct:** `<script src="./index.tsx"></script>`
+- **Incorrect:** `<script src="/index.tsx"></script>`
+This is critical for the monorepo structure where apps are served under subdirectories like `/apps/category/app-name/`.
+
+## 6. Dependency Consistency
+- If you encounter "Failed to resolve react" errors when running from the root, ensure `react` and `react-dom` are present in the root `package.json`'s `devDependencies`.
+- New apps should have their own `package.json` with unique names as per Section 3.
