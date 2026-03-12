@@ -1,9 +1,11 @@
 {
   "name": "miniapps-monorepo",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "pnpm -r run build",
+    "build:deploy": "node scripts/build-combined.js",
     "lint": "pnpm -r run lint",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo .next"
   },
@@ -17,5 +19,9 @@
     "react-dom": "^19.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "fs-extra": "^11.3.4"
   }
 }

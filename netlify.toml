@@ -1,0 +1,10 @@
+[build]
+  command = "pnpm build:deploy"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+  conditions = {Role = ["admin"]} # This is just a placeholder, but actually we probably want to allow direct access to sub-folder index.html files.

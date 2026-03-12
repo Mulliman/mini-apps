@@ -1,3 +1,8 @@
+import numberBusImg from './assets/number-bus.png';
+import bingoBuddyImg from './assets/bingo-buddy.png';
+import numberPlatePopImg from './assets/number-plate-pop.png';
+import periodicExplorerImg from './assets/periodic-explorer.png';
+
 export interface AppInfo {
   id: string;
   title: string;
@@ -14,7 +19,7 @@ export const appsData: AppInfo[] = [
     category: "Letters and Numbers",
     description: "A simple educational game for toddlers where they identify and type numbers on a moving London bus.",
     url: "/apps/letters-and-numbers/NumberBus/index.html",
-    image: "./src/assets/number-bus.png"
+    image: numberBusImg
   },
   {
     id: "bingo-buddy",
@@ -22,7 +27,7 @@ export const appsData: AppInfo[] = [
     category: "Letters and Numbers",
     description: "A colorful and interactive Bingo caller app for children with animations and voice announcements.",
     url: "/apps/letters-and-numbers/bingo-buddy/index.html",
-    image: "./src/assets/bingo-buddy.png"
+    image: bingoBuddyImg
   },
   {
     id: "number-plate-pop",
@@ -30,7 +35,7 @@ export const appsData: AppInfo[] = [
     category: "Letters and Numbers",
     description: "A fun and simple number plate matching game designed for toddlers.",
     url: "/apps/letters-and-numbers/number-plate-pop/index.html",
-    image: "./src/assets/number-plate-pop.png"
+    image: numberPlatePopImg
   },
   {
     id: "periodic-explorer",
@@ -38,7 +43,7 @@ export const appsData: AppInfo[] = [
     category: "Science",
     description: "An interactive periodic table explorer with detailed element information and smooth navigation.",
     url: "/apps/science/periodic-explorer/index.html",
-    image: "./src/assets/periodic-explorer.png"
+    image: periodicExplorerImg
   }
 
 ];
