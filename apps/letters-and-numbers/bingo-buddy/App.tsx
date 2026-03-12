@@ -5,6 +5,8 @@ import Cage from './components/Cage';
 import Ball from './components/Ball';
 import HistoryBoard from './components/HistoryBoard';
 import { speakNumber } from './utils/tts';
+import Header from '../../shared/Header';
+
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.IDLE);
@@ -100,12 +102,10 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-yellow-100 overflow-hidden relative select-none">
+      <Header title="Bingo Buddy" />
       
-      {/* Header / Controls */}
-      <div className="absolute top-0 w-full p-4 flex justify-between items-center z-50 pointer-events-none">
-        <h1 className="text-3xl font-black text-orange-600 drop-shadow-white tracking-widest bg-white/80 px-4 py-2 rounded-xl">
-          BINGO BUDDY
-        </h1>
+      {/* Controls */}
+      <div className="absolute top-16 w-full p-4 flex justify-end items-center z-50">
         <button 
           onClick={(e) => { e.stopPropagation(); resetGame(); }}
           className="pointer-events-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-full shadow-lg border-b-4 border-red-800 active:border-b-0 active:translate-y-1 transition-all"
@@ -113,6 +113,7 @@ const App: React.FC = () => {
           NEW GAME
         </button>
       </div>
+
 
       {/* Main Game Area */}
       <div 

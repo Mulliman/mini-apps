@@ -21,6 +21,7 @@ When asked to add a new app to the monorepo:
 2.  **Naming:** Ensure the app has a `package.json` with a clear, unique `name` attribute (e.g., `"name": "@miniapps/tic-tac-toe"`).
 3.  **Dependencies:** Run `pnpm install` from the root of the monorepo. Do not run installations inside the app folder directly.
 4.  **Homepage Integration:** Automatically search for where the homepage retrieves the list of apps (typically a JSON or TS file in `apps/homepage/src/`) and append the new app's metadata to ensure it shows up without needing the user to explicitly ask.
+5.  **Shared Header:** All apps (except the homepage) MUST include the shared `Header` component from `apps/shared/Header.tsx`. Import it as `import Header from '../../shared/Header';` (adjust path as needed) and wrap the main app content with `<Header title="App Title" />`.
 
 ## 4. Homepage Responsibilities
 The homepage is responsible for displaying a grid/list of all available apps. Always ensure the design of this homepage remains visually appealing, responsive, and organized by categories.

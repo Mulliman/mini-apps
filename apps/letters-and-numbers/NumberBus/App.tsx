@@ -3,6 +3,8 @@ import { GameBackground } from './components/GameBackground';
 import { LondonBus } from './components/LondonBus';
 import { Sparkles } from './components/Sparkles';
 import { BusData } from './types';
+import Header from '../../shared/Header';
+
 
 const BUS_SPEED_BASE = 2; // Pixels per frame
 const SPAWN_DELAY = 1000; // ms
@@ -162,17 +164,19 @@ const App: React.FC = () => {
 
 
   return (
-    <div ref={containerRef} className="relative w-screen h-screen bg-sky-300 overflow-hidden select-none font-fredoka">
+    <div ref={containerRef} className="relative w-screen h-screen bg-sky-300 overflow-hidden select-none font-fredoka flex flex-col">
+      <Header title="Number Bus London" />
       <GameBackground />
 
       {/* Score Board */}
-      <div className="absolute top-6 left-6 z-30 bg-white/90 rounded-2xl p-4 shadow-lg border-4 border-yellow-400 transform -rotate-2">
+      <div className="absolute top-20 left-6 z-30 bg-white/90 rounded-2xl p-4 shadow-lg border-4 border-yellow-400 transform -rotate-2">
         <div className="text-2xl font-bold text-gray-600 uppercase tracking-wider">Score</div>
         <div className="text-5xl font-black text-yellow-500 text-center">{score}</div>
       </div>
 
       {/* Instruction Hint */}
-      <div className="absolute top-6 right-6 z-30 bg-white/90 rounded-2xl p-4 shadow-lg border-4 border-blue-400 transform rotate-2 max-w-xs hidden md:block">
+      <div className="absolute top-20 right-6 z-30 bg-white/90 rounded-2xl p-4 shadow-lg border-4 border-blue-400 transform rotate-2 max-w-xs hidden md:block">
+
         <p className="text-xl text-center font-bold text-gray-700">
            Type the number on the bus!
         </p>
