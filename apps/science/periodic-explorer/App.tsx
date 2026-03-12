@@ -8,6 +8,7 @@ import Header from '../../shared/Header';
 
 const App: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<'summary' | 'usage' | 'etymology'>('summary');
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
@@ -24,7 +25,10 @@ const App: React.FC = () => {
   const navigateTo = useCallback((el: PeriodicElement | null) => {
     if (el) {
       const idx = ELEMENTS.findIndex(e => e.number === el.number);
-      if (idx !== -1) setCurrentIndex(idx);
+      if (idx !== -1) {
+        setCurrentIndex(idx);
+        setActiveTab('summary');
+      }
     }
   }, []);
 
@@ -64,13 +68,13 @@ const App: React.FC = () => {
       <Header title="Periodic Explorer" />
       {/* Ghost Background Symbol */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-        <div className="text-[40rem] md:text-[60rem] font-black opacity-[0.05] select-none leading-none">
+        <div className="text-[20rem] sm:text-[40rem] md:text-[60rem] font-black opacity-[0.05] select-none leading-none">
           {currentElement.symbol}
         </div>
       </div>
 
-      {/* Main 3x3 Grid Layout: 10% sidebars, 80% center */}
-      <div className="grid grid-cols-[10%_80%_10%] grid-rows-[10%_80%_10%] w-full flex-1 relative z-10">
+      {/* Main 3x3 Grid Layout: Responsive sidebars and center */}
+      <div className="grid grid-cols-[2.5rem_1fr_2.5rem] lg:grid-cols-[15%_70%_15%] grid-rows-[3.5rem_1fr_3.5rem] md:grid-rows-[10%_80%_10%] w-full flex-1 relative z-10 overflow-hidden px-1 md:px-0">
         
         {/* Row 1 - Top Nav Area */}
         <div className="bg-black/50"></div>
@@ -84,70 +88,88 @@ const App: React.FC = () => {
           <NeighborElement element={getNeighbors.left} position="left" onClick={() => navigateTo(getNeighbors.left)} />
         </div>
 
-        {/* CENTER ELEMENT AREA */}
-        <div className="flex flex-col items-center justify-center space-y-8 p-4 md:p-10 text-white overflow-hidden">
+        {/* CENTER ELEMENT AREA - Scrollable content if it overflows vertically */}
+        <div className="flex flex-col items-center justify-start md:justify-center p-4 md:p-10 text-white overflow-y-auto scrollbar-hide space-y-4 md:space-y-8">
           
           {/* Top Integrated Identity Header - Linear Format */}
-          <div className="w-full max-w-5xl flex items-center justify-center bg-white/10 backdrop-blur-2xl border border-white/20 px-6 md:px-12 py-4 md:py-8 rounded-[2rem] shadow-2xl">
-            <div className="flex items-center space-x-6 md:space-x-12">
+          <div className="w-full max-w-5xl flex items-center justify-center bg-white/10 backdrop-blur-2xl border border-white/20 px-3 md:px-12 py-3 md:py-8 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl flex-shrink-0 z-20">
+            <div className="flex items-center space-x-2 md:space-x-12">
               <div className="flex flex-col items-center">
-                <span className="text-3xl md:text-5xl font-black mono text-white/90 leading-none">#{currentElement.number}</span>
-                <span className="text-[9px] uppercase font-bold opacity-40 mt-1 tracking-widest">Number</span>
+                <span className="text-lg md:text-5xl font-black mono text-white/90 leading-none">#{currentElement.number}</span>
+                <span className="text-[6px] md:text-[9px] uppercase font-bold opacity-40 mt-1 tracking-widest">Number</span>
               </div>
               
-              <div className="h-10 md:h-16 w-px bg-white/20"></div>
+              <div className="h-6 md:h-16 w-px bg-white/20"></div>
 
-              <div className="flex flex-col items-center justify-center">
-                <span className="text-5xl md:text-8xl font-black leading-none drop-shadow-xl select-none">{currentElement.symbol}</span>
-                <span className="text-lg md:text-4xl font-extrabold uppercase tracking-tight opacity-90 mt-1">{currentElement.name}</span>
+              <div className="flex flex-col items-center justify-center px-1">
+                <span className="text-3xl md:text-8xl font-black leading-none drop-shadow-xl select-none">{currentElement.symbol}</span>
+                <span className="text-[10px] md:text-4xl font-extrabold uppercase tracking-tight opacity-90 mt-1 text-center truncate max-w-[80px] md:max-w-none">{currentElement.name}</span>
               </div>
 
-              <div className="h-10 md:h-16 w-px bg-white/20"></div>
+              <div className="h-6 md:h-16 w-px bg-white/20"></div>
 
               <div className="flex flex-col items-center">
-                <span className="text-2xl md:text-5xl font-black mono text-white/90 leading-none">
-                  {currentElement.mass > 0 ? currentElement.mass.toFixed(3) : "Synth"}
+                <span className="text-xs md:text-5xl font-black mono text-white/90 leading-none">
+                  {currentElement.mass > 0 ? currentElement.mass.toFixed(1) : "Synth"}
                 </span>
-                <span className="text-[9px] uppercase font-bold opacity-40 mt-1 tracking-widest">Mass</span>
+                <span className="text-[6px] md:text-[9px] uppercase font-bold opacity-40 mt-1 tracking-widest">Mass</span>
               </div>
             </div>
           </div>
 
           {/* Bottom Card - Detailed Info Section */}
-          <div className="w-full max-w-5xl bg-black/40 backdrop-blur-3xl rounded-[3rem] border border-white/15 p-6 md:p-12 shadow-2xl relative overflow-hidden">            
-            <div className="grid md:grid-cols-2 gap-8 md:gap-16">
-              <div className="flex flex-col">
-                <div className="flex flex-wrap items-center gap-4 mb-8">
-                  <span className="px-5 py-2 rounded-2xl bg-white/15 border border-white/25 text-xs md:text-sm font-black uppercase tracking-[0.15em] shadow-lg">
+          <div className="w-full max-w-5xl bg-black/40 backdrop-blur-3xl rounded-[2rem] md:rounded-[3rem] border border-white/15 p-5 md:p-12 shadow-2xl relative overflow-hidden flex-shrink-0">            
+            
+            {/* Tab Switcher - Mobile Only */}
+            <div className="flex md:hidden w-full border-b border-white/10 mb-6 -mx-5 px-5">
+              {(['summary', 'usage', 'etymology'] as const).map((tab) => (
+                (tab !== 'etymology' || currentElement.etymology) && (
+                  <button 
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'text-white border-b-2 border-white' : 'text-white/40'}`}
+                  >
+                    {tab === 'summary' ? 'Info' : tab === 'usage' ? 'Usage' : 'Origin'}
+                  </button>
+                )
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 md:gap-16">
+              {/* Left Column / Mobile Active Tab */}
+              <div className={`${activeTab === 'summary' ? 'flex' : 'hidden md:flex'} flex-col`}>
+                <div className="flex flex-wrap items-center gap-3 mb-6 md:mb-8">
+                  <span className="px-4 py-1.5 rounded-xl bg-white/15 border border-white/25 text-[10px] md:text-sm font-black uppercase tracking-[0.15em] shadow-lg">
                     {getDisplayCategory(currentElement.category)}
                   </span>
-                  <span className="text-[11px] font-black mono text-white/50 bg-white/5 border border-white/10 px-4 py-1.5 rounded-xl uppercase tracking-wider">
+                  <span className="text-[10px] font-black mono text-white/50 bg-white/5 border border-white/10 px-3 py-1 rounded-lg uppercase tracking-wider">
                     G{currentElement.group} • P{currentElement.period}
                   </span>
                 </div>
                 
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   <div>
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-2.5">Atomic Summary</h3>
-                    <p className="text-base md:text-lg leading-relaxed font-medium text-white/95 text-pretty">
+                    <h3 className="hidden md:block text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-2">Atomic Summary</h3>
+                    <p className="text-sm md:text-lg leading-relaxed font-medium text-white/95 text-pretty">
                       {currentElement.summary}
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="border-t md:border-t-0 md:border-l border-white/10 pt-8 md:pt-0 md:pl-12 flex flex-col space-y-8">
-                <div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-2.5">Practical & Industrial Usage</h3>
-                  <p className="text-base md:text-lg leading-relaxed font-medium text-white/95 text-pretty">
+              {/* Right Column / Mobile Active Tab */}
+              <div className={`${activeTab !== 'summary' ? 'flex' : 'hidden md:flex'} border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-12 flex-col space-y-6 md:space-y-8`}>
+                <div className={`${activeTab === 'usage' ? 'block' : 'hidden md:block'}`}>
+                  <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-2.5">Practical & Industrial Usage</h3>
+                  <p className="text-sm md:text-lg leading-relaxed font-medium text-white/95 text-pretty">
                     {currentElement.usage || "Used in specialized high-energy research and advanced synthesis."}
                   </p>
                 </div>
 
                 {currentElement.etymology && (
-                  <div>
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-2.5">Origin & Etymology</h3>
-                    <p className="text-base md:text-lg leading-relaxed font-medium text-white/95 text-pretty">
+                  <div className={`${activeTab === 'etymology' ? 'block' : 'hidden md:block'}`}>
+                    <h3 className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-2.5">Origin & Etymology</h3>
+                    <p className="text-sm md:text-lg leading-relaxed font-medium text-white/95 text-pretty">
                       {currentElement.etymology}
                     </p>
                   </div>
