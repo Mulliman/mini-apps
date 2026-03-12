@@ -31,6 +31,14 @@ export const appsData: AppInfo[] = [
     description: "A fun and simple number plate matching game designed for toddlers.",
     url: "/apps/letters-and-numbers/number-plate-pop/index.html",
     image: "./src/assets/number-plate-pop.png"
+  },
+  {
+    id: "periodic-explorer",
+    title: "Periodic Explorer",
+    category: "Science",
+    description: "An interactive periodic table explorer with detailed element information and smooth navigation.",
+    url: "/apps/science/periodic-explorer/index.html",
+    image: "./src/assets/periodic-explorer.png"
   }
 
 ];

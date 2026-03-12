@@ -1,0 +1,5 @@
+{
+  "name": "Periodic Explorer",
+  "description": "An immersive, gesture-driven periodic table explorer that allows you to navigate elements through space and time with high-fidelity visuals.",
+  "requestFramePermissions": []
+}
