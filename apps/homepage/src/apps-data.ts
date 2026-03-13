@@ -44,7 +44,13 @@ export const appsData: AppInfo[] = [
     description: "An interactive periodic table explorer with detailed element information and smooth navigation.",
     url: "/apps/science/periodic-explorer/index.html",
     image: periodicExplorerImg
+  },
+  {
+    id: "little-emotes-match",
+    title: "Little Emotes Match",
+    category: "Games",
+    description: "A fun and simple emoji matching game for kids to help identify feelings and objects.",
+    url: "/apps/games/little-emotes-match/index.html"
   }
-
 ];
 
