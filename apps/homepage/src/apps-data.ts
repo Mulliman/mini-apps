@@ -2,6 +2,7 @@ import numberBusImg from './assets/number-bus.png';
 import bingoBuddyImg from './assets/bingo-buddy.png';
 import numberPlatePopImg from './assets/number-plate-pop.png';
 import periodicExplorerImg from './assets/periodic-explorer.png';
+import christmasCountdownImg from './assets/christmas-countdown-preview.png';
 
 export interface AppInfo {
   id: string;
@@ -51,6 +52,14 @@ export const appsData: AppInfo[] = [
     category: "Games",
     description: "A fun and simple emoji matching game for kids to help identify feelings and objects.",
     url: "/apps/games/little-emotes-match/index.html"
+  },
+  {
+    id: "christmas-countdown",
+    title: "Christmas Countdown",
+    category: "Games",
+    description: "A festive advent calendar game where you find and type numbers in the run-up to Christmas.",
+    url: "/apps/christmas/christmas-countdown/index.html",
+    image: christmasCountdownImg
   }
 ];
 

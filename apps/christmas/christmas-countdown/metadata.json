@@ -1,0 +1,5 @@
+{
+  "name": "Christmas Countdown",
+  "description": "An interactive Advent Calendar where children count to Christmas by finding and clicking windows or typing numbers.",
+  "requestFramePermissions": []
+}
