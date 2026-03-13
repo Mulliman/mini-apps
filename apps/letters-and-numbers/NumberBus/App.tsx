@@ -38,6 +38,7 @@ const App: React.FC = () => {
   // Refs for game loop state to avoid closure staleness
   const busRef = useRef<BusData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const gameAreaRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
   const userInputRef = useRef<string>('');
 
@@ -166,9 +167,10 @@ const App: React.FC = () => {
   return (
     <div ref={containerRef} className="relative w-screen h-screen bg-sky-300 overflow-hidden select-none font-fredoka flex flex-col">
       <Header title="Number Bus London" />
-      <GameBackground />
+      <div ref={gameAreaRef} className="relative flex-1 w-full overflow-hidden">
+        <GameBackground />
 
-      {/* Score Board */}
+        {/* Score Board */}
       <div className="absolute top-20 left-6 z-30 bg-white/90 rounded-2xl p-4 shadow-lg border-4 border-yellow-400 transform -rotate-2">
         <div className="text-2xl font-bold text-gray-600 uppercase tracking-wider">Score</div>
         <div className="text-5xl font-black text-yellow-500 text-center">{score}</div>
@@ -191,18 +193,19 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* The Bus */}
-      {bus && (
-        <>
-          <LondonBus bus={bus} isWrongInput={isWrongInput} />
-          {bus.state === 'celebrating' && (
-            <Sparkles x={bus.x} y={window.innerHeight - 150} />
-          )}
-        </>
-      )}
+        {/* The Bus */}
+        {bus && (
+          <>
+            <LondonBus bus={bus} isWrongInput={isWrongInput} />
+            {bus.state === 'celebrating' && (
+              <Sparkles x={bus.x} y={(gameAreaRef.current?.clientHeight || window.innerHeight) - 150} />
+            )}
+          </>
+        )}
+      </div>
 
       {/* Mobile Virtual Keypad */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gray-100 z-50 flex items-center justify-center space-x-2 p-2 md:hidden border-t-4 border-gray-300">
+      <div className="w-full h-32 bg-gray-100 flex items-center justify-center space-x-2 p-2 border-t-4 border-gray-300 z-50 relative">
          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num) => (
             <button
               key={num}
