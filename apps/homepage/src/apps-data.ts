@@ -3,6 +3,7 @@ import bingoBuddyImg from './assets/bingo-buddy.png';
 import numberPlatePopImg from './assets/number-plate-pop.png';
 import periodicExplorerImg from './assets/periodic-explorer.png';
 import christmasCountdownImg from './assets/christmas-countdown-preview.png';
+import patternPlaytimeImg from './assets/pattern-playtime.png';
 
 export interface AppInfo {
   id: string;
@@ -60,6 +61,14 @@ export const appsData: AppInfo[] = [
     description: "A festive advent calendar game where you find and type numbers in the run-up to Christmas.",
     url: "/apps/christmas/christmas-countdown/index.html",
     image: christmasCountdownImg
+  },
+  {
+    id: "pattern-playtime",
+    title: "Pattern Playtime",
+    category: "Logic",
+    description: "A fun and educational pattern completion game for kids featuring colorful shapes and logical puzzles.",
+    url: "/apps/logic/pattern-playtime/index.html",
+    image: patternPlaytimeImg
   }
 ];
 

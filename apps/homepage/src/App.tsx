@@ -60,7 +60,7 @@ function App() {
       </main>
 
       <footer className="portal-footer">
-        <p>Built with ❤️ by AI Studio</p>
+        <p>Obviously these are AI generated and are just quickly done.</p>
       </footer>
       <div className="background-shapes">
         <div className="shape shape-1"></div>
