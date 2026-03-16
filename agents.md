@@ -31,6 +31,14 @@ When adding or modifying an app, ensure that all resource links in `index.html` 
 - **Incorrect:** `<script src="/index.tsx"></script>`
 This is critical for the monorepo structure where apps are served under subdirectories like `/apps/category/app-name/`.
 
+**CRITICAL (Vite Config):** You MUST also set `base: './'` in the app's `vite.config.ts` to ensure that bundled assets are also referenced relatively in the production build.
+```typescript
+export default defineConfig({
+  base: './',
+  // ... rest of config
+});
+```
+
 ## 6. Dependency Consistency
 - If you encounter "Failed to resolve react" errors when running from the root, ensure `react` and `react-dom` are present in the root `package.json`'s `devDependencies`.
 - New apps should have their own `package.json` with unique names as per Section 3.
