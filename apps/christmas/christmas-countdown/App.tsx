@@ -111,7 +111,7 @@ const App: React.FC = () => {
   // Keep input focused
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (!showWinModal) {
+    if (!showWinModal && window.matchMedia("(pointer: fine)").matches) {
         inputRef.current?.focus();
     }
   }, [currentNumber, showWinModal]);
@@ -166,7 +166,7 @@ const App: React.FC = () => {
         </main>
 
         {/* Bottom Controls */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur shadow-up z-40 flex justify-center items-center gap-4 border-t-4 border-red-500">
+        <div className="desktop-only fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur shadow-up z-40 flex justify-center items-center gap-4 border-t-4 border-red-500">
            <label className="text-xl sm:text-2xl font-bold text-slate-700 christmas-font whitespace-nowrap">
              Type next number:
            </label>
