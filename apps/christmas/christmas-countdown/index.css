@@ -48,3 +48,9 @@ body {
     transform: translateY(105vh);
   }
 }
+
+@media (pointer: coarse) {
+  .desktop-only {
+    display: none !important;
+  }
+}
