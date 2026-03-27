@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import workboxBuild from 'workbox-build';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +67,25 @@ async function build() {
   }
 
   console.log('✅ Combined build complete! Output is in ./dist');
+
+  // 4. Generate Service Worker
+  console.log('🛠 Generating Service Worker...');
+  try {
+    const { count, size, warnings } = await workboxBuild.generateSW({
+      globDirectory: distDir,
+      globPatterns: [
+        '**/*.{html,js,css,woff2,png,jpg,jpeg,svg,json,ico,webmanifest}'
+      ],
+      swDest: path.join(distDir, 'sw.js'),
+      clientsClaim: true,
+      skipWaiting: true,
+    });
+
+    warnings.forEach(warning => console.warn('⚠️ Service Worker Warning:', warning));
+    console.log(`✅ Service Worker generated successfully. Caching ${count} files, totaling ${size} bytes.`);
+  } catch (error) {
+    console.error('❌ Failed to generate Service Worker:', error);
+  }
 }
 
 build().catch(err => {
