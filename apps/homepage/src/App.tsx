@@ -1,4 +1,6 @@
 import { appsData } from './apps-data';
+import { PWAUpdater } from './components/PWAUpdater';
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 import './index.css';
 
 function App() {
@@ -67,6 +69,8 @@ function App() {
         <div className="shape shape-2"></div>
         <div className="shape shape-3"></div>
       </div>
+      <PWAUpdater />
+      <PWAInstallPrompt />
     </div>
   );
 }
