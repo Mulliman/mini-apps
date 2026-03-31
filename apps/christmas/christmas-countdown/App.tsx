@@ -118,7 +118,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-start relative overflow-hidden">
+    <div className="h-[100dvh] bg-slate-900 flex flex-col items-center justify-start relative overflow-hidden">
       <Header title="Christmas Countdown" />
       
       {/* Background Image Layer */}
@@ -153,7 +153,7 @@ const App: React.FC = () => {
         </header>
 
         {/* The Grid */}
-        <main className="w-full grid grid-cols-4 sm:grid-cols-6 gap-3 sm:gap-4 md:gap-6 flex-grow overflow-y-auto overflow-x-hidden pb-20">
+        <main className="w-full grid grid-cols-4 sm:grid-cols-6 grid-rows-6 sm:grid-rows-4 gap-2 sm:gap-4 md:gap-6 flex-grow min-h-0 pb-24">
           {gridOrder.map((num) => (
             <AdventWindow 
               key={num}
