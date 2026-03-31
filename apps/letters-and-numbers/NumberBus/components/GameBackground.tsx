@@ -18,18 +18,24 @@ export const GameBackground: React.FC = () => {
       </div>
 
       {/* Distant City Silhouette (Simple) */}
-      <div className="absolute bottom-32 left-0 right-0 h-32 flex items-end justify-center space-x-1 opacity-30">
-          <div className="w-16 h-24 bg-indigo-900 rounded-t-lg"></div>
-          <div className="w-12 h-16 bg-indigo-900 rounded-t-lg"></div>
-          <div className="w-20 h-32 bg-indigo-900 rounded-t-lg"></div>
-          <div className="w-14 h-20 bg-indigo-900 rounded-t-lg"></div>
-          <div className="w-24 h-12 bg-indigo-900 rounded-t-lg"></div>
-          <div className="w-16 h-28 bg-indigo-900 rounded-t-lg"></div>
-          <div className="w-10 h-14 bg-indigo-900 rounded-t-lg"></div>
+      <div
+        className="absolute left-0 right-0 flex items-end justify-center space-x-1 opacity-30"
+        style={{ bottom: 'clamp(60px, 15vh, 8rem)', height: 'clamp(60px, 15vh, 8rem)' }}
+      >
+          <div className="w-16 h-[75%] bg-indigo-900 rounded-t-lg"></div>
+          <div className="w-12 h-[50%] bg-indigo-900 rounded-t-lg"></div>
+          <div className="w-20 h-full bg-indigo-900 rounded-t-lg"></div>
+          <div className="w-14 h-[62.5%] bg-indigo-900 rounded-t-lg"></div>
+          <div className="w-24 h-[37.5%] bg-indigo-900 rounded-t-lg"></div>
+          <div className="w-16 h-[87.5%] bg-indigo-900 rounded-t-lg"></div>
+          <div className="w-10 h-[43.75%] bg-indigo-900 rounded-t-lg"></div>
       </div>
 
       {/* Road */}
-      <div className="absolute bottom-0 w-full h-32 bg-gray-700 border-t-8 border-gray-600">
+      <div
+        className="absolute bottom-0 w-full bg-gray-700 border-t-8 border-gray-600"
+        style={{ height: 'clamp(60px, 15vh, 8rem)' }}
+      >
         {/* Road markings */}
         <div className="absolute top-1/2 left-0 right-0 h-2 flex justify-between space-x-12 px-4">
              {Array.from({ length: 20 }).map((_, i) => (
@@ -39,7 +45,10 @@ export const GameBackground: React.FC = () => {
       </div>
 
       {/* Grass */}
-      <div className="absolute bottom-32 w-full h-8 bg-green-500 flex items-end overflow-hidden">
+      <div
+        className="absolute w-full h-8 bg-green-500 flex items-end overflow-hidden"
+        style={{ bottom: 'clamp(60px, 15vh, 8rem)' }}
+      >
          {/* Grass blades effect using zig zag gradient or simplified divs */}
          <div className="w-full h-4 bg-green-600 opacity-50 rounded-t-full transform scale-y-50"></div>
       </div>

@@ -29,12 +29,13 @@ export const LondonBus: React.FC<LondonBusProps> = ({ bus, isWrongInput }) => {
 
   return (
     <div
-      className={`absolute bottom-20 transition-transform will-change-transform ${celebrateClass} ${shakeClass}`}
+      className={`absolute transition-transform will-change-transform responsive-bus ${celebrateClass} ${shakeClass}`}
       style={{
         left: `${bus.x}px`,
         transform: 'translateX(-50%)', // Center the component on its X coordinate
         width: '300px',
         height: '180px',
+        bottom: 'max(calc(clamp(60px, 15vh, 8rem) - 2rem), 1.5rem)',
       }}
     >
       {/* The Bouncing Container */}
@@ -145,6 +146,12 @@ style.innerHTML = `
   }
   .animate-shake {
     animation: shake 0.4s ease-in-out;
+  }
+  @media (max-height: 500px) {
+    .responsive-bus {
+      transform: scale(0.6) translateX(-50%) !important;
+      transform-origin: bottom left;
+    }
   }
 `;
 document.head.appendChild(style);
