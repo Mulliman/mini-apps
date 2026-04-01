@@ -6,7 +6,7 @@ import { BusData } from './types';
 import Header from '../../shared/Header';
 
 
-const BUS_SPEED_BASE = 2; // Pixels per frame
+const TARGET_DURATION_MS = 6000; // 6 seconds to cross the screen
 const SPAWN_DELAY = 1000; // ms
 
 const generateBus = (width: number): BusData => {
@@ -14,13 +14,18 @@ const generateBus = (width: number): BusData => {
   // Completely random between 1 and 150
   const num = Math.floor(Math.random() * 150) + 1;
 
+  // Total distance to cover: from -350 to width + 350 (or vice versa)
+  const totalDistance = width + 700;
+  // Speed in pixels per millisecond
+  const speed = totalDistance / TARGET_DURATION_MS;
+
   return {
     id: Math.random().toString(36).substr(2, 9),
     number: num,
     x: direction === 'left-to-right' ? -350 : width + 350,
     direction,
     state: 'moving',
-    speed: BUS_SPEED_BASE + Math.random(),
+    speed,
   };
 };
 
@@ -35,6 +40,7 @@ const App: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
   const userInputRef = useRef<string>('');
 
   // Sync ref with state for keydown handler
@@ -56,9 +62,18 @@ const App: React.FC = () => {
   }, []);
 
   // Game Loop
-  const animate = useCallback(() => {
+  const animate = useCallback((time: number) => {
     // Request next frame immediately to ensure loop keeps running
     requestRef.current = requestAnimationFrame(animate);
+
+    if (lastTimeRef.current === 0) {
+      lastTimeRef.current = time;
+      return;
+    }
+
+    // Cap deltaTime to prevent huge jumps if the tab was inactive
+    const deltaTime = Math.min(time - lastTimeRef.current, 100);
+    lastTimeRef.current = time;
 
     if (busRef.current) {
       const currentBus = { ...busRef.current };
@@ -67,15 +82,18 @@ const App: React.FC = () => {
       if (currentBus.state === 'moving') {
         let shouldRemove = false;
 
+        // Distance = speed (px/ms) * time (ms)
+        const distance = currentBus.speed * deltaTime;
+
         // Movement
         if (currentBus.direction === 'left-to-right') {
-          currentBus.x += currentBus.speed;
+          currentBus.x += distance;
           // Check bounds - if missed, just respawn, keep score
           if (currentBus.x > width + 400) {
             shouldRemove = true;
           }
         } else {
-          currentBus.x -= currentBus.speed;
+          currentBus.x -= distance;
           if (currentBus.x < -400) {
             shouldRemove = true;
           }
@@ -200,11 +218,11 @@ const App: React.FC = () => {
       </div>
 
       {/* Mobile Virtual Keypad */}
-      <div className="w-full h-32 bg-gray-100 flex items-center justify-center space-x-2 p-2 border-t-4 border-gray-300 z-50 relative">
+      <div className="w-full h-[15vh] min-h-[60px] max-h-32 bg-gray-100 flex items-center justify-center space-x-2 p-2 border-t-4 border-gray-300 z-50 relative">
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((num) => (
           <button
             key={num}
-            className="flex-1 h-full max-w-[60px] bg-white rounded-lg shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 text-2xl font-bold text-blue-600 flex items-center justify-center"
+            className="flex-1 h-full max-w-[60px] bg-white rounded-lg shadow-md border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 text-xl sm:text-2xl font-bold text-blue-600 flex items-center justify-center"
             onClick={() => {
               // Dispatch keyboard event for compatibility with existing logic
               const event = new KeyboardEvent('keydown', { key: num.toString() });
