@@ -4,6 +4,7 @@ import numberPlatePopImg from './assets/number-plate-pop.png';
 import periodicExplorerImg from './assets/periodic-explorer.png';
 import christmasCountdownImg from './assets/christmas-countdown-preview.png';
 import patternPlaytimeImg from './assets/pattern-playtime.png';
+import solarSystemExplorerImg from './assets/solar-system-explorer.png';
 
 export interface AppInfo {
   id: string;
@@ -69,6 +70,14 @@ export const appsData: AppInfo[] = [
     description: "A fun and educational pattern completion game for kids featuring colorful shapes and logical puzzles.",
     url: "/apps/logic/pattern-playtime/index.html",
     image: patternPlaytimeImg
+  },
+  {
+    id: "solar-system-explorer",
+    title: "Solar System Explorer",
+    category: "Science",
+    description: "An educational and interactive journey through our solar system, exploring planets and moons.",
+    url: "/apps/science/solar-system-explorer/index.html",
+    image: solarSystemExplorerImg
   }
 ];
 
