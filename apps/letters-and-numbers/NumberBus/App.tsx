@@ -6,7 +6,7 @@ import { BusData } from './types';
 import Header from '../../shared/Header';
 
 
-const TARGET_DURATION_MS = 6000; // 6 seconds to cross the screen
+const TARGET_DURATION_MS = 10000; // 6 seconds to cross the screen
 const SPAWN_DELAY = 1000; // ms
 
 const generateBus = (width: number): BusData => {
