@@ -281,6 +281,64 @@ importers:
         specifier: ~5.8.2
         version: 5.8.3
 
+  apps/maths/simple-sums:
+    dependencies:
+      '@google/genai':
+        specifier: ^1.29.0
+        version: 1.45.0
+      '@tailwindcss/vite':
+        specifier: ^4.1.14
+        version: 4.2.1(vite@6.4.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.1)(tsx@4.21.0))
+      '@vitejs/plugin-react':
+        specifier: ^5.0.4
+        version: 5.1.4(vite@6.4.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.1)(tsx@4.21.0))
+      canvas-confetti:
+        specifier: ^1.9.4
+        version: 1.9.4
+      dotenv:
+        specifier: ^17.2.3
+        version: 17.3.1
+      express:
+        specifier: ^4.21.2
+        version: 4.22.1
+      lucide-react:
+        specifier: ^0.546.0
+        version: 0.546.0(react@19.2.4)
+      motion:
+        specifier: ^12.23.24
+        version: 12.36.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.4(react@19.2.4)
+      vite:
+        specifier: ^6.2.0
+        version: 6.4.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.1)(tsx@4.21.0)
+    devDependencies:
+      '@types/canvas-confetti':
+        specifier: ^1.9.0
+        version: 1.9.0
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
+      autoprefixer:
+        specifier: ^10.4.21
+        version: 10.4.27(postcss@8.5.8)
+      tailwindcss:
+        specifier: ^4.1.14
+        version: 4.2.1
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: ~5.8.2
+        version: 5.8.3
+
   apps/science/periodic-explorer:
     dependencies:
       react:

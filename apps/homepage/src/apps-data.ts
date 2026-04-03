@@ -5,6 +5,7 @@ import periodicExplorerImg from './assets/periodic-explorer.png';
 import christmasCountdownImg from './assets/christmas-countdown-preview.png';
 import patternPlaytimeImg from './assets/pattern-playtime.png';
 import solarSystemExplorerImg from './assets/solar-system-explorer.png';
+import simpleSumsImg from './assets/simple-sums.png';
 
 export interface AppInfo {
   id: string;
@@ -66,7 +67,7 @@ export const appsData: AppInfo[] = [
   {
     id: "pattern-playtime",
     title: "Pattern Playtime",
-    category: "Logic",
+    category: "Maths & Logic",
     description: "A fun and educational pattern completion game for kids featuring colorful shapes and logical puzzles.",
     url: "/apps/logic/pattern-playtime/index.html",
     image: patternPlaytimeImg
@@ -78,6 +79,14 @@ export const appsData: AppInfo[] = [
     description: "An educational and interactive journey through our solar system, exploring planets and moons.",
     url: "/apps/science/solar-system-explorer/index.html",
     image: solarSystemExplorerImg
+  },
+  {
+    id: "simple-sums",
+    title: "Simple Sums",
+    category: "Maths & Logic",
+    description: "An interactive and playful math game for kids to practice simple addition with fun shapes and colors.",
+    url: "/apps/maths/simple-sums/index.html",
+    image: simpleSumsImg
   }
 ];
 
