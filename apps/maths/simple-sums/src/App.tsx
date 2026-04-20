@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { Circle, Square, Star, Triangle } from 'lucide-react';
+import { Circle, Square, Star, Triangle, Plus, Minus } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header from '../../../shared/Header';
 
@@ -14,6 +14,7 @@ const COLORS = [
 ];
 
 type ShapeType = typeof SHAPES[number];
+type Mode = 'add' | 'subtract' | 'both';
 
 function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -24,6 +25,8 @@ function getRandomElement<T>(arr: readonly T[] | T[]): T {
 }
 
 export default function App() {
+  const [mode, setMode] = useState<Mode>('add');
+  const [op, setOp] = useState<'+' | '-'>('+');
   const [num1, setNum1] = useState(1);
   const [num2, setNum2] = useState(1);
   const [shape, setShape] = useState<ShapeType>('circle');
@@ -43,9 +46,28 @@ export default function App() {
   const input2Ref = useRef<HTMLInputElement>(null);
   const inputTotalRef = useRef<HTMLInputElement>(null);
 
-  const startNewRound = () => {
-    setNum1(getRandomInt(1, 9));
-    setNum2(getRandomInt(1, 9));
+  const startNewRound = (targetMode: Mode = mode) => {
+    let newOp: '+' | '-' = '+';
+    if (targetMode === 'add') {
+      newOp = '+';
+    } else if (targetMode === 'subtract') {
+      newOp = '-';
+    } else {
+      newOp = Math.random() < 0.5 ? '+' : '-';
+    }
+    setOp(newOp);
+
+    let n1, n2;
+    if (newOp === '+') {
+      n1 = getRandomInt(1, 9);
+      n2 = getRandomInt(1, 9);
+    } else {
+      n1 = getRandomInt(2, 10);
+      n2 = getRandomInt(1, n1 - 1); // Ensure n2 is strictly smaller than n1
+    }
+
+    setNum1(n1);
+    setNum2(n2);
     setShape(getRandomElement(SHAPES));
     setColor(getRandomElement(COLORS));
     setInput1('');
@@ -83,7 +105,7 @@ export default function App() {
   }, [step]);
 
   const handleInput1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
+    const val = e.target.value.replace(/[^0-9]/g, '');
     if (val === '') {
       setInput1('');
       return;
@@ -107,7 +129,7 @@ export default function App() {
   };
 
   const handleInput2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
+    const val = e.target.value.replace(/[^0-9]/g, '');
     if (val === '') {
       setInput2('');
       return;
@@ -131,12 +153,13 @@ export default function App() {
   };
 
   const handleInputTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
+    const val = e.target.value.replace(/[^0-9]/g, '');
     if (val === '') {
       setInputTotal('');
       return;
     }
-    const targetStr = (num1 + num2).toString();
+    const targetValue = op === '+' ? num1 + num2 : num1 - num2;
+    const targetStr = targetValue.toString();
     if (targetStr === val) {
       setInputTotal(val);
       setStep(3);
@@ -154,10 +177,11 @@ export default function App() {
     }
   };
 
-  const renderShape = (index: number) => {
+  const renderShape = (index: number, opacity: number = 1) => {
     const props = {
       className: `w-4 h-4 sm:w-12 sm:h-12 ${color.class}`,
       fill: 'currentColor',
+      style: { opacity }
     };
     switch (shape) {
       case 'circle':
@@ -171,14 +195,42 @@ export default function App() {
     }
   };
 
+  const getTitle = () => {
+    if (mode === 'add') return "Let's Add!";
+    if (mode === 'subtract') return "Let's Subtract!";
+    return "Let's Add or Subtract!";
+  };
+
+  const totalShapes = op === '+' ? num1 + num2 : num1 - num2;
+
   return (
     <div
       className={`min-h-screen flex flex-col transition-colors duration-1000 ${color.bg} font-sans overflow-x-hidden`}
     >
       <Header title="Simple Sums" />
-      <div className="flex-1 flex flex-col items-center justify-center p-4">
+      <div className="flex-1 flex flex-col items-center p-4 pt-12">
+        {/* Mode Selector */}
+        <div className="flex bg-white/50 backdrop-blur-sm p-1.5 rounded-2xl shadow-sm gap-1 mb-8">
+          {(['add', 'subtract', 'both'] as Mode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => {
+                setMode(m);
+                startNewRound(m);
+                input1Ref.current?.focus();
+              }}
+              className={`px-4 sm:px-8 py-2 sm:py-3 rounded-xl font-bold transition-all text-sm sm:text-base capitalize ${mode === m
+                  ? 'bg-white text-gray-800 shadow-md scale-105'
+                  : 'text-gray-500 hover:bg-white/30'
+                }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+
         <h1 className="text-5xl sm:text-7xl font-black text-gray-800 mb-8 sm:mb-16 text-center drop-shadow-sm">
-          Let's Add!
+          {getTitle()}
         </h1>
 
         <div className="grid grid-cols-[3fr_auto_3fr_auto_4fr] items-center justify-items-center gap-x-2 sm:gap-x-8 gap-y-4 sm:gap-y-10 w-full max-w-4xl pb-8 px-2 sm:px-8">
@@ -186,17 +238,19 @@ export default function App() {
           <div className="flex flex-wrap justify-center gap-1 sm:gap-2 w-full min-h-[60px] sm:min-h-[120px] content-center">
             {Array.from({ length: num1 }).map((_, i) => renderShape(i))}
           </div>
-          
-          <div className="text-2xl sm:text-7xl font-black text-gray-400 drop-shadow-sm">+</div>
-          
+
+          <div className="text-2xl sm:text-7xl font-black text-gray-400 drop-shadow-sm">
+            {op === '+' ? <Plus size={48} strokeWidth={4} /> : <Minus size={48} strokeWidth={4} />}
+          </div>
+
           <div className="flex flex-wrap justify-center gap-1 sm:gap-2 w-full min-h-[60px] sm:min-h-[120px] content-center">
             {Array.from({ length: num2 }).map((_, i) => renderShape(i))}
           </div>
-          
+
           <div className="text-2xl sm:text-7xl font-black text-gray-400 drop-shadow-sm">=</div>
-          
+
           <div className="flex flex-wrap justify-center gap-1 sm:gap-2 w-full min-h-[60px] sm:min-h-[120px] content-center">
-            {Array.from({ length: num1 + num2 }).map((_, i) => (
+            {Array.from({ length: totalShapes }).map((_, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0 }}
@@ -211,64 +265,66 @@ export default function App() {
           {/* Row 2: Inputs */}
           <motion.input
             ref={input1Ref}
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={input1}
             onChange={handleInput1Change}
             disabled={step > 0}
             readOnly={error1}
             animate={error1 ? { x: [-10, 10, -10, 10, 0] } : { x: 0 }}
             transition={{ duration: 0.4 }}
-            className={`no-spinners w-full aspect-square max-w-[144px] text-center text-3xl sm:text-8xl font-black rounded-xl sm:rounded-3xl border-4 sm:border-8 outline-none transition-all duration-300 shadow-lg ${
-              error1
+            className={`no-spinners w-full aspect-square max-w-[144px] text-center text-3xl sm:text-8xl font-black rounded-xl sm:rounded-3xl border-4 sm:border-8 outline-none transition-all duration-300 shadow-lg ${error1
                 ? 'border-red-500 bg-red-100 text-red-600'
                 : step > 0
-                ? 'border-green-500 bg-green-100 text-green-600 scale-105'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-4 sm:focus:ring-8 focus:ring-blue-200 bg-white text-gray-800'
-            }`}
+                  ? 'border-green-500 bg-green-100 text-green-600 scale-105'
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-4 sm:focus:ring-8 focus:ring-blue-200 bg-white text-gray-800'
+              }`}
           />
 
-          <div className="text-2xl sm:text-7xl font-black text-gray-400 drop-shadow-sm">+</div>
+          <div className="text-2xl sm:text-7xl font-black text-gray-400 drop-shadow-sm">
+            {op === '+' ? '+' : '-'}
+          </div>
 
           <motion.input
             ref={input2Ref}
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={input2}
             onChange={handleInput2Change}
             disabled={step > 1 || step < 1}
             readOnly={error2}
             animate={error2 ? { x: [-10, 10, -10, 10, 0] } : { x: 0 }}
             transition={{ duration: 0.4 }}
-            className={`no-spinners w-full aspect-square max-w-[144px] text-center text-3xl sm:text-8xl font-black rounded-xl sm:rounded-3xl border-4 sm:border-8 outline-none transition-all duration-300 shadow-lg ${
-              error2
+            className={`no-spinners w-full aspect-square max-w-[144px] text-center text-3xl sm:text-8xl font-black rounded-xl sm:rounded-3xl border-4 sm:border-8 outline-none transition-all duration-300 shadow-lg ${error2
                 ? 'border-red-500 bg-red-100 text-red-600'
                 : step > 1
-                ? 'border-green-500 bg-green-100 text-green-600 scale-105'
-                : step === 1
-                ? 'border-gray-300 focus:border-blue-500 focus:ring-4 sm:focus:ring-8 focus:ring-blue-200 bg-white text-gray-800 scale-105'
-                : 'border-gray-200 bg-gray-50 text-gray-300 opacity-70'
-            }`}
+                  ? 'border-green-500 bg-green-100 text-green-600 scale-105'
+                  : step === 1
+                    ? 'border-gray-300 focus:border-blue-500 focus:ring-4 sm:focus:ring-8 focus:ring-blue-200 bg-white text-gray-800 scale-105'
+                    : 'border-gray-200 bg-gray-50 text-gray-300 opacity-70'
+              }`}
           />
 
           <div className="text-2xl sm:text-7xl font-black text-gray-400 drop-shadow-sm">=</div>
 
           <motion.input
             ref={inputTotalRef}
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={inputTotal}
             onChange={handleInputTotalChange}
             disabled={step > 2 || step < 2}
             readOnly={errorTotal}
             animate={errorTotal ? { x: [-10, 10, -10, 10, 0] } : { x: 0 }}
             transition={{ duration: 0.4 }}
-            className={`no-spinners w-full aspect-[4/3] max-w-[192px] text-center text-3xl sm:text-8xl font-black rounded-xl sm:rounded-3xl border-4 sm:border-8 outline-none transition-all duration-300 shadow-lg ${
-              errorTotal
+            className={`no-spinners w-full aspect-[4/3] max-w-[192px] text-center text-3xl sm:text-8xl font-black rounded-xl sm:rounded-3xl border-4 sm:border-8 outline-none transition-all duration-300 shadow-lg ${errorTotal
                 ? 'border-red-500 bg-red-100 text-red-600'
                 : step > 2
-                ? 'border-green-500 bg-green-100 text-green-600 scale-110'
-                : step === 2
-                ? 'border-gray-300 focus:border-purple-500 focus:ring-4 sm:focus:ring-8 focus:ring-purple-200 bg-white text-gray-800 scale-110'
-                : 'border-gray-200 bg-gray-50 text-gray-300 opacity-70'
-            }`}
+                  ? 'border-green-500 bg-green-100 text-green-600 scale-110'
+                  : step === 2
+                    ? 'border-gray-300 focus:border-purple-500 focus:ring-4 sm:focus:ring-8 focus:ring-purple-200 bg-white text-gray-800 scale-110'
+                    : 'border-gray-200 bg-gray-50 text-gray-300 opacity-70'
+              }`}
           />
         </div>
 
