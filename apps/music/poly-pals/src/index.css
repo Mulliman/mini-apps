@@ -114,6 +114,7 @@
   .bottom-action-bar {
     padding: 0.25rem 0.5rem !important;
     border-top-width: 1px !important;
+    min-height: 40px !important;
   }
   .bottom-action-bar h1 {
     font-size: 1.1rem !important;
@@ -141,5 +142,25 @@
     width: 28px !important;
     height: 28px !important;
     padding: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tracks-container-board {
+    padding: 0.5rem 0.25rem !important;
+  }
+
+  [id^="lane-"] {
+    max-width: 80px !important;
+  }
+
+  [id^="lane-"] .absolute.-top-10 {
+    font-size: 8px !important;
+    top: -28px !important;
+  }
+
+  [id^="lane-"] .w-\[clamp\(1\.4rem\,6vw\,5\.5rem\)\] {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
   }
 }

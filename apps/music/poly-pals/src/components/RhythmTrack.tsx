@@ -152,7 +152,7 @@ export default function RhythmTrack({
             boxShadow: isSelected ? `0 0 30px ${color}` : `0 0 20px ${color}`,
             border: isSelected ? '2px solid white' : 'none'
           }}
-          className="absolute w-[clamp(1.8rem,7vw,5.5rem)] h-[clamp(1.8rem,7vw,5.5rem)] rounded-full pointer-events-auto flex items-center justify-center will-change-transform transition-[border,box-shadow]"
+          className="absolute w-[clamp(1.4rem,6vw,5.5rem)] h-[clamp(1.4rem,6vw,5.5rem)] rounded-full pointer-events-auto flex items-center justify-center will-change-transform transition-[border,box-shadow]"
         >
           {/* Subtle reflection core shine */}
           <div className="w-[15%] h-[15%] bg-white/40 rounded-full absolute top-[15%] left-[15%] pointer-events-none" />
