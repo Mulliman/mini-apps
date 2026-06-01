@@ -296,7 +296,7 @@ export default function App() {
               id="tracks-container"
               className="tracks-container-board flex-1 flex justify-around items-end bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-8 pb-6 sm:pb-8 md:pb-16 relative overflow-hidden w-full min-h-0"
             >
-              <AnimatePresence>
+              <AnimatePresence mode="popLayout">
                 {rhythms.map((rhythm) => (
                   <motion.div
                     key={rhythm.id}
@@ -305,7 +305,7 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.3 }}
-                    className="h-full flex items-end justify-center px-0.5 sm:px-2 md:px-4 min-w-0"
+                    className="h-full flex items-end justify-center px-0.5 sm:px-1 md:px-4 min-w-0"
                   >
                     <RhythmTrack
                       rhythm={rhythm}
@@ -435,7 +435,7 @@ export default function App() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-xl border-t border-white/10 p-3 md:p-6 pt-6 md:pt-10 rounded-t-2xl md:rounded-t-3xl shadow-2xl max-w-6xl mx-auto max-h-[85vh] overflow-y-auto custom-scrollbar"
+              className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-xl border-t border-white/10 p-3 md:p-6 pt-6 md:pt-10 rounded-t-2xl md:rounded-t-3xl shadow-2xl max-w-6xl mx-auto max-h-[95vh] sm:max-h-[85vh] overflow-y-auto custom-scrollbar"
             >
               <button 
                 onClick={() => setShowGlobalSettings(false)}

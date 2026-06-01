@@ -66,10 +66,10 @@ export default function SettingsPanel({
       exit={{ opacity: 0, scale: 0.95, y: 20 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
       style={{ borderColor: color, boxShadow: `0 25px 50px -12px ${color}20` }}
-      className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-1rem)] max-w-xl bg-black border shadow-2xl z-50 flex flex-col overflow-hidden rounded-2xl md:rounded-3xl max-h-[90dvh]"
+      className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-1rem)] max-w-xl bg-black border shadow-2xl z-50 flex flex-col overflow-hidden rounded-2xl md:rounded-3xl max-h-[95dvh] sm:max-h-[90dvh]"
     >
       {/* Modal Header */}
-      <div className="flex items-center justify-between p-3 md:p-5 border-b border-white/10 bg-white/[0.02] shrink-0">
+      <div className="flex items-center justify-between p-2 md:p-5 border-b border-white/10 bg-white/[0.02] shrink-0">
         <div className="flex items-center gap-2 md:gap-4">
           <div className="flex items-center bg-zinc-900 border border-white/10 rounded-xl overflow-hidden p-0.5">
             <button 
@@ -104,7 +104,7 @@ export default function SettingsPanel({
       </div>
 
       {/* Modal Contents */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 space-y-4 md:space-y-6 max-h-[75vh]">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-6 space-y-3 md:space-y-6">
         
         {/* Note Selection */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 mt-1 md:mt-0">
@@ -295,7 +295,7 @@ export default function SettingsPanel({
       </div>
 
       {/* Modal Action row */}
-      <div className="p-3 md:p-6 border-t border-white/10 bg-white/[0.02] flex items-center justify-between shrink-0 gap-3 md:gap-4">
+      <div className="p-2 md:p-6 border-t border-white/10 bg-white/[0.02] flex items-center justify-between shrink-0 gap-3 md:gap-4">
         <button
           id="settings-remove-track-btn"
           type="button"
