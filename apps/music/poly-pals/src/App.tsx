@@ -386,7 +386,7 @@ export default function App() {
           {/* Desktop inline menu / Mobile popup menu */}
           <div className={`
             flex items-center gap-3
-            md:flex-row md:static md:opacity-100 md:visible md:bg-transparent md:translate-y-0
+            md:flex-row md:static md:opacity-100 md:visible md:bg-transparent md:translate-y-0 md:pointer-events-auto
             ${showMobileMenu ? 'flex flex-col absolute bottom-full right-0 mb-3 bg-zinc-900/95 backdrop-blur-xl p-3 auto rounded-2xl border border-white/10 opacity-100 translate-y-0 shadow-2xl z-30' : 'opacity-0 invisible md:visible pointer-events-none translate-y-4 absolute bottom-full md:static md:translate-y-0'}
             transition-all duration-200
           `}>
