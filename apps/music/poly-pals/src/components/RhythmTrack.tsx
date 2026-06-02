@@ -119,7 +119,7 @@ export default function RhythmTrack({
       </div>
 
       {/* Bouncing runway track-line */}
-      <div className="relative w-[2px] h-[25vh] min-h-[110px] max-h-[360px] md:h-[40vh] bg-white/5 my-0.5 z-10 pointer-events-none mb-8 md:mb-16">
+      <div className="relative w-[2px] h-[60vh] min-h-[110px] max-h-[600px] md:h-[50vh] bg-white/5 my-0.5 z-10 pointer-events-none mb-8 md:mb-16">
         
         {/* Glowing impact floor ripple */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[10px] flex items-center justify-center">
