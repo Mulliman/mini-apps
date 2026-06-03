@@ -13,7 +13,7 @@ export const AdventWindow: React.FC<AdventWindowProps> = ({ number, isNext, isOp
       onClick={() => onClick(number)}
       disabled={isOpen || !isNext}
       className={`
-        relative flex items-center justify-center w-full h-20 sm:h-24 md:h-28 rounded-xl 
+        relative flex items-center justify-center w-full h-full rounded-xl
         text-2xl sm:text-4xl font-bold transition-all duration-300 transform will-change-transform
         ${isOpen 
           ? 'window-open cursor-default' 
