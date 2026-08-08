@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Shuffle Bus</title>
+<style>
+  :root{
+    --dur-drive: 260ms;
+    --dur-wiggle: 320ms;
+    --dur-bay-pop: 220ms;
+    --dur-bay-depart: 230ms;
+    --dur-board: 150ms;
+    --cell: 40px;
+  }
+  *, *::before, *::after{ box-sizing: border-box; }
+  html, body{
+    margin:0; padding:0;
+    background:#0f172a;
+    color:#e2e8f0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height:100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100dvh;
+  }
+  button{ font-family:inherit; }
+
+  /* ---------- shared header (adapted from apps/shared/Header) ---------- */
+  .shared-header{
+    position:sticky; top:0; left:0; width:100%; z-index:1000;
+    background:rgba(15,23,42,0.7);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    padding:0.75rem 1.5rem;
+    box-shadow:0 4px 15px rgba(0,0,0,0.2);
+  }
+  .header-content{
+    max-width:1400px; margin:0 auto;
+    display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+  }
+  .header-left{ display:flex; align-items:center; }
+  .back-button{
+    display:flex; align-items:center; gap:0.5rem;
+    text-decoration:none; color:#94a3b8;
+    font-weight:500; font-size:0.95rem;
+    transition:all 0.3s ease;
+    padding:0.5rem 0.75rem; border-radius:8px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.05);
+  }
+  .back-button:hover{ color:#fff; background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15); transform:translateX(-2px); }
+  .back-arrow{ font-size:1.2rem; line-height:1; }
+  .back-text{ text-transform:capitalize; }
+  .header-center{ text-align:center; }
+  .app-title-header{
+    font-size:1.25rem; font-weight:700; margin:0;
+    background:linear-gradient(135deg,#fff 0%,#94a3b8 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+    white-space:nowrap;
+  }
+  .header-right{}
+  @media (max-width:640px){
+    .shared-header{ padding:0.5rem 1rem; }
+    .back-text{ display:none; }
+    .app-title-header{ font-size:1.1rem; }
+  }
+
+  /* ---------- layout ---------- */
+  .game-wrap{
+    flex:1;
+    max-width:900px;
+    width:100%;
+    margin:0 auto;
+    padding:0.75rem 1rem 2rem;
+    display:flex;
+    flex-direction:column;
+    gap:0.85rem;
+    align-items:center;
+  }
+
+  .toolbar{
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.6rem;
+  }
+  .level-label{
+    font-size:0.85rem;
+    color:#94a3b8;
+    font-weight:600;
+    letter-spacing:0.02em;
+  }
+  .difficulty-group{
+    display:flex;
+    gap:0.35rem;
+    background:rgba(255,255,255,0.05);
+    padding:0.3rem;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .diff-btn{
+    border:none;
+    background:transparent;
+    color:#94a3b8;
+    padding:0.4rem 0.75rem;
+    border-radius:9px;
+    font-size:0.85rem;
+    font-weight:600;
+    cursor:pointer;
+    touch-action:manipulation;
+    user-select:none;
+    transition:background 0.2s ease, color 0.2s ease;
+  }
+  .diff-btn.active{
+    background:#38bdf8;
+    color:#0f172a;
+  }
+  .diff-btn:not(.active):hover{ color:#fff; background:rgba(255,255,255,0.08); }
+
+  .toolbar-actions{
+    display:flex;
+    align-items:center;
+    gap:0.5rem;
+  }
+  .icon-btn, .primary-btn{
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    font-size:0.85rem;
+    cursor:pointer;
+    touch-action:manipulation;
+    user-select:none;
+    padding:0.55rem 0.9rem;
+    transition:transform 0.15s ease, background 0.2s ease;
+  }
+  .icon-btn{
+    background:rgba(255,255,255,0.08);
+    color:#e2e8f0;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  .icon-btn:hover{ background:rgba(255,255,255,0.15); }
+  .primary-btn{
+    background:linear-gradient(135deg,#38bdf8,#818cf8);
+    color:#0f172a;
+  }
+  .primary-btn:hover{ transform:translateY(-1px); }
+  .primary-btn:active, .icon-btn:active{ transform:scale(0.96); }
+
+  .stats-row{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    font-size:0.78rem;
+    color:#64748b;
+  }
+
+  .section-label{
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:#64748b;
+    font-weight:700;
+    margin-bottom:0.35rem;
+  }
+
+  /* ---------- board ---------- */
+  .board-wrap{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    overflow-x:auto;
+    padding:0.25rem;
+  }
+  .board{
+    position:relative;
+    /* Asphalt lot: a duller, greyer surface than any of the 5 vehicle
+       colours so colour stays the loud, unambiguous gameplay signal.
+       Faint speckle for grain plus painted lane lines standing in for
+       parking-bay outlines. */
+    background-color:#1a2334;
+    background-image:
+      radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.4px),
+      radial-gradient(rgba(0,0,0,0.25) 1px, transparent 1.4px),
+      linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-position: 0 0, calc(var(--cell) * 0.5) calc(var(--cell) * 0.5), 0 0, 0 0;
+    background-size:
+      var(--cell) var(--cell),
+      var(--cell) var(--cell),
+      var(--cell) var(--cell),
+      var(--cell) var(--cell);
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 8px 24px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(0,0,0,0.25);
+    touch-action:manipulation;
+    user-select:none;
+    flex:0 0 auto;
+    /* Clip the drive-off animation cleanly at the lot's edge — with the bays
+       now sitting above the board rather than below it, an uncontained exit
+       could otherwise paint over the bays/queue sections above. */
+    overflow:hidden;
+  }
+  /* The outer .vehicle owns position + the body's compass rotation only.
+     The inner .vehicle-body owns everything animated (wiggle, drive-off) so
+     those transforms compose with — rather than clobber — the rotation. */
+  .vehicle{
+    position:absolute;
+    cursor:pointer;
+    touch-action:manipulation;
+    user-select:none;
+    transform-origin:center center;
+  }
+  .vehicle-body{
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: calc(var(--cell) * 0.06);
+    padding:0 9%;
+    box-shadow:
+      0 2px 6px rgba(0,0,0,0.45),
+      inset 0 0 0 2px rgba(255,255,255,0.2),
+      0 0 0 1.5px rgba(2,6,23,0.6);
+    overflow:hidden;
+  }
+  /* Seat dots: two rows, like seats down the aisle of a bus, showing how many
+     passengers this vehicle takes before it fills up and departs. Deliberately
+     low-contrast — the colour and the direction arrow stay the loud signals. */
+  .seat-dots{
+    display:grid;
+    grid-template-rows:repeat(2, auto);
+    grid-auto-flow:column;
+    gap: calc(var(--cell) * 0.045);
+    pointer-events:none;
+  }
+  .seat-dot{
+    /* floor in px so the dots don't vanish once cells shrink on a phone */
+    width: max(3px, calc(var(--cell) * 0.105));
+    height: max(3px, calc(var(--cell) * 0.105));
+    border-radius:50%;
+    background:currentColor;
+    opacity:0.5;
+  }
+  .vehicle-body .arrow{
+    position:relative;
+    font-size: calc(var(--cell) * 0.34);
+    line-height:1;
+    pointer-events:none;
+    display:block;
+  }
+  .vehicle-body.wiggle{ animation: wiggle var(--dur-wiggle) ease; }
+  @keyframes wiggle{
+    0%,100%{ transform: translate(0,0) rotate(0); }
+    20%{ transform: translate(-5px,0) rotate(-4deg); }
+    40%{ transform: translate(5px,0) rotate(4deg); }
+    60%{ transform: translate(-4px,0) rotate(-3deg); }
+    80%{ transform: translate(4px,0) rotate(3deg); }
+  }
+  .vehicle-body.drive-off{
+    transition: transform var(--dur-drive) cubic-bezier(.4,0,1,1), opacity var(--dur-drive) ease-in;
+  }
+
+  /* ---------- bays: styled as parking spaces ---------- */
+  .bays-wrap{ width:100%; }
+  .bays{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.7rem;
+    justify-content:center;
+  }
+  /* A grey asphalt slab with painted white lines down each side, open at the
+     bottom edge — the entry, facing the lot below. Deliberately reads as an
+     empty parking space until a vehicle "parks" on top of it. */
+  .bay-slot{
+    position:relative;
+    width:76px;
+    min-height:82px;
+    border-radius:5px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    gap:5px;
+    padding:6px 6px 7px;
+    background-color:#242e42;
+    box-shadow:
+      inset 3px 0 0 0 rgba(255,255,255,0.5),
+      inset -3px 0 0 0 rgba(255,255,255,0.5),
+      inset 0 3px 0 0 rgba(255,255,255,0.5);
+  }
+  .bay-number{
+    position:absolute;
+    top:5px; left:0; right:0;
+    text-align:center;
+    font-size:0.85rem;
+    font-weight:800;
+    color:rgba(255,255,255,0.16);
+    letter-spacing:0.02em;
+    pointer-events:none;
+    user-select:none;
+    line-height:1;
+  }
+  .bay-slot.empty{
+    box-shadow:
+      inset 3px 0 0 0 rgba(255,255,255,0.28),
+      inset -3px 0 0 0 rgba(255,255,255,0.28),
+      inset 0 3px 0 0 rgba(255,255,255,0.28);
+  }
+  .bay-slot.filled{
+    box-shadow:
+      inset 3px 0 0 0 rgba(255,255,255,0.6),
+      inset -3px 0 0 0 rgba(255,255,255,0.6),
+      inset 0 3px 0 0 rgba(255,255,255,0.6);
+  }
+  .bay-slot.pop{ animation: bayPop var(--dur-bay-pop) ease; }
+  @keyframes bayPop{
+    0%{ transform:scale(0.55); opacity:0; }
+    70%{ transform:scale(1.08); opacity:1; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+  .bay-slot.depart{ animation: bayDepart var(--dur-bay-depart) ease forwards; }
+  @keyframes bayDepart{
+    0%{ transform:translateY(0) scale(1); opacity:1; }
+    100%{ transform:translateY(-16px) scale(0.85); opacity:0; }
+  }
+  /* The parked vehicle: a rounded block sat on top of the asphalt slab, in
+     its own colour, so the bay reads as "occupied by this bus" rather than
+     the whole slab just becoming a flat colour square. */
+  .bay-vehicle{
+    width:100%;
+    flex:0 0 auto;
+    border-radius:8px;
+    padding:8px 5px 6px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    box-shadow:
+      0 3px 8px rgba(0,0,0,0.4),
+      inset 0 0 0 2px rgba(255,255,255,0.25),
+      inset 0 -3px 4px rgba(0,0,0,0.2);
+  }
+  .bay-empty-label{
+    font-size:0.65rem;
+    color:#54617a;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    font-weight:700;
+  }
+  .seat-pips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:3px;
+    max-width:56px;
+    justify-content:center;
+  }
+  .pip{
+    width:8px; height:8px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.28);
+  }
+  .pip.filled{
+    background:#fff;
+    box-shadow:0 0 0 2px rgba(0,0,0,0.25) inset;
+  }
+
+  /* ---------- queue: styled as people lining up for the bays ---------- */
+  .queue-wrap{ width:100%; }
+  .queue{
+    position:relative;
+    display:flex;
+    align-items:flex-end;
+    /* Hug the visible passengers and centre the row itself, rather than
+       stretching full-width and stranding the queue against the left edge.
+       Contents stay left-aligned on purpose: centring them would clip the
+       FRONT passenger once the row overflows on a narrow screen, and the
+       front passenger is the one the player needs to see. */
+    width:fit-content;
+    max-width:100%;
+    margin-inline:auto;
+    gap:8px;
+    padding:10px 10px 8px;
+    background:rgba(255,255,255,0.03);
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.06);
+    overflow:hidden;
+    min-height:52px;
+  }
+  /* When the queue is longer than the visible window, the "N LEFT" badge is
+     pinned to the row's own right edge (not laid out inline after the last
+     avatar) so it can never be scrolled/clipped out of view by a long queue
+     on a narrow phone. The reserved padding keeps avatars from rendering
+     underneath it; the fade hints that the row continues beyond the edge. */
+  .queue.has-badge{ padding-right:74px; }
+  .queue.has-badge::after{
+    content:'';
+    position:absolute;
+    top:0; bottom:0; right:70px;
+    width:22px;
+    background:linear-gradient(to right, transparent, rgba(15,23,42,0.85));
+    pointer-events:none;
+  }
+  /* Each waiting passenger: a round head over a rounded shoulders/body
+     shape, coloured to match the bus colour they're waiting for. Built from
+     two stacked divs so it reads as a little person, not a plain dot. */
+  .queue-person{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    flex:0 0 auto;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .qp-head{
+    width:12px; height:12px;
+    border-radius:50%;
+    background:currentColor;
+    box-shadow:0 1px 2px rgba(0,0,0,0.35);
+    margin-bottom:2px;
+  }
+  .qp-body{
+    width:19px; height:15px;
+    border-radius:9px 9px 3px 3px;
+    background:currentColor;
+    box-shadow:0 2px 4px rgba(0,0,0,0.35);
+  }
+  /* The front-most passenger — next to board — is visibly larger with a
+     white outline, plus a small arrow "facing" toward the bays below. */
+  .queue-person.front .qp-head{
+    width:17px; height:17px;
+    box-shadow:0 0 0 3px #fff, 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .queue-person.front .qp-body{
+    width:27px; height:21px;
+    box-shadow:0 0 0 3px #fff, 0 2px 5px rgba(0,0,0,0.45);
+  }
+  .qp-arrow{
+    width:0; height:0;
+    margin-top:3px;
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-top:6px solid rgba(255,255,255,0.6);
+  }
+  .queue-person.boarding{
+    animation: boardOut var(--dur-board) ease forwards;
+  }
+  @keyframes boardOut{
+    to{ transform: scale(0.15) translateY(-14px); opacity:0; }
+  }
+  /* A gentle idle shift-of-weight so the line reads as people waiting
+     rather than static shapes. Staggered per position; skipped for the
+     front passenger (kept still so it stays the clear visual anchor) and
+     for anyone mid-board-animation. */
+  @keyframes queueBob{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-2px); }
+  }
+  .queue-person:not(.front):not(.boarding){
+    animation: queueBob 1.7s ease-in-out infinite;
+  }
+  .queue-person:nth-child(3n+1):not(.front):not(.boarding){ animation-delay:0.15s; }
+  .queue-person:nth-child(3n+2):not(.front):not(.boarding){ animation-delay:0.45s; }
+  .queue-person:nth-child(3n):not(.front):not(.boarding){ animation-delay:0.75s; }
+  .queue-total-badge{
+    position:absolute;
+    top:50%; right:8px;
+    transform:translateY(-50%);
+    padding:0.3rem 0.6rem;
+    border-radius:999px;
+    background:rgba(56,189,248,0.14);
+    border:1px solid rgba(56,189,248,0.35);
+    color:#7dd3fc;
+    font-size:0.72rem;
+    font-weight:800;
+    letter-spacing:0.03em;
+    white-space:nowrap;
+  }
+  .queue-empty{
+    color:#64748b;
+    font-size:0.85rem;
+    font-weight:600;
+    align-self:center;
+  }
+
+  /* ---------- overlay ---------- */
+  .overlay{
+    position:fixed; inset:0;
+    background:rgba(15,23,42,0.86);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.25s ease;
+    z-index:2000;
+    padding:1rem;
+  }
+  .overlay.visible{ opacity:1; pointer-events:auto; }
+  .overlay-card{
+    position:relative;
+    background:#1e293b;
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:20px;
+    padding:2.2rem 2rem 1.8rem;
+    text-align:center;
+    max-width:90vw;
+    width:340px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+  .confetti-layer{
+    position:absolute; inset:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .confetti-piece{
+    position:absolute;
+    top:-10%;
+    width:8px; height:14px;
+    border-radius:2px;
+    opacity:0.9;
+    animation-name: confettiFall;
+    animation-timing-function: linear;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+  }
+  @keyframes confettiFall{
+    0%{ transform: translateY(0) rotate(0deg); opacity:0.95; }
+    100%{ transform: translateY(320px) rotate(400deg); opacity:0; }
+  }
+  .overlay-title{
+    font-size:1.5rem;
+    font-weight:800;
+    margin:0.2rem 0 0.5rem;
+    position:relative;
+  }
+  .overlay-msg{
+    color:#94a3b8;
+    margin:0 0 1.3rem;
+    font-size:0.95rem;
+    position:relative;
+  }
+
+  .reduced-motion .vehicle-body.wiggle,
+  .reduced-motion .bay-slot.pop,
+  .reduced-motion .bay-slot.depart,
+  .reduced-motion .queue-person.boarding,
+  .reduced-motion .confetti-piece{
+    animation-duration:0.001s !important;
+  }
+  .reduced-motion .vehicle-body.drive-off{
+    transition-duration:0.001s !important;
+  }
+  .reduced-motion .queue-person{
+    animation:none !important;
+  }
+
+  @media (max-width:480px){
+    .bay-slot{ width:64px; min-height:70px; }
+    .app-title-header{ font-size:1.05rem; }
+  }
+</style>
+</head>
+<body>
+  <header class="shared-header">
+    <div class="header-content">
+      <div class="header-left">
+        <a href="/" class="back-button">
+          <span class="back-arrow">&larr;</span>
+          <span class="back-text">back</span>
+        </a>
+      </div>
+      <div class="header-center">
+        <h1 class="app-title-header">Shuffle Bus</h1>
+      </div>
+      <div class="header-right"></div>
+    </div>
+  </header>
+
+  <main class="game-wrap">
+    <div class="toolbar">
+      <div>
+        <div class="level-label" id="levelLabel">Easy</div>
+        <div class="difficulty-group" role="group" aria-label="Difficulty">
+          <button class="diff-btn" data-diff="easy" type="button">Easy</button>
+          <button class="diff-btn" data-diff="medium" type="button">Medium</button>
+          <button class="diff-btn" data-diff="hard" type="button">Hard</button>
+        </div>
+      </div>
+      <div class="toolbar-actions">
+        <button id="soundBtn" class="icon-btn" type="button" aria-pressed="false">Sound: On</button>
+        <button id="restartBtn" class="primary-btn" type="button">New Game</button>
+      </div>
+    </div>
+
+    <div class="stats-row" id="statsLabel">Played 0 &middot; Won 0</div>
+
+    <div class="queue-wrap">
+      <div class="section-label">Passengers Waiting</div>
+      <div id="queue" class="queue"></div>
+    </div>
+
+    <div class="bays-wrap">
+      <div class="section-label">Parking Bays</div>
+      <div id="bays" class="bays"></div>
+    </div>
+
+    <div class="board-wrap" id="boardWrap">
+      <div id="board" class="board"></div>
+    </div>
+  </main>
+
+  <div id="overlay" class="overlay">
+    <div class="overlay-card">
+      <div class="confetti-layer" id="confettiLayer"></div>
+      <h2 class="overlay-title" id="overlayTitle"></h2>
+      <p class="overlay-msg" id="overlayMsg"></p>
+      <button id="overlayRestartBtn" class="primary-btn" type="button">Play Again</button>
+    </div>
+  </div>
+
+<script>
+// ===== ENGINE START (verbatim from verified engine.cjs — do not edit) =====
+// Shuffle Bus (Bus Jam) - pure logic engine. No DOM, no CSS, no rendering.
+// This entire file is designed to be pasted verbatim inside a browser <script> tag.
+//
+// Vehicle geometry: a vehicle's body runs along its own travel direction
+// (see DIRS). N/S and E/W vehicles are straight orthogonal runs; NE/SW and
+// SE/NW vehicles are diagonal staircases. cells[0] is always the REAR and
+// cells[cells.length - 1] is always the NOSE -- see the comment in
+// attemptPack for the exact contract the renderer depends on.
+
+const CONFIG = {
+  easy:   { gridSize: 6,  colors: 3, bays: 5, vehicleLens: [2],    caps: [4],      count: 10, diagonals: true },
+  medium: { gridSize: 8,  colors: 4, bays: 5, vehicleLens: [2,3],  caps: [4,6],    count: 18, diagonals: true },
+  hard:   { gridSize: 10, colors: 5, bays: 4, vehicleLens: [2,3],  caps: [4,6,8],  count: 28, diagonals: true },
+};
+const COLORS = ['#E6194B', '#4363D8', '#3CB44B', '#FFE119', '#911EB4']; // red, blue, green, gold, purple
+
+const DIRS = {
+  N:{x:0,y:-1}, NE:{x:1,y:-1}, E:{x:1,y:0}, SE:{x:1,y:1},
+  S:{x:0,y:1},  SW:{x:-1,y:1}, W:{x:-1,y:0}, NW:{x:-1,y:-1}
+};
+
+function makeRng(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// ---- Body geometry: single source of truth shared by collision and render ----
+// The renderer draws every vehicle body as a rotated rectangle running from
+// its rear cell centre to its nose cell centre. That rectangle has real
+// width, so two vehicles whose centrelines never cross can still visibly
+// overlap near a shared diagonal corner (a rotated rect unavoidably pokes
+// outside its own two cells there). Collision therefore has to reason about
+// the same rectangle the renderer draws -- these constants and the rect
+// derivation below are that one shared definition.
+const BODY_GEOM = {
+  capCells: 0.82,      // added to the rear->nose centre distance to get drawn length
+  widthOrtho: 0.70,    // body width for N/S/E/W vehicles
+  widthDiag: 0.56,     // body width for the four diagonal vehicles
+  clearance: 0.05       // minimum gap required between two bodies
+};
+
+// Returns the drawn body as an oriented rectangle in CELL units:
+// { cx, cy, len, wid, ang } -- centre, full length, full width, angle in
+// radians. Derived exactly as the renderer does: rear/nose cell centres,
+// midpoint as centre, atan2 for angle, centre-to-centre distance (NOT 1 --
+// diagonally adjacent centres are sqrt(2) apart) plus capCells for length.
+function vehicleBodyRect(vehicle) {
+  const rear = vehicle.cells[0];
+  const nose = vehicle.cells[vehicle.cells.length - 1];
+  const rx = rear.x + 0.5, ry = rear.y + 0.5;
+  const nx = nose.x + 0.5, ny = nose.y + 0.5;
+  const cx = (rx + nx) / 2, cy = (ry + ny) / 2;
+  const dx = nx - rx, dy = ny - ry;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const ang = Math.atan2(dy, dx);
+  const dv = DIRS[vehicle.dir];
+  const isDiagonal = dv.x !== 0 && dv.y !== 0;
+  const wid = isDiagonal ? BODY_GEOM.widthDiag : BODY_GEOM.widthOrtho;
+  return { cx, cy, len: dist + BODY_GEOM.capCells, wid, ang };
+}
+
+// Builds the rectangle a vehicle's body sweeps while exiting: same width and
+// angle as its parked body, running from its current rear cell centre out to
+// well beyond the far edge of the grid (N * sqrt(2) safely exceeds the
+// longest possible on-grid travel in any of the 8 directions).
+function sweptExitRect(vehicle, N) {
+  const dv = DIRS[vehicle.dir];
+  const isDiagonal = dv.x !== 0 && dv.y !== 0;
+  const mag = isDiagonal ? Math.SQRT2 : 1;
+  const ux = dv.x / mag, uy = dv.y / mag;
+  const rear = vehicle.cells[0];
+  const rx = rear.x + 0.5, ry = rear.y + 0.5;
+  const sweepLen = N * 2 + BODY_GEOM.capCells; // generously beyond any grid edge
+  const fx = rx + ux * sweepLen, fy = ry + uy * sweepLen;
+  const wid = isDiagonal ? BODY_GEOM.widthDiag : BODY_GEOM.widthOrtho;
+  return { cx: (rx + fx) / 2, cy: (ry + fy) / 2, len: sweepLen, wid, ang: Math.atan2(uy, ux) };
+}
+
+// ---- Oriented-rectangle (OBB) overlap: standard separating-axis test ----
+// Two convex rectangles are disjoint iff a separating axis exists among the
+// 4 face normals (2 unique axes per rectangle, since opposite faces share an
+// axis). `clearance` inflates the test so near-touching bodies (gap smaller
+// than clearance along every axis) also count as overlapping.
+function rectAxes(rect) {
+  const ux = Math.cos(rect.ang), uy = Math.sin(rect.ang);
+  return [{ x: ux, y: uy }, { x: -uy, y: ux }];
+}
+
+function rectCorners(rect) {
+  const ux = Math.cos(rect.ang), uy = Math.sin(rect.ang);
+  const vx = -uy, vy = ux;
+  const hl = rect.len / 2, hw = rect.wid / 2;
+  const corners = [];
+  for (const sl of [-1, 1]) {
+    for (const sw of [-1, 1]) {
+      corners.push({ x: rect.cx + sl * hl * ux + sw * hw * vx, y: rect.cy + sl * hl * uy + sw * hw * vy });
+    }
+  }
+  return corners;
+}
+
+function projectOntoAxis(corners, axis) {
+  let min = Infinity, max = -Infinity;
+  for (const c of corners) {
+    const p = c.x * axis.x + c.y * axis.y;
+    if (p < min) min = p;
+    if (p > max) max = p;
+  }
+  return [min, max];
+}
+
+function rectsOverlap(rectA, rectB, clearance) {
+  const cornersA = rectCorners(rectA);
+  const cornersB = rectCorners(rectB);
+  const axes = rectAxes(rectA).concat(rectAxes(rectB));
+  for (const axis of axes) {
+    const [minA, maxA] = projectOntoAxis(cornersA, axis);
+    const [minB, maxB] = projectOntoAxis(cornersB, axis);
+    if (minA - maxB > clearance || minB - maxA > clearance) return false; // separating axis found
+  }
+  return true;
+}
+
+// Cheap pre-filter before SAT maths: true if any cell of A is within
+// `maxChebyshev` cells (Chebyshev distance) of any cell of B. Two vehicles
+// whose cells are all far apart can never have overlapping bodies, since
+// drawn bodies extend only a fraction of a cell beyond their own run.
+function cellsNearby(cellsA, cellsB, maxChebyshev) {
+  for (const a of cellsA) {
+    for (const b of cellsB) {
+      if (Math.abs(a.x - b.x) <= maxChebyshev && Math.abs(a.y - b.y) <= maxChebyshev) return true;
+    }
+  }
+  return false;
+}
+
+function isExitClear(vehicle, grid, N, vehicles) {
+  const v = DIRS[vehicle.dir];
+  for (const c of vehicle.cells) {
+    let x = c.x + v.x, y = c.y + v.y;
+    while (x >= 0 && x < N && y >= 0 && y < N) {
+      const occ = grid[y][x];
+      if (occ !== null && occ !== vehicle.id) return false;
+      x += v.x; y += v.y;
+    }
+  }
+
+  // Body-width guard: the drawn body has real width, so an exiting vehicle's
+  // swept body can clip a neighbouring body that pokes into its lane even
+  // when no cell is shared. This applies to every direction, not just
+  // diagonals -- an orthogonal lane can be clipped by a diagonal body poking
+  // out of an adjacent cell just as easily as by another diagonal body.
+  // Build the swept rectangle from the vehicle's own rear cell out past the
+  // grid edge and reject if it overlaps any other on-grid vehicle's body.
+  const sweptRect = sweptExitRect(vehicle, N);
+  for (const id in vehicles) {
+    if (id === vehicle.id) continue;
+    const other = vehicles[id];
+    let onGrid = true;
+    for (const c of other.cells) {
+      if (c.x < 0 || c.x >= N || c.y < 0 || c.y >= N || grid[c.y][c.x] !== id) { onGrid = false; break; }
+    }
+    if (!onGrid) continue;
+    // No cheap distance pre-filter here: the swept rect can span the whole
+    // grid, so nearby-cell pruning (used in attemptPack, where each
+    // candidate's own footprint is small) would never actually skip anyone.
+    if (rectsOverlap(sweptRect, vehicleBodyRect(other), BODY_GEOM.clearance)) return false;
+  }
+  return true;
+}
+
+function makeEmptyGrid(N) {
+  const grid = [];
+  for (let y = 0; y < N; y++) grid.push(new Array(N).fill(null));
+  return grid;
+}
+
+function isGridEmpty(grid, N) {
+  for (let y = 0; y < N; y++) {
+    for (let x = 0; x < N; x++) {
+      if (grid[y][x] !== null) return false;
+    }
+  }
+  return true;
+}
+
+// Valid inclusive [min, max] range for a body's anchor coordinate along one
+// axis, given that axis's component of the direction vector (`sign`) and the
+// run length `len`, so that every one of the `len` cells lands in [0, N).
+function axisAnchorRange(N, len, sign) {
+  if (sign > 0) return [0, N - len];
+  if (sign < 0) return [len - 1, N - 1];
+  return [0, N - 1];
+}
+
+// ---- Generator: (A) reverse-pack the grid ----
+// One attempt at packing a fresh board. Returns the placed vehicles in
+// placement order, or null if it gave up. Every candidate is written into the
+// grid before isExitClear runs (a vehicle is transparent to its own body via
+// the occ !== vehicle.id check) and unwritten again if it is not exit-clear.
+function attemptPack(N, cfg, colors, dirPool, rng, maxRetriesPerVehicle, counters) {
+  const grid = makeEmptyGrid(N);
+  const placed = [];
+  let idCounter = 0;
+
+  // id -> vehicle for every committed vehicle, plus (transiently, only while
+  // its own isExitClear check runs) the current candidate. This mirrors the
+  // `vehicles` shape isExitClear expects from live state, so a candidate's
+  // own body is correctly excluded from its own exit-clear crossing check.
+  const placedMap = {};
+
+  while (placed.length < cfg.count) {
+    let placedThisVehicle = false;
+
+    for (let retry = 0; retry < maxRetriesPerVehicle; retry++) {
+      counters.totalRetries++;
+      const len = cfg.vehicleLens[Math.floor(rng() * cfg.vehicleLens.length)];
+      const cap = cfg.caps[Math.floor(rng() * cfg.caps.length)];
+      const color = colors[Math.floor(rng() * colors.length)];
+      const dir = dirPool[Math.floor(rng() * dirPool.length)];
+      const v = DIRS[dir];
+
+      // A vehicle's body runs along its own travel axis: cells[i] = anchor +
+      // i * v, where v is the vehicle's own direction unit vector. N/S and
+      // E/W bodies come out as straight orthogonal runs (as before); NE/SW
+      // and SE/NW bodies come out as diagonal staircases. cells[0] is the
+      // REAR of the vehicle and cells[len - 1] is the NOSE -- i.e. for every
+      // consecutive pair, cells[i+1] - cells[i] === v, so the nose is always
+      // the cell furthest along the travel direction. The renderer relies on
+      // this ordering to draw the body as a rotated rect from rear to nose
+      // with the arrow at the front.
+      //
+      // Pick the anchor so every cell of the run lands in bounds up front,
+      // rather than placing blindly and rejecting out-of-bounds candidates --
+      // otherwise diagonal placements would waste most of the retry budget.
+      const xRange = axisAnchorRange(N, len, v.x);
+      const yRange = axisAnchorRange(N, len, v.y);
+      if (xRange[1] < xRange[0] || yRange[1] < yRange[0]) continue;
+
+      const x0 = xRange[0] + Math.floor(rng() * (xRange[1] - xRange[0] + 1));
+      const y0 = yRange[0] + Math.floor(rng() * (yRange[1] - yRange[0] + 1));
+
+      const cells = [];
+      for (let i = 0; i < len; i++) {
+        cells.push({ x: x0 + i * v.x, y: y0 + i * v.y });
+      }
+
+      // Defensive bounds check even though the anchor range above already
+      // guarantees every cell lands in bounds.
+      let inBounds = true;
+      for (const c of cells) {
+        if (c.x < 0 || c.x >= N || c.y < 0 || c.y >= N) { inBounds = false; break; }
+      }
+      if (!inBounds) continue;
+
+      let free = true;
+      for (const c of cells) {
+        if (grid[c.y][c.x] !== null) { free = false; break; }
+      }
+      if (!free) continue;
+
+      // Body-overlap guard: reject a candidate whose drawn OBB overlaps the
+      // drawn body of any already-placed vehicle. Cell-occupancy above is
+      // the cheap first filter (no shared cells); this catches the case
+      // where two bodies occupy entirely disjoint cells yet still overlap
+      // visually because a rotated rect pokes outside its own two cells
+      // near a shared diagonal corner. Checked before writing the candidate
+      // into the grid since it depends only on `cells`/`dir`. A cheap
+      // Chebyshev-distance pre-filter skips placed vehicles that are far
+      // from every candidate cell, since attemptPack runs this loop
+      // thousands of times per level and most placed vehicles are nowhere
+      // near a given candidate.
+      const candRect = vehicleBodyRect({ dir, cells });
+      let bodyConflict = false;
+      for (const other of placed) {
+        if (!cellsNearby(cells, other.cells, 3)) continue;
+        if (rectsOverlap(candRect, vehicleBodyRect(other), BODY_GEOM.clearance)) { bodyConflict = true; break; }
+      }
+      if (bodyConflict) continue;
+
+      const id = 'v' + idCounter;
+      for (const c of cells) grid[c.y][c.x] = id;
+      const vehicle = { id, color, dir, cells, cap, boarded: 0, arrivalSeq: null };
+
+      // Include the candidate itself in the map passed to isExitClear so its
+      // own body's blocks are attributed to its own id and correctly
+      // excluded from its own crossing check, matching how tapVehicle passes
+      // state.vehicles (which still includes the tapped vehicle at check
+      // time). Roll this back on rejection.
+      placedMap[id] = vehicle;
+
+      if (isExitClear(vehicle, grid, N, placedMap)) {
+        idCounter++;
+        placed.push(vehicle);
+        placedThisVehicle = true;
+        break;
+      }
+      delete placedMap[id];
+      for (const c of cells) grid[c.y][c.x] = null;
+    }
+
+    if (!placedThisVehicle) return null;
+  }
+
+  return { grid, placed };
+}
+
+function packGrid(N, cfg, colors, rng) {
+  const dirPool = cfg.diagonals ? Object.keys(DIRS) : ['N', 'E', 'S', 'W'];
+  const maxOuterAttempts = 4000;
+  const maxRetriesPerVehicle = 4000;
+  const counters = { totalRetries: 0 };
+  let outerAttempts = 0;
+
+  // Failed placements are normal even for a well-tuned packer. Bail to a
+  // fresh empty board when a vehicle can't be seated, then — only if that
+  // somehow never succeeds — retry far more patiently rather than throwing.
+  const passes = [maxRetriesPerVehicle, maxRetriesPerVehicle * 4];
+  for (const retriesPerVehicle of passes) {
+    for (let outer = 0; outer < maxOuterAttempts; outer++) {
+      outerAttempts++;
+      const result = attemptPack(N, cfg, colors, dirPool, rng, retriesPerVehicle, counters);
+      if (result) {
+        return { grid: result.grid, placed: result.placed, outerAttempts, totalRetries: counters.totalRetries };
+      }
+    }
+  }
+
+  throw new Error('packGrid: exhausted all attempts to pack the grid');
+}
+
+// ---- Generator: (B) forward-trace the bays to build the queue ----
+function forwardTrace(removalOrder, vehiclesMap, B, rng) {
+  const bays = [];
+  let next = 0;
+  let seq = 0;
+  const queue = [];
+
+  while (bays.length < B && next < removalOrder.length) {
+    const id = removalOrder[next++];
+    const v = vehiclesMap[id];
+    bays.push({ id, color: v.color, cap: v.cap, boarded: 0, arrivalSeq: seq++ });
+  }
+
+  while (bays.length > 0) {
+    const colorsAvail = [];
+    for (const b of bays) {
+      if (colorsAvail.indexOf(b.color) === -1) colorsAvail.push(b.color);
+    }
+    const c = colorsAvail[Math.floor(rng() * colorsAvail.length)];
+
+    let target = null;
+    for (const b of bays) {
+      if (b.color === c && (target === null || b.arrivalSeq < target.arrivalSeq)) target = b;
+    }
+
+    queue.push(c);
+    target.boarded++;
+
+    if (target.boarded === target.cap) {
+      const idx = bays.indexOf(target);
+      bays.splice(idx, 1);
+      if (next < removalOrder.length) {
+        const id = removalOrder[next++];
+        const v = vehiclesMap[id];
+        bays.push({ id, color: v.color, cap: v.cap, boarded: 0, arrivalSeq: seq++ });
+      }
+    }
+  }
+
+  return queue;
+}
+
+function generateLevel(difficulty, seed) {
+  const cfg = CONFIG[difficulty];
+  if (!cfg) throw new Error('Unknown difficulty: ' + difficulty);
+  const N = cfg.gridSize;
+  const B = cfg.bays;
+  const colors = COLORS.slice(0, cfg.colors);
+  const rng = makeRng(seed);
+
+  const packed = packGrid(N, cfg, colors, rng);
+
+  const vehicles = {};
+  for (const v of packed.placed) vehicles[v.id] = v;
+
+  const removalOrder = packed.placed.slice().reverse().map(function (v) { return v.id; });
+
+  const queue = forwardTrace(removalOrder, vehicles, B, rng);
+
+  const bays = new Array(B).fill(null);
+
+  const state = {
+    seed: seed,
+    difficulty: difficulty,
+    N: N,
+    bayCount: B,
+    grid: packed.grid,
+    vehicles: vehicles,
+    bays: bays,
+    queue: queue,
+    status: 'PLAYING',
+    nextSeq: 0,
+    removalOrder: removalOrder,
+  };
+
+  // Debug-only stats attached to the function itself (not part of the module
+  // exports contract) so callers/tests can inspect packing health without
+  // altering the state shape or the public API.
+  generateLevel.lastStats = {
+    difficulty: difficulty,
+    outerAttempts: packed.outerAttempts,
+    totalRetries: packed.totalRetries,
+  };
+
+  return state;
+}
+
+function findExitSlot(state) {
+  for (let i = 0; i < state.bays.length; i++) {
+    if (state.bays[i] === null) return i;
+  }
+  return -1;
+}
+
+function boardingCascade(state, events) {
+  while (state.queue.length > 0) {
+    const front = state.queue[0];
+    let targetId = null;
+    let targetSeq = Infinity;
+    for (let i = 0; i < state.bays.length; i++) {
+      const id = state.bays[i];
+      if (id === null) continue;
+      const v = state.vehicles[id];
+      if (v.color === front && v.boarded < v.cap && v.arrivalSeq < targetSeq) {
+        targetSeq = v.arrivalSeq;
+        targetId = id;
+      }
+    }
+    if (targetId === null) break;
+
+    const v = state.vehicles[targetId];
+    v.boarded++;
+    state.queue.shift();
+    const slot = state.bays.indexOf(targetId);
+    events.push({ type: 'BOARD', vehicleId: targetId, slot: slot, color: v.color, boarded: v.boarded, cap: v.cap });
+
+    if (v.boarded === v.cap) {
+      state.bays[slot] = null;
+      events.push({ type: 'DEPART', vehicleId: targetId, slot: slot });
+    }
+  }
+}
+
+function checkStatus(state) {
+  const gridEmpty = isGridEmpty(state.grid, state.N);
+  const baysAllNull = state.bays.every(function (b) { return b === null; });
+
+  if (gridEmpty && baysAllNull && state.queue.length === 0) {
+    state.status = 'WON';
+    return state.status;
+  }
+
+  if (state.queue.length > 0) {
+    const front = state.queue[0];
+    let hasMatch = false;
+    for (let i = 0; i < state.bays.length; i++) {
+      const id = state.bays[i];
+      if (id === null) continue;
+      const v = state.vehicles[id];
+      if (v.color === front && v.boarded < v.cap) { hasMatch = true; break; }
+    }
+    const baysAllFull = state.bays.every(function (b) { return b !== null; });
+    if (!hasMatch && (baysAllFull || gridEmpty)) {
+      state.status = 'LOST';
+      return state.status;
+    }
+  }
+
+  state.status = 'PLAYING';
+  return state.status;
+}
+
+function tapVehicle(state, vehicleId) {
+  if (state.status !== 'PLAYING') {
+    return { ok: false, reason: 'NOT_PLAYING', events: [] };
+  }
+  const vehicle = state.vehicles[vehicleId];
+  if (!vehicle) {
+    return { ok: false, reason: 'UNKNOWN', events: [] };
+  }
+  if (!isExitClear(vehicle, state.grid, state.N, state.vehicles)) {
+    return { ok: false, reason: 'BLOCKED', events: [] };
+  }
+  const slot = findExitSlot(state);
+  if (slot === -1) {
+    return { ok: false, reason: 'NO_BAY', events: [] };
+  }
+
+  const events = [];
+  for (const c of vehicle.cells) state.grid[c.y][c.x] = null;
+  state.bays[slot] = vehicle.id;
+  vehicle.arrivalSeq = state.nextSeq++;
+  events.push({ type: 'ARRIVE', vehicleId: vehicle.id, slot: slot });
+
+  boardingCascade(state, events);
+
+  checkStatus(state);
+  if (state.status !== 'PLAYING') {
+    events.push({ type: 'STATUS', status: state.status });
+  }
+
+  return { ok: true, reason: null, events: events };
+}
+
+function serialize(state) {
+  return JSON.parse(JSON.stringify(state));
+}
+
+function deserialize(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { CONFIG, COLORS, DIRS, makeRng, isExitClear, generateLevel, findExitSlot, tapVehicle, boardingCascade, checkStatus, serialize, deserialize, BODY_GEOM, vehicleBodyRect };
+}
+// ===== ENGINE END =====
+
+// ===== UI LAYER (presentation only — every rule decision is delegated to the engine above) =====
+(function () {
+  'use strict';
+
+  var SESSION_KEY = 'shuffle_bus_session';
+  var STATS_KEY = 'shuffle_bus_stats';
+  // Bump whenever a change to the engine makes previously-saved boards invalid.
+  // A stale save still has the right grid size, bay count and shape, so the
+  // structural checks in loadSession() cannot catch it on their own — without
+  // this stamp an old save would restore a board built by the old geometry
+  // (e.g. one with crossing diagonal bodies) and it would never go away.
+  var SESSION_VERSION = 3;
+  var QUEUE_WINDOW = 14;
+
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var TIMING = reducedMotion
+    ? { drive: 20, wiggle: 20, boardStep: 15, departStep: 15, postArrive: 10, statusDelay: 20 }
+    : { drive: 260, wiggle: 320, boardStep: 150, departStep: 230, postArrive: 70, statusDelay: 220 };
+
+  // ---------------- sound ----------------
+  function SoundFX() {
+    this.ctx = null;
+    this.muted = false;
+    this.failed = false;
+  }
+  SoundFX.prototype.ensureCtx = function () {
+    if (this.ctx || this.failed) return this.ctx;
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { this.failed = true; return null; }
+      this.ctx = new AC();
+    } catch (e) { this.failed = true; this.ctx = null; }
+    return this.ctx;
+  };
+  SoundFX.prototype.resume = function () {
+    try {
+      var ctx = this.ensureCtx();
+      if (ctx && ctx.state === 'suspended') ctx.resume();
+    } catch (e) { /* ignore */ }
+  };
+  SoundFX.prototype.tone = function (freq, dur, opts) {
+    if (this.muted) return;
+    opts = opts || {};
+    try {
+      var ctx = this.ensureCtx();
+      if (!ctx) return;
+      var t0 = ctx.currentTime;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = opts.type || 'sine';
+      osc.frequency.setValueAtTime(freq, t0);
+      if (opts.slideTo) osc.frequency.linearRampToValueAtTime(opts.slideTo, t0 + dur);
+      var peak = (opts.gain != null) ? opts.gain : 0.12;
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.linearRampToValueAtTime(peak, t0 + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.03);
+    } catch (e) { /* fail silently — audio must never break gameplay */ }
+  };
+  SoundFX.prototype.playPop = function () { this.tone(680, 0.12, { type: 'sine', gain: 0.12 }); };
+  SoundFX.prototype.playWiggle = function () { this.tone(160, 0.18, { type: 'triangle', gain: 0.10 }); };
+  SoundFX.prototype.playDepart = function () { this.tone(320, 0.28, { type: 'sawtooth', slideTo: 520, gain: 0.07 }); };
+  SoundFX.prototype.playAlert = function () {
+    var self = this;
+    this.tone(240, 0.12, { type: 'square', gain: 0.08 });
+    try { setTimeout(function () { self.tone(200, 0.14, { type: 'square', gain: 0.08 }); }, 130); } catch (e) {}
+  };
+  SoundFX.prototype.playVictory = function () {
+    var self = this;
+    var notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach(function (f, i) {
+      try { setTimeout(function () { self.tone(f, 0.22, { type: 'sine', gain: 0.12 }); }, i * 110); } catch (e) {}
+    });
+  };
+  SoundFX.prototype.playDefeat = function () {
+    var self = this;
+    var notes = [392, 329.63, 261.63];
+    notes.forEach(function (f, i) {
+      try { setTimeout(function () { self.tone(f, 0.28, { type: 'sine', gain: 0.10 }); }, i * 160); } catch (e) {}
+    });
+  };
+  var sound = new SoundFX();
+
+  // ---------------- storage ----------------
+  function loadStats() {
+    try {
+      var raw = localStorage.getItem(STATS_KEY);
+      if (!raw) return { played: 0, won: 0 };
+      var obj = JSON.parse(raw);
+      if (!obj || typeof obj.played !== 'number' || typeof obj.won !== 'number') return { played: 0, won: 0 };
+      return { played: obj.played, won: obj.won };
+    } catch (e) { return { played: 0, won: 0 }; }
+  }
+  function saveStats() {
+    try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e) { /* ignore */ }
+  }
+  function saveSession() {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({
+        v: SESSION_VERSION,
+        seed: gameState.seed,
+        difficulty: gameState.difficulty,
+        state: serialize(gameState)
+      }));
+    } catch (e) { /* ignore — file:// or blocked storage */ }
+  }
+  function loadSession() {
+    try {
+      var raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      if (!obj || typeof obj !== 'object') return null;
+      // Saves from an older build describe boards the current engine would
+      // never generate; drop them and start fresh rather than restoring one.
+      if (obj.v !== SESSION_VERSION) return null;
+      if (typeof obj.seed !== 'number' || !obj.difficulty || !CONFIG[obj.difficulty] || !obj.state) return null;
+      var st = deserialize(obj.state);
+      if (!st || !st.grid || !st.vehicles || !st.bays || !st.queue || !st.N || !st.status) return null;
+      if (st.N !== CONFIG[obj.difficulty].gridSize) return null;
+      if (!Array.isArray(st.bays) || st.bays.length !== CONFIG[obj.difficulty].bays) return null;
+      return st;
+    } catch (e) { return null; }
+  }
+  function clearSession() {
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
+  }
+  function randomSeed() {
+    try {
+      if (window.crypto && window.crypto.getRandomValues) {
+        var arr = new Uint32Array(1);
+        window.crypto.getRandomValues(arr);
+        return arr[0];
+      }
+    } catch (e) { /* ignore */ }
+    return Math.floor(Math.random() * 4294967295);
+  }
+
+  // ---------------- colour helpers ----------------
+  var colorInfoCache = {};
+  function colorInfo(hex) {
+    if (colorInfoCache[hex]) return colorInfoCache[hex];
+    var r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+    function lin(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+    var L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    var glyphColor = L > 0.45 ? '#1e293b' : '#ffffff';
+    var info = { luminance: L, glyphColor: glyphColor };
+    colorInfoCache[hex] = info;
+    return info;
+  }
+
+  // ---------------- state ----------------
+  var gameState = null;
+  var cellPx = 40;
+  var inputLocked = false;
+  var stats = loadStats();
+  var vehicleEls = new Map();
+  var bayEls = [];
+
+  var boardEl = document.getElementById('board');
+  var boardWrapEl = document.getElementById('boardWrap');
+  var baysEl = document.getElementById('bays');
+  var queueEl = document.getElementById('queue');
+  var statsLabelEl = document.getElementById('statsLabel');
+  var levelLabelEl = document.getElementById('levelLabel');
+  var overlayEl = document.getElementById('overlay');
+  var overlayTitleEl = document.getElementById('overlayTitle');
+  var overlayMsgEl = document.getElementById('overlayMsg');
+  var confettiLayerEl = document.getElementById('confettiLayer');
+  var soundBtn = document.getElementById('soundBtn');
+  var restartBtn = document.getElementById('restartBtn');
+  var overlayRestartBtn = document.getElementById('overlayRestartBtn');
+  var diffBtns = Array.prototype.slice.call(document.querySelectorAll('.diff-btn'));
+
+  function wait(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  // ---------------- render: toolbar / stats ----------------
+  function renderToolbar() {
+    diffBtns.forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.diff === gameState.difficulty);
+    });
+    var n = gameState.N;
+    var label = gameState.difficulty.charAt(0).toUpperCase() + gameState.difficulty.slice(1);
+    levelLabelEl.textContent = label + ' · ' + n + '×' + n;
+    soundBtn.textContent = sound.muted ? 'Sound: Off' : 'Sound: On';
+    soundBtn.setAttribute('aria-pressed', sound.muted ? 'true' : 'false');
+  }
+  function renderStats() {
+    statsLabelEl.textContent = 'Played ' + stats.played + ' · Won ' + stats.won;
+  }
+
+  // ---------------- render: board ----------------
+  // A vehicle's body is drawn as a rotated rectangle running from its REAR
+  // cell (cells[0]) to its NOSE cell (cells[last]) — exactly the geometry
+  // the reworked engine now produces (straight runs for N/S/E/W, diagonal
+  // staircases for the ordinal directions). We derive position, length and
+  // angle purely from the pixel centres of those two cells, so orthogonal
+  // and diagonal vehicles fall out of the same formula with no direction
+  // lookup table needed.
+  function innerOf(outerEl) {
+    return outerEl ? outerEl.firstElementChild : null;
+  }
+  function buildVehicleEl(v) {
+    // Geometry comes from the engine's vehicleBodyRect (cell units), which is
+    // the SAME rectangle the generator's overlap test uses. Deriving it here
+    // independently is what previously let the drawn width drift away from the
+    // collision width, so bodies overlapped on screen while the engine thought
+    // they were clear. Multiply by cellPx and draw exactly that rect.
+    var rect = vehicleBodyRect(v);
+    var angleDeg = rect.ang * 180 / Math.PI;
+
+    var outer = document.createElement('div');
+    outer.className = 'vehicle';
+    outer.dataset.id = v.id;
+    outer.style.left = (rect.cx * cellPx) + 'px';
+    outer.style.top = (rect.cy * cellPx) + 'px';
+    outer.style.width = (rect.len * cellPx) + 'px';
+    outer.style.height = (rect.wid * cellPx) + 'px';
+    outer.style.transform = 'translate(-50%, -50%) rotate(' + angleDeg + 'deg)';
+
+    var inner = document.createElement('div');
+    inner.className = 'vehicle-body';
+    inner.style.background = v.color;
+
+    var info = colorInfo(v.color);
+
+    // Capacity shown as two rows of seat dots. Caps are always even (4/6/8),
+    // so this splits cleanly; guard anyway so an odd cap still renders sanely.
+    var dots = document.createElement('div');
+    dots.className = 'seat-dots';
+    dots.style.color = info.glyphColor;
+    dots.style.gridTemplateRows = 'repeat(' + (v.cap >= 4 ? 2 : 1) + ', auto)';
+    for (var s = 0; s < v.cap; s++) {
+      var dot = document.createElement('span');
+      dot.className = 'seat-dot';
+      dots.appendChild(dot);
+    }
+    inner.appendChild(dots);
+
+    var arrow = document.createElement('span');
+    arrow.className = 'arrow';
+    arrow.style.color = info.glyphColor;
+    // The body itself is rotated to face the travel direction, so a
+    // right-pointing glyph at the nose end always points the right way
+    // without any independent glyph rotation.
+    arrow.textContent = '▶';
+    inner.appendChild(arrow);
+
+    outer.appendChild(inner);
+    return outer;
+  }
+  function renderBoard() {
+    boardEl.innerHTML = '';
+    vehicleEls = new Map();
+    for (var id in gameState.vehicles) {
+      if (!Object.prototype.hasOwnProperty.call(gameState.vehicles, id)) continue;
+      var v = gameState.vehicles[id];
+      var c0 = v.cells[0];
+      if (gameState.grid[c0.y][c0.x] !== id) continue; // not currently on the grid
+      var el = buildVehicleEl(v);
+      boardEl.appendChild(el);
+      vehicleEls.set(id, el);
+    }
+  }
+  function computeAndApplyCellSize() {
+    var n = gameState.N;
+    var availW = boardWrapEl.clientWidth - 8;
+    var wrapRect = boardWrapEl.getBoundingClientRect();
+    // Everything above the board (toolbar, stats, queue, bays) is already
+    // accounted for by wrapRect.top, so the only space still to reserve is
+    // whatever sits BELOW the board — the wrapper's bottom padding. Measure it
+    // rather than hardcoding: a hardcoded guess silently double-counted the
+    // queue and bays when they moved above the grid, shrinking the board and
+    // leaving a large dead gap underneath it.
+    var wrapStyles = window.getComputedStyle(boardWrapEl.parentElement);
+    var reserved = (parseFloat(wrapStyles.paddingBottom) || 0) + 16;
+    var availH = window.innerHeight - wrapRect.top - reserved;
+    // The board should always FIT the viewport rather than hold a minimum cell
+    // size and scroll: a 10x10 at the old 40px floor was 400px wide, which
+    // overflowed every phone. MIN_CELL is only a guard against degenerate
+    // sizes on absurdly narrow screens; MAX_CELL stops a small grid ballooning
+    // on a wide desktop.
+    var MIN_CELL = 18, MAX_CELL = 46;
+    var raw = Math.floor(Math.min(availW, availH) / n);
+    if (!isFinite(raw) || raw <= 0) raw = 32;
+    var size = Math.max(MIN_CELL, Math.min(MAX_CELL, raw));
+    boardEl.style.setProperty('--cell', size + 'px');
+    boardEl.style.width = (size * n) + 'px';
+    boardEl.style.height = (size * n) + 'px';
+    cellPx = size;
+  }
+
+  // ---------------- render: bays ----------------
+  function baysDataFromState() {
+    return gameState.bays.map(function (id) {
+      if (id === null) return null;
+      var v = gameState.vehicles[id];
+      return { id: id, color: v.color, boarded: v.boarded, cap: v.cap };
+    });
+  }
+  function paintBaySlots(dataArray, highlightSlot) {
+    baysEl.innerHTML = '';
+    bayEls = [];
+    dataArray.forEach(function (data, i) {
+      var slotEl = document.createElement('div');
+      slotEl.className = 'bay-slot' + (data ? ' filled' : ' empty') + (i === highlightSlot ? ' pop' : '');
+
+      // Faint space number painted on the asphalt slab itself, under
+      // whatever is parked on it (or visible outright when the bay is empty).
+      var numberEl = document.createElement('div');
+      numberEl.className = 'bay-number';
+      numberEl.textContent = String(i + 1);
+      slotEl.appendChild(numberEl);
+
+      if (data) {
+        // The bus sits ON the slab as its own coloured block, rather than the
+        // whole slab (with its painted lines) turning into a flat colour.
+        var vehicleEl = document.createElement('div');
+        vehicleEl.className = 'bay-vehicle';
+        vehicleEl.style.background = data.color;
+        var pipsWrap = document.createElement('div');
+        pipsWrap.className = 'seat-pips';
+        for (var s = 0; s < data.cap; s++) {
+          var pip = document.createElement('span');
+          pip.className = 'pip' + (s < data.boarded ? ' filled' : '');
+          pipsWrap.appendChild(pip);
+        }
+        vehicleEl.appendChild(pipsWrap);
+        slotEl.appendChild(vehicleEl);
+      } else {
+        var dash = document.createElement('span');
+        dash.className = 'bay-empty-label';
+        dash.textContent = 'empty';
+        slotEl.appendChild(dash);
+      }
+      baysEl.appendChild(slotEl);
+      bayEls[i] = slotEl;
+    });
+  }
+  function renderBays() { paintBaySlots(baysDataFromState(), -1); }
+
+  // ---------------- render: queue ----------------
+  // How many waiting passengers actually fit on this screen. A fixed window of
+  // 14 fits a desktop but overflows a phone, where the tail ends up crammed
+  // under the "N LEFT" badge. Measured against the full-width wrapper (the row
+  // itself is width:fit-content, so its own width would be circular).
+  function visibleQueueCount() {
+    var avail = (queueEl.parentElement && queueEl.parentElement.clientWidth) || 0;
+    var PERSON_W = 28;   // avatar plus its gap
+    var BADGE_W = 96;    // pinned badge plus the fade before it
+    var ROW_PAD = 20;
+    if (avail <= 0) return QUEUE_WINDOW;
+    var fits = Math.floor((avail - ROW_PAD - BADGE_W) / PERSON_W);
+    return Math.max(4, Math.min(QUEUE_WINDOW, fits));
+  }
+  function renderQueue(overrideArr) {
+    var arr = overrideArr || gameState.queue;
+    queueEl.innerHTML = '';
+    // Only a small window of DOM nodes is ever built here, however long the
+    // real queue is (a hard level can hold ~170 passengers) — the rest is
+    // summarised by the "LEFT" badge below, never rendered as individual nodes.
+    var shown = arr.slice(0, visibleQueueCount());
+    shown.forEach(function (color, idx) {
+      var person = document.createElement('div');
+      person.className = 'queue-person' + (idx === 0 ? ' front' : '');
+      person.style.color = color;
+
+      var head = document.createElement('div');
+      head.className = 'qp-head';
+      person.appendChild(head);
+
+      var body = document.createElement('div');
+      body.className = 'qp-body';
+      person.appendChild(body);
+
+      if (idx === 0) {
+        // The next passenger to board — a small arrow "facing" down toward
+        // the bays row directly below the queue.
+        var arrow = document.createElement('div');
+        arrow.className = 'qp-arrow';
+        person.appendChild(arrow);
+      }
+
+      queueEl.appendChild(person);
+    });
+    // Pinned to the row's own edge (see .queue.has-badge in CSS) rather than
+    // laid out after the last avatar, so it stays visible even when the
+    // avatars alone already fill the row on a narrow phone.
+    // Compare against what was actually rendered, not the fixed maximum —
+    // otherwise a queue longer than the on-screen window but shorter than
+    // QUEUE_WINDOW would hide passengers with no badge to account for them.
+    queueEl.classList.toggle('has-badge', arr.length > shown.length);
+    queueEl.style.paddingRight = '';
+    if (arr.length > shown.length) {
+      var badge = document.createElement('div');
+      badge.className = 'queue-total-badge';
+      badge.textContent = arr.length + ' LEFT';
+      queueEl.appendChild(badge);
+      // Reserve exactly the space the badge actually takes. A fixed padding
+      // guess in CSS cannot know how wide "9 LEFT" vs "168 LEFT" renders, and
+      // when it under-reserves the badge sits on top of the last passenger.
+      queueEl.style.paddingRight = (badge.offsetWidth + 18) + 'px';
+    }
+    if (arr.length === 0) {
+      var doneMsg = document.createElement('div');
+      doneMsg.className = 'queue-empty';
+      doneMsg.textContent = 'All aboard!';
+      queueEl.appendChild(doneMsg);
+    }
+  }
+
+  // ---------------- overlay ----------------
+  function spawnConfetti() {
+    confettiLayerEl.innerHTML = '';
+    if (reducedMotion) return;
+    for (var i = 0; i < 26; i++) {
+      var piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      var color = COLORS[i % COLORS.length];
+      piece.style.background = color;
+      piece.style.left = (Math.random() * 100) + '%';
+      piece.style.animationDuration = (900 + Math.random() * 700) + 'ms';
+      piece.style.animationDelay = (Math.random() * 400) + 'ms';
+      confettiLayerEl.appendChild(piece);
+    }
+  }
+  function showOverlay(status) {
+    if (status === 'WON') {
+      overlayTitleEl.textContent = 'You did it!';
+      overlayMsgEl.textContent = 'Every bus and every passenger made it. Great job!';
+      spawnConfetti();
+    } else {
+      overlayTitleEl.textContent = "Let's try again!";
+      overlayMsgEl.textContent = 'The buses got a little stuck this time. Ready for a fresh grid?';
+      confettiLayerEl.innerHTML = '';
+    }
+    overlayEl.classList.add('visible');
+  }
+  function hideOverlay() {
+    overlayEl.classList.remove('visible');
+    confettiLayerEl.innerHTML = '';
+  }
+
+  // ---------------- animation helpers ----------------
+  function wiggleElement(el) {
+    if (!el) return;
+    el.classList.remove('wiggle');
+    void el.offsetWidth; // force reflow so the animation can restart
+    el.classList.add('wiggle');
+    el.addEventListener('animationend', function handler() {
+      el.classList.remove('wiggle');
+      el.removeEventListener('animationend', handler);
+    });
+  }
+  function animateDriveOff(innerEl) {
+    if (!innerEl) return;
+    // The outer element already carries the compass rotation, so "forward"
+    // is simply +X in the inner element's own (rotated) local frame — no
+    // per-direction vector math needed here any more.
+    var dist = (gameState.N + 2) * cellPx;
+    innerEl.classList.add('drive-off');
+    void innerEl.offsetWidth; // force a reflow so the transition actually engages,
+                               // rather than the class-add and transform-set
+                               // coalescing into a single paint with no animation
+    innerEl.style.transform = 'translateX(' + dist + 'px)';
+    innerEl.style.opacity = '0';
+  }
+
+  // ---------------- core tap sequence ----------------
+  async function runTapSequence(vehicleId) {
+    var vehicle = gameState.vehicles[vehicleId];
+    if (!vehicle) return;
+    var el = vehicleEls.get(vehicleId);
+
+    // Snapshot pre-tap visuals so the cascade can be replayed step-by-step
+    // even though tapVehicle mutates gameState synchronously and completely.
+    var shadowBays = gameState.bays.map(function (id) {
+      if (id === null) return null;
+      var v = gameState.vehicles[id];
+      return { id: id, color: v.color, boarded: v.boarded, cap: v.cap };
+    });
+    var shadowQueue = gameState.queue.slice();
+
+    var result = tapVehicle(gameState, vehicleId);
+
+    if (!result.ok) {
+      if (result.reason === 'BLOCKED') {
+        sound.playWiggle();
+        wiggleElement(innerOf(el));
+        await wait(TIMING.wiggle);
+      } else if (result.reason === 'NO_BAY') {
+        sound.playAlert();
+        wiggleElement(innerOf(el));
+        await wait(TIMING.wiggle);
+      }
+      return;
+    }
+
+    var arriveEv = null;
+    for (var i = 0; i < result.events.length; i++) {
+      if (result.events[i].type === 'ARRIVE') { arriveEv = result.events[i]; break; }
+    }
+
+    if (el) {
+      animateDriveOff(innerOf(el));
+      await wait(TIMING.drive);
+      el.remove();
+      vehicleEls.delete(vehicleId);
+    }
+
+    if (arriveEv) {
+      shadowBays[arriveEv.slot] = { id: vehicleId, color: vehicle.color, boarded: 0, cap: vehicle.cap };
+      paintBaySlots(shadowBays, arriveEv.slot);
+      await wait(TIMING.postArrive);
+    }
+
+    for (var e = 0; e < result.events.length; e++) {
+      var ev = result.events[e];
+      if (ev.type === 'ARRIVE' || ev.type === 'STATUS') continue;
+
+      if (ev.type === 'BOARD') {
+        var front = queueEl.querySelector('.queue-person');
+        if (front) front.classList.add('boarding');
+        sound.playPop();
+        await wait(TIMING.boardStep);
+        shadowQueue = shadowQueue.slice(1);
+        renderQueue(shadowQueue);
+        if (shadowBays[ev.slot]) shadowBays[ev.slot].boarded = ev.boarded;
+        paintBaySlots(shadowBays, ev.slot);
+      } else if (ev.type === 'DEPART') {
+        var slotEl = bayEls[ev.slot];
+        sound.playDepart();
+        if (slotEl) slotEl.classList.add('depart');
+        await wait(TIMING.departStep);
+        shadowBays[ev.slot] = null;
+        paintBaySlots(shadowBays, -1);
+      }
+    }
+
+    // Authoritative re-sync — guarantees the DOM matches gameState exactly,
+    // regardless of any drift in the cosmetic replay above.
+    renderQueue();
+    renderBays();
+    renderStats();
+    saveSession();
+
+    var statusEvent = null;
+    for (var s = 0; s < result.events.length; s++) {
+      if (result.events[s].type === 'STATUS') { statusEvent = result.events[s]; break; }
+    }
+    if (statusEvent) {
+      await wait(TIMING.statusDelay);
+      if (statusEvent.status === 'WON') {
+        stats.won++;
+        sound.playVictory();
+        showOverlay('WON');
+      } else {
+        sound.playDefeat();
+        showOverlay('LOST');
+      }
+      saveStats();
+    }
+  }
+
+  async function onVehicleTap(vehicleId) {
+    if (inputLocked) return;
+    if (!gameState || gameState.status !== 'PLAYING') return;
+    if (!gameState.vehicles[vehicleId]) return;
+    inputLocked = true;
+    try {
+      await runTapSequence(vehicleId);
+    } catch (err) {
+      // A defensive net: presentation bugs must never soft-brick the game.
+      try { renderQueue(); renderBays(); renderBoard(); } catch (e2) { /* ignore */ }
+    } finally {
+      inputLocked = false;
+    }
+  }
+
+  // ---------------- game lifecycle ----------------
+  function fullRender() {
+    renderToolbar();
+    renderStats();
+    renderBays();
+    renderQueue();
+    computeAndApplyCellSize();
+    renderBoard();
+    if (gameState.status !== 'PLAYING') {
+      showOverlay(gameState.status);
+    } else {
+      hideOverlay();
+    }
+  }
+
+  function newGame(difficulty) {
+    var seed = randomSeed();
+    gameState = generateLevel(difficulty, seed);
+    stats.played++;
+    saveStats();
+    hideOverlay();
+    saveSession();
+    fullRender();
+  }
+
+  function init() {
+    document.body.classList.toggle('reduced-motion', reducedMotion);
+    document.documentElement.style.setProperty('--dur-drive', TIMING.drive + 'ms');
+    document.documentElement.style.setProperty('--dur-wiggle', TIMING.wiggle + 'ms');
+    document.documentElement.style.setProperty('--dur-bay-pop', TIMING.postArrive + 'ms');
+    document.documentElement.style.setProperty('--dur-bay-depart', TIMING.departStep + 'ms');
+    document.documentElement.style.setProperty('--dur-board', TIMING.boardStep + 'ms');
+
+    var restored = loadSession();
+    if (restored) {
+      gameState = restored;
+    } else {
+      gameState = generateLevel('easy', randomSeed());
+      stats.played++;
+      saveStats();
+      saveSession();
+    }
+
+    fullRender();
+
+    boardEl.addEventListener('click', function (e) {
+      var el = e.target.closest ? e.target.closest('.vehicle') : null;
+      if (el) onVehicleTap(el.dataset.id);
+    });
+
+    diffBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var d = btn.dataset.diff;
+        if (inputLocked) return;
+        if (d !== gameState.difficulty) newGame(d);
+      });
+    });
+
+    restartBtn.addEventListener('click', function () {
+      if (inputLocked) return;
+      newGame(gameState.difficulty);
+    });
+    overlayRestartBtn.addEventListener('click', function () {
+      if (inputLocked) return;
+      newGame(gameState.difficulty);
+    });
+
+    soundBtn.addEventListener('click', function () {
+      sound.muted = !sound.muted;
+      renderToolbar();
+    });
+
+    document.addEventListener('pointerdown', function firstGesture() {
+      sound.resume();
+      document.removeEventListener('pointerdown', firstGesture);
+    });
+
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        computeAndApplyCellSize();
+        renderBoard();
+        // The number of visible passengers is width-dependent, so it has to be
+        // recomputed on resize/orientation change too.
+        renderQueue();
+      }, 80);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

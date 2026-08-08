@@ -1,0 +1,13 @@
+{
+  "name": "@miniapps/shuffle-bus",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node -e \"console.log('shuffle-bus is a static file: open index.html directly in a browser')\"",
+    "build": "node build.js",
+    "preview": "node -e \"console.log('shuffle-bus is a static file: open dist/index.html directly in a browser')\"",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "lint": "node -e \"console.log('no lint step for shuffle-bus (zero-dependency static app)')\""
+  }
+}

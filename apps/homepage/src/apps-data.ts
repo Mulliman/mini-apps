@@ -96,6 +96,13 @@ export const appsData: AppInfo[] = [
     description: "An interactive polyrhythm visualizer with glowing bouncing faces and customizable sounds.",
     url: "/apps/music/poly-pals/index.html",
     image: polyPalsImg
+  },
+  {
+    id: "shuffle-bus",
+    title: "Shuffle Bus",
+    category: "Games",
+    description: "A colourful bus puzzle where kids drive matching-colour buses off the grid to board waiting passengers.",
+    url: "/apps/games/shuffle-bus/index.html"
   }
 ];
 

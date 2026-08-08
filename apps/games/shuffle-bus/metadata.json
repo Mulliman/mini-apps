@@ -1,0 +1,5 @@
+{
+  "name": "Shuffle Bus",
+  "description": "A colour-matching bus puzzle where kids clear buses, bays and a passenger queue by driving matching colours off the grid.",
+  "requestFramePermissions": []
+}
