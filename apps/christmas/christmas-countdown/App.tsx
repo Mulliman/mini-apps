@@ -118,7 +118,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-start relative overflow-hidden">
+    <div className="h-[100dvh] bg-slate-900 flex flex-col items-center justify-start relative overflow-hidden">
       <Header title="Christmas Countdown" />
       
       {/* Background Image Layer */}
@@ -153,7 +153,7 @@ const App: React.FC = () => {
         </header>
 
         {/* The Grid */}
-        <main className="w-full grid grid-cols-4 sm:grid-cols-6 gap-3 sm:gap-4 md:gap-6 flex-grow overflow-y-auto overflow-x-hidden pb-20">
+        <main className="w-full grid grid-cols-4 sm:grid-cols-6 grid-rows-6 sm:grid-rows-4 gap-2 sm:gap-4 md:gap-6 flex-grow min-h-0 pb-4 sm:pb-24">
           {gridOrder.map((num) => (
             <AdventWindow 
               key={num}
@@ -166,7 +166,7 @@ const App: React.FC = () => {
         </main>
 
         {/* Bottom Controls */}
-        <div className="desktop-only fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur shadow-up z-40 flex justify-center items-center gap-4 border-t-4 border-red-500">
+        <div className="hidden sm:flex fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur shadow-up z-40 justify-center items-center gap-4 border-t-4 border-red-500">
            <label className="text-xl sm:text-2xl font-bold text-slate-700 christmas-font whitespace-nowrap">
              Type next number:
            </label>
