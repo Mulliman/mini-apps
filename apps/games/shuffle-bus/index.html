@@ -591,6 +591,7 @@
           <button class="diff-btn" data-diff="easy" type="button">Easy</button>
           <button class="diff-btn" data-diff="medium" type="button">Medium</button>
           <button class="diff-btn" data-diff="hard" type="button">Hard</button>
+          <button class="diff-btn" data-diff="pro" type="button">Pro</button>
         </div>
       </div>
       <div class="toolbar-actions">
@@ -637,9 +638,10 @@
 // attemptPack for the exact contract the renderer depends on.
 
 const CONFIG = {
-  easy:   { gridSize: 6,  colors: 3, bays: 5, vehicleLens: [2],    caps: [4],      count: 10, diagonals: true },
-  medium: { gridSize: 8,  colors: 4, bays: 5, vehicleLens: [2,3],  caps: [4,6],    count: 18, diagonals: true },
-  hard:   { gridSize: 10, colors: 5, bays: 4, vehicleLens: [2,3],  caps: [4,6,8],  count: 28, diagonals: true },
+  easy:   { gridSize: 5, colors: 3, bays: 5, vehicleLens: [2],    caps: [4],      count: 11, diagonals: true, diagMaxLen: 2 },
+  medium: { gridSize: 7, colors: 4, bays: 5, vehicleLens: [2,3],  caps: [4,6],    count: 18, diagonals: true, diagMaxLen: 2 },
+  hard:   { gridSize: 8, colors: 5, bays: 4, vehicleLens: [2,3],  caps: [4,6,8],  count: 23, diagonals: true, diagMaxLen: 2 },
+  pro:    { gridSize: 9, colors: 5, bays: 3, vehicleLens: [2,3],  caps: [4,6,8],  count: 27, diagonals: true, diagMaxLen: 2 },
 };
 const COLORS = ['#E6194B', '#4363D8', '#3CB44B', '#FFE119', '#911EB4']; // red, blue, green, gold, purple
 
@@ -667,9 +669,9 @@ function makeRng(seed) {
 // the same rectangle the renderer draws -- these constants and the rect
 // derivation below are that one shared definition.
 const BODY_GEOM = {
-  capCells: 0.82,      // added to the rear->nose centre distance to get drawn length
-  widthOrtho: 0.70,    // body width for N/S/E/W vehicles
-  widthDiag: 0.56,     // body width for the four diagonal vehicles
+  capCells: 0.60,      // added to the rear->nose centre distance to get drawn length
+  widthOrtho: 0.80,    // body width for N/S/E/W vehicles
+  widthDiag: 0.64,     // body width for the four diagonal vehicles
   clearance: 0.05       // minimum gap required between two bodies
 };
 
@@ -848,11 +850,18 @@ function attemptPack(N, cfg, colors, dirPool, rng, maxRetriesPerVehicle, counter
 
     for (let retry = 0; retry < maxRetriesPerVehicle; retry++) {
       counters.totalRetries++;
-      const len = cfg.vehicleLens[Math.floor(rng() * cfg.vehicleLens.length)];
+      let len = cfg.vehicleLens[Math.floor(rng() * cfg.vehicleLens.length)];
       const cap = cfg.caps[Math.floor(rng() * cfg.caps.length)];
       const color = colors[Math.floor(rng() * colors.length)];
       const dir = dirPool[Math.floor(rng() * dirPool.length)];
       const v = DIRS[dir];
+      // Diagonal staircases already read ~41% longer than an orthogonal run
+      // of the same cell-count (diagonally adjacent centres are sqrt(2)
+      // apart, not 1), so cap diagonal runs at cfg.diagMaxLen to keep them
+      // from reading as slivers -- this is a visible config knob, not a
+      // hidden packer rule.
+      const isDiagonalDir = v.x !== 0 && v.y !== 0;
+      if (isDiagonalDir && cfg.diagMaxLen) len = Math.min(len, cfg.diagMaxLen);
 
       // A vehicle's body runs along its own travel axis: cells[i] = anchor +
       // i * v, where v is the vehicle's own direction unit vector. N/S and
@@ -1171,7 +1180,7 @@ if (typeof module !== 'undefined' && module.exports) {
   // structural checks in loadSession() cannot catch it on their own — without
   // this stamp an old save would restore a board built by the old geometry
   // (e.g. one with crossing diagonal bodies) and it would never go away.
-  var SESSION_VERSION = 3;
+  var SESSION_VERSION = 4;
   var QUEUE_WINDOW = 14;
 
   var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
