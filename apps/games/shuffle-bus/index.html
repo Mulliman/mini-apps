@@ -12,6 +12,10 @@
     --dur-bay-depart: 230ms;
     --dur-board: 150ms;
     --cell: 40px;
+    /* The queue's fade-out mask has to end on exactly the pavement colour, so
+       the two share one variable — hard-coding it in both drifted the last
+       time this surface was recoloured. */
+    --pavement: #4c5157;
   }
   *, *::before, *::after{ box-sizing: border-box; }
   html, body{
@@ -92,12 +96,6 @@
     justify-content:space-between;
     gap:0.6rem;
   }
-  .level-label{
-    font-size:0.85rem;
-    color:#94a3b8;
-    font-weight:600;
-    letter-spacing:0.02em;
-  }
   .difficulty-group{
     display:flex;
     gap:0.35rem;
@@ -106,19 +104,29 @@
     border-radius:12px;
     border:1px solid rgba(255,255,255,0.08);
   }
-  .diff-name{ display:block; }
+  .diff-name{ display:inline; }
+  /* The level rides alongside the tier name on one line, as a chip rather than
+     the words "Level 3" on a second row — four two-line buttons were most of
+     the toolbar's height on a phone. */
   .diff-level{
-    display:block;
-    font-size:0.68rem;
-    font-weight:600;
-    opacity:0.75;
-    letter-spacing:0.01em;
+    display:inline-block;
+    min-width:1.15em;
+    padding:0.05em 0.3em;
+    border-radius:5px;
+    background:rgba(255,255,255,0.10);
+    font-size:0.72rem;
+    font-weight:700;
+    line-height:1.35;
+    text-align:center;
   }
   .diff-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:0.32rem;
     border:none;
     background:transparent;
     color:#94a3b8;
-    padding:0.4rem 0.75rem;
+    padding:0.4rem 0.6rem;
     border-radius:9px;
     font-size:0.85rem;
     font-weight:600;
@@ -131,6 +139,7 @@
     background:#38bdf8;
     color:#0f172a;
   }
+  .diff-btn.active .diff-level{ background:rgba(15,23,42,0.22); }
   .diff-btn:not(.active):hover{ color:#fff; background:rgba(255,255,255,0.08); }
 
   .toolbar-actions{
@@ -155,6 +164,24 @@
     border:1px solid rgba(255,255,255,0.1);
   }
   .icon-btn:hover{ background:rgba(255,255,255,0.15); }
+  /* Circular icon-only toggle — no label to translate or to blow the toolbar
+     onto a second row. The two icon states live in the same SVG so toggling is
+     a class change, with no markup rebuilt per render. */
+  .sound-btn{
+    width:38px;
+    height:38px;
+    padding:0;
+    border-radius:50%;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+  }
+  .sound-btn svg{ width:19px; height:19px; display:block; }
+  .sound-btn .snd-cross{ display:none; }
+  .sound-btn.muted{ color:#8b96a8; }
+  .sound-btn.muted .snd-wave{ display:none; }
+  .sound-btn.muted .snd-cross{ display:inline; }
   .primary-btn{
     background:linear-gradient(135deg,#38bdf8,#818cf8);
     color:#0f172a;
@@ -179,11 +206,11 @@
     margin-bottom:0.35rem;
     text-shadow:0 1px 2px rgba(0,0,0,0.35);
   }
-  /* Labels take their contrast from the surface they sit on: dark ink on the
-     light concrete pavement, light paint on the dark asphalt. */
+  /* Both surfaces are dark now, so labels are painted light on each — the
+     pavement's dark ink was for the light concrete it no longer wears. */
   .pavement .section-label{
-    color:#232830;
-    text-shadow:0 1px 0 rgba(255,255,255,0.35);
+    color:#dfe3e8;
+    text-shadow:0 1px 2px rgba(0,0,0,0.45);
   }
   .tarmac .section-label{
     color:#e8ebee;
@@ -209,33 +236,60 @@
      the two surfaces read as distinct materials. The passenger queue lives
      here, on the pavement, waiting to cross the kerb into the lot. */
   .pavement{
-    /* Real concrete grey. The previous slate-blue read as "dark UI panel"
-       rather than pavement; the whole point of this band is that it looks
-       like a physical surface the passengers are standing on. */
-    /* Flat concrete — no speckle. The dotted texture stays on the tarmac
-       below, where it reads as asphalt aggregate; on the pavement it just
-       looked like noise. */
-    background-color:#9ba0a6;
+    /* The darker concrete the tarmac used to wear, before the lot went to one
+       dark asphalt. The light grey that replaced it was too bright to read as
+       a real surface — it looked like a white UI band with people drawn on it,
+       and it left the queue floating rather than standing on something. */
+    /* Speckled like the tarmac, but on a tighter 10px tile at lower contrast:
+       concrete is a finer aggregate than asphalt, and that difference in grain
+       is what keeps the two surfaces reading as different materials now that
+       they are close in value. (Grain was left off entirely while this band
+       was light grey — on that, the dots read as noise rather than stone.) */
+    background-color:var(--pavement);
+    background-image:
+      radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.2px),
+      radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1.3px);
+    background-position:0 0, 5px 5px;
+    background-size:10px 10px, 10px 10px;
     padding:0.85rem 1rem 0.75rem;
   }
-  /* A single painted kerb line separating pavement from road — just a line,
-     not a slab. */
+  /* An actual kerbstone rather than a painted stripe. Seen from the game's
+     slightly-above angle a kerb is two faces, not a line: a lit top face, then
+     a vertical front face dropping to the road, split by a hard arris. Joints
+     every 48px read as individual laid stones, and the shadow cast onto the
+     tarmac is what sells the step down from pavement to lot — z-index is
+     load-bearing for that, since the tarmac paints after this in tree order
+     and would otherwise swallow the shadow whole. */
   .kerb{
-    height:5px;
-    background:linear-gradient(to bottom, #b6c0d1, #e7ecf3 45%, #8b96ab);
-    box-shadow:0 1px 3px rgba(0,0,0,0.45);
+    position:relative;
+    z-index:1;
+    height:12px;
+    background-image:
+      /* joints between stones, over the faces below */
+      repeating-linear-gradient(to right,
+        transparent 0 46px,
+        rgba(0,0,0,0.30) 46px 48px),
+      linear-gradient(to bottom,
+        #adb4bc 0 1px,     /* far edge, catching the most light */
+        #959ca4 1px 6px,   /* top face */
+        #5e656d 6px 7px,   /* arris */
+        #4d545c 7px 10px,  /* front face */
+        #3e454d 10px 12px  /* base, in its own shadow */);
+    box-shadow:0 3px 7px rgba(0,0,0,0.5);
   }
   /* Tarmac: the large car-park surface. Bays and the vehicle grid both sit
      directly on it (see .board below) so they read as one continuous lot
      rather than separate floating cards. */
   .tarmac{
-    /* Asphalt grey. Dark enough that the five vehicle colours stay the
-       loudest thing on screen, light enough to read as a real surface
-       rather than the page background showing through. */
-    background-color:#4c5157;
+    /* ONE asphalt surface for the whole lot: bays, perimeter road and vehicle
+       grid all sit directly on this and paint nothing of their own behind
+       them, so the speckle runs unbroken from the kerb to the bottom edge and
+       the lot reads as a single pour rather than three stacked panels. Dark
+       enough that the five vehicle colours stay the loudest thing on screen. */
+    background-color:#2b3342;
     background-image:
-      radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1.3px),
-      radial-gradient(rgba(0,0,0,0.20) 1px, transparent 1.3px);
+      radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.3px),
+      radial-gradient(rgba(0,0,0,0.22) 1px, transparent 1.4px);
     background-position:0 0, 7px 7px;
     background-size:14px 14px, 14px 14px;
     display:flex;
@@ -251,6 +305,58 @@
     justify-content:center;
     overflow-x:auto;
     padding:0.25rem;
+  }
+  /* The perimeter road: a lane of asphalt wrapping all four sides of the grid.
+     A tapped bus drives off the grid onto this lane, follows it round to the
+     bays and turns in (see animateDriveToBay), so --lane is load-bearing, not
+     decorative: the flight path is measured off this element's real geometry.
+     computeAndApplyCellSize sets --cell on :root as well as on the board so
+     that this padding tracks the live cell size instead of silently falling
+     back to the :root default. */
+  .road-ring{
+    --lane: calc(var(--cell) * 0.62);
+    position:relative;
+    padding: var(--lane);
+    /* No fill and no drop shadow: the road is PAINT ON THE TARMAC, exactly as
+       the bays are. Anything opaque here cut a rectangle out of the lot's
+       speckle and the road went back to reading as a raised panel. Its extent
+       is drawn entirely by the painted edge in the box-shadow below plus the
+       centre lines in ::before. */
+    border-radius:14px;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.10);
+  }
+  /* Dashed centre lines: one per side, inset by half a lane so each is painted
+     down the middle of its own carriageway rather than along the kerb. */
+  .road-ring::before{
+    content:'';
+    position:absolute;
+    inset: calc(var(--lane) / 2);
+    pointer-events:none;
+    background-image:
+      repeating-linear-gradient(to right,  rgba(255,255,255,0.5) 0 10px, transparent 10px 22px),
+      repeating-linear-gradient(to right,  rgba(255,255,255,0.5) 0 10px, transparent 10px 22px),
+      repeating-linear-gradient(to bottom, rgba(255,255,255,0.5) 0 10px, transparent 10px 22px),
+      repeating-linear-gradient(to bottom, rgba(255,255,255,0.5) 0 10px, transparent 10px 22px);
+    background-size: 100% 2px, 100% 2px, 2px 100%, 2px 100%;
+    background-position: 0 0, 0 100%, 0 0, 100% 0;
+    background-repeat:no-repeat;
+  }
+  /* A bus in flight is cloned into this fixed layer: the grid clips its own
+     overflow and the bays live in a different container entirely, so a clone
+     over the whole page is the only way one element can cross both. */
+  .drive-layer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:40;
+  }
+  .drive-clone{
+    position:absolute;
+    left:0;
+    top:0;
+    transform-origin:center center;
+    will-change:transform, opacity;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45));
   }
   .board{
     position:relative;
@@ -384,13 +490,13 @@
   }
   .v-taillight.top { top: max(3px, calc(var(--cell) * 0.10)); }
   .v-taillight.bot { bottom: max(3px, calc(var(--cell) * 0.10)); }
-  .vehicle-body.wiggle{ animation: wiggle var(--dur-wiggle) ease; }
-  @keyframes wiggle{
-    0%,100%{ transform: translate(0,0) rotate(0); }
-    20%{ transform: translate(-5px,0) rotate(-4deg); }
-    40%{ transform: translate(5px,0) rotate(4deg); }
-    60%{ transform: translate(-4px,0) rotate(-3deg); }
-    80%{ transform: translate(4px,0) rotate(3deg); }
+  .vehicle-body.wiggle, .vehicle-body.block-shake{ animation: blockShake 500ms ease; }
+  @keyframes blockShake{
+    0%,100%{ transform: rotate(0deg); }
+    15%{ transform: rotate(-10deg); }
+    35%{ transform: rotate(10deg); }
+    55%{ transform: rotate(-8deg); }
+    75%{ transform: rotate(8deg); }
   }
   .vehicle-body.drive-off{
     transition: transform var(--dur-drive) cubic-bezier(.4,0,1,1), opacity var(--dur-drive) ease-in;
@@ -407,17 +513,20 @@
   /* A grey asphalt slab with painted white lines down each side, open at the
      bottom edge — the entry, facing the lot below. Deliberately reads as an
      empty parking space until a vehicle "parks" on top of it. */
+  /* Proportioned like a real bay, not a square: a bus is roughly twice as long
+     as it is wide, so the space it parks in has to be too. A squarer bay left
+     the parked bus squashed into something van-shaped. */
   .bay-slot{
     position:relative;
-    width:76px;
-    min-height:82px;
+    width:48px;
+    min-height:104px;
     border-radius:5px;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:flex-end;
     gap:5px;
-    padding:6px 6px 7px;
+    padding:6px 4px 7px;
     /* A bay is PAINT ON THE TARMAC, not a panel cut into it: keep the asphalt
        showing through (just scuffed slightly darker) and let the white lines
        do the work. A solid fill here read as a hole in the surface. */
@@ -467,40 +576,105 @@
      the whole slab just becoming a flat colour square. */
   .bay-vehicle{
     width:100%;
+    min-height:80px;
     flex:0 0 auto;
-    border-radius:8px;
-    padding:8px 5px 6px;
+    border-radius:7px;
+    padding:7px 3px 6px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:5px;
+    justify-content:flex-start;
+    gap:6px;
+    position:relative;
     box-shadow:
-      0 3px 8px rgba(0,0,0,0.4),
-      inset 0 0 0 2px rgba(255,255,255,0.25),
+      0 3px 8px rgba(0,0,0,0.45),
+      inset 0 0 0 1.5px rgba(255,255,255,0.25),
       inset 0 -3px 4px rgba(0,0,0,0.2);
   }
+  .bay-wheel{
+    position:absolute;
+    width:4px;
+    height:11px;
+    background:#020617;
+    border-radius:1px;
+    box-shadow:inset 0 0 0 1px #334155, 0 1px 2px rgba(0,0,0,0.5);
+    z-index:1;
+    pointer-events:none;
+  }
+  .bay-wheel.fl { top: 16%; left: -2px; }
+  .bay-wheel.fr { top: 16%; right: -2px; }
+  .bay-wheel.rl { bottom: 16%; left: -2px; }
+  .bay-wheel.rr { bottom: 16%; right: -2px; }
+
+  .bay-headlight{
+    position:absolute; top:3px;
+    width:7px; height:3px;
+    background:#fef08a;
+    border-radius:1px;
+    box-shadow:0 0 4px #fef08a, 0 0 1px #ffffff;
+    z-index:2;
+    pointer-events:none;
+  }
+  .bay-headlight.left { left: 12%; }
+  .bay-headlight.right { right: 12%; }
+
+  .bay-taillight{
+    position:absolute; bottom:3px;
+    width:7px; height:3px;
+    background:#ef4444;
+    border-radius:1px;
+    box-shadow:0 0 2px #ef4444;
+    z-index:2;
+    pointer-events:none;
+  }
+  .bay-taillight.left { left: 12%; }
+  .bay-taillight.right { right: 12%; }
+
+  .bay-windscreen{
+    width:22px;
+    height:7px;
+    border-radius:2px;
+    background:linear-gradient(140deg, #f8fafc 0%, #cbd5e1 35%, #475569 100%);
+    box-shadow:inset 0 0 0 1px rgba(15,23,42,0.6);
+  }
   .bay-empty-label{
-    font-size:0.65rem;
-    color:#54617a;
+    font-size:0.55rem;
+    color:#5c6980;
     text-transform:uppercase;
-    letter-spacing:0.07em;
+    letter-spacing:0.04em;
     font-weight:700;
   }
+  /* Two columns running down the bus, which is the board's .seat-dots grid
+     turned through 90 degrees — a parked bus is nose-up, so its aisle runs
+     top-to-bottom rather than left-to-right. */
   .seat-pips{
-    display:flex;
-    flex-wrap:wrap;
-    gap:3px;
-    max-width:56px;
+    display:grid;
+    grid-template-columns:repeat(2, auto);
+    gap:4px;
     justify-content:center;
+    /* Auto margins centre the seats in whatever body length is left below the
+       windscreen, so a 4-seater and an 8-seater both look laid out rather than
+       bunched up behind the driver. */
+    margin:auto 0;
   }
+  /* currentColor, set per-bus from colorInfo().glyphColor, so a seat dot on a
+     yellow bus is dark and one on a blue bus is light — the same contrast rule
+     the board's .seat-dot follows. Plain white vanished on the light buses at
+     the 25% "empty" opacity. */
   .pip{
-    width:8px; height:8px;
+    width:7px; height:7px;
     border-radius:50%;
-    background:rgba(255,255,255,0.28);
+    background:currentColor;
+    opacity:0.25;
+    transition:opacity 0.2s ease, transform 0.2s ease;
   }
   .pip.filled{
-    background:#fff;
-    box-shadow:0 0 0 2px rgba(0,0,0,0.25) inset;
+    opacity:1.0;
+    box-shadow:0 0 4px currentColor;
+    transform:scale(1.1);
+  }
+  .pip.empty{
+    opacity:0.25;
   }
 
   /* ---------- queue: styled as people lining up for the bays ---------- */
@@ -538,7 +712,7 @@
     top:0; bottom:0; right:70px;
     width:22px;
     /* Fades into the pavement the queue now stands on, not the old panel. */
-    background:linear-gradient(to right, transparent, #9ba0a6);
+    background:linear-gradient(to right, transparent, var(--pavement));
     pointer-events:none;
   }
   /* Each waiting passenger: a round head over a rounded shoulders/body
@@ -723,7 +897,21 @@
   }
 
   @media (max-width:480px){
-    .bay-slot{ width:64px; min-height:70px; }
+    .bay-slot{ width:44px; min-height:94px; }
+    .bay-vehicle{ min-height:72px; }
+    /* Trimmed so the whole toolbar — four tiers, the sound toggle and New
+       Game — holds one row on a 375px phone. It still wraps rather than
+       overflows on anything narrower, and centring keeps the second row under
+       the first instead of stranded against the left edge. */
+    .game-wrap{ padding:0.75rem 0.6rem 0.85rem; }
+    .toolbar{ gap:0.4rem; justify-content:center; }
+    .difficulty-group{ gap:0.06rem; padding:0.18rem; border-radius:10px; }
+    .diff-btn{ padding:0.35rem 0.3rem; font-size:0.75rem; gap:0.2rem; }
+    .diff-level{ font-size:0.62rem; padding:0 0.22em; min-width:1em; }
+    .sound-btn{ width:32px; height:32px; }
+    .sound-btn svg{ width:16px; height:16px; }
+    .primary-btn{ padding:0.5rem 0.55rem; font-size:0.78rem; }
+    .toolbar-actions{ gap:0.35rem; }
     .app-title-header{ font-size:1.05rem; }
   }
 </style>
@@ -746,22 +934,32 @@
 
   <main class="game-wrap">
     <div class="toolbar">
-      <div>
-        <div class="level-label" id="levelLabel">Easy</div>
-        <div class="difficulty-group" role="group" aria-label="Difficulty">
-          <button class="diff-btn" data-diff="easy" type="button">Easy</button>
-          <button class="diff-btn" data-diff="medium" type="button">Medium</button>
-          <button class="diff-btn" data-diff="hard" type="button">Hard</button>
-          <button class="diff-btn" data-diff="pro" type="button">Pro</button>
-        </div>
+      <div class="difficulty-group" role="group" aria-label="Difficulty">
+        <button class="diff-btn" data-diff="easy" type="button">Easy</button>
+        <button class="diff-btn" data-diff="medium" type="button">Medium</button>
+        <button class="diff-btn" data-diff="hard" type="button">Hard</button>
+        <button class="diff-btn" data-diff="pro" type="button">Pro</button>
       </div>
       <div class="toolbar-actions">
-        <button id="soundBtn" class="icon-btn" type="button" aria-pressed="false">Sound: On</button>
+        <!-- Icon-only toggle: the speaker body is always drawn, and the class
+             on the button swaps the sound waves for a cross. -->
+        <button id="soundBtn" class="icon-btn sound-btn" type="button" aria-pressed="false" aria-label="Sound on">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor" stroke="none"/>
+            <g class="snd-wave">
+              <path d="M15.4 8.6a4.8 4.8 0 0 1 0 6.8"/>
+              <path d="M18.4 5.6a9 9 0 0 1 0 12.8"/>
+            </g>
+            <g class="snd-cross">
+              <path d="M16 9.5l5.5 5"/>
+              <path d="M21.5 9.5l-5.5 5"/>
+            </g>
+          </svg>
+        </button>
         <button id="restartBtn" class="primary-btn" type="button">New Game</button>
       </div>
     </div>
-
-    <div class="stats-row" id="statsLabel">Played 0 &middot; Won 0</div>
 
     <div class="carpark-scene">
       <div class="pavement">
@@ -776,11 +974,20 @@
         </div>
 
         <div class="board-wrap" id="boardWrap">
-          <div id="board" class="board"></div>
+          <div class="road-ring" id="roadRing">
+            <div id="board" class="board"></div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Below the lot, not above it: this is a footnote, and it was taking a
+         row of vertical space out of the board's budget at the top of the
+         screen. computeAndApplyCellSize now reserves room for it. -->
+    <div class="stats-row" id="statsLabel">Played 0 &middot; Won 0</div>
   </main>
+
+  <div id="driveLayer" class="drive-layer" aria-hidden="true"></div>
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
@@ -1584,10 +1791,11 @@ if (typeof module !== 'undefined' && module.exports) {
 
   var boardEl = document.getElementById('board');
   var boardWrapEl = document.getElementById('boardWrap');
+  var roadRingEl = document.getElementById('roadRing');
+  var driveLayerEl = document.getElementById('driveLayer');
   var baysEl = document.getElementById('bays');
   var queueEl = document.getElementById('queue');
   var statsLabelEl = document.getElementById('statsLabel');
-  var levelLabelEl = document.getElementById('levelLabel');
   var overlayEl = document.getElementById('overlay');
   var overlayTitleEl = document.getElementById('overlayTitle');
   var overlayMsgEl = document.getElementById('overlayMsg');
@@ -1618,14 +1826,15 @@ if (typeof module !== 'undefined' && module.exports) {
       btn.appendChild(name);
       var lvl = document.createElement('span');
       lvl.className = 'diff-level';
-      lvl.textContent = 'Level ' + levelFor(d);
+      lvl.textContent = levelFor(d);
       btn.appendChild(lvl);
+      // The bare number only reads as a level because of where it sits, so
+      // spell it out for anyone hearing the button rather than seeing it.
+      btn.setAttribute('aria-label', titleCase(d) + ', level ' + levelFor(d));
     });
-    var n = gameState.N;
-    levelLabelEl.textContent = titleCase(gameState.difficulty) +
-      ' · Level ' + levelFor(gameState.difficulty) + ' · ' + n + '×' + n;
-    soundBtn.textContent = sound.muted ? 'Sound: Off' : 'Sound: On';
+    soundBtn.classList.toggle('muted', sound.muted);
     soundBtn.setAttribute('aria-pressed', sound.muted ? 'true' : 'false');
+    soundBtn.setAttribute('aria-label', sound.muted ? 'Sound off' : 'Sound on');
   }
   function renderStats() {
     statsLabelEl.textContent = 'Played ' + stats.played + ' · Won ' + stats.won;
@@ -1640,7 +1849,7 @@ if (typeof module !== 'undefined' && module.exports) {
   // and diagonal vehicles fall out of the same formula with no direction
   // lookup table needed.
   function innerOf(outerEl) {
-    return outerEl ? outerEl.firstElementChild : null;
+    return outerEl ? outerEl.querySelector('.vehicle-body') : null;
   }
   function buildVehicleEl(v) {
     var rect = vehicleBodyRect(v);
@@ -1713,6 +1922,10 @@ if (typeof module !== 'undefined' && module.exports) {
   }
   function renderBoard() {
     boardEl.innerHTML = '';
+    // Drop any bus still in flight: a New Game (or a resize re-render) part-way
+    // through one would otherwise leave a clone driving to a bay that no
+    // longer exists.
+    if (driveLayerEl) driveLayerEl.innerHTML = '';
     vehicleEls = new Map();
     for (var id in gameState.vehicles) {
       if (!Object.prototype.hasOwnProperty.call(gameState.vehicles, id)) continue;
@@ -1726,26 +1939,33 @@ if (typeof module !== 'undefined' && module.exports) {
   }
   function computeAndApplyCellSize() {
     var n = gameState.N;
-    var availW = boardWrapEl.clientWidth - 8;
+    var availW = boardWrapEl.clientWidth - 24;
     var wrapRect = boardWrapEl.getBoundingClientRect();
-    // Everything above the board (toolbar, stats, queue, bays) is already
-    // accounted for by wrapRect.top, so the only space still to reserve is
-    // whatever sits BELOW the board — the wrapper's bottom padding. Measure it
-    // rather than hardcoding: a hardcoded guess silently double-counted the
-    // queue and bays when they moved above the grid, shrinking the board and
-    // leaving a large dead gap underneath it.
+    // wrapRect.top already accounts for everything ABOVE the board, so the
+    // only budget still to subtract is what sits BELOW it: the tarmac's own
+    // bottom padding, plus the stats line now that it lives under the lot
+    // rather than over it. Measured, not hardcoded — none of these are
+    // circular, since none of them depend on the board's size.
     var wrapStyles = window.getComputedStyle(boardWrapEl.parentElement);
-    var reserved = (parseFloat(wrapStyles.paddingBottom) || 0) + 16;
+    var reserved = (parseFloat(wrapStyles.paddingBottom) || 0) + 20;
+    if (statsLabelEl) {
+      var pageStyles = window.getComputedStyle(statsLabelEl.parentElement);
+      reserved += statsLabelEl.getBoundingClientRect().height +
+        (parseFloat(pageStyles.rowGap) || 0) +
+        (parseFloat(pageStyles.paddingBottom) || 0);
+    }
     var availH = window.innerHeight - wrapRect.top - reserved;
-    // The board should always FIT the viewport rather than hold a minimum cell
-    // size and scroll: a 10x10 at the old 40px floor was 400px wide, which
-    // overflowed every phone. MIN_CELL is only a guard against degenerate
-    // sizes on absurdly narrow screens; MAX_CELL stops a small grid ballooning
-    // on a wide desktop.
     var MIN_CELL = 16, MAX_CELL = 34;
-    var raw = Math.floor(Math.min(availW, availH) / n);
+    // The +1.24 is the perimeter road: .road-ring pads the grid by --lane
+    // (0.62 cells) on all four sides, so the ring is 1.24 cells wider and
+    // taller than the grid itself and has to come out of the same budget.
+    var raw = Math.floor(Math.min(availW, availH) / (n + 1.3));
     if (!isFinite(raw) || raw <= 0) raw = 32;
     var size = Math.max(MIN_CELL, Math.min(MAX_CELL, raw));
+    // Also on :root, because .road-ring is the board's PARENT and custom
+    // properties only inherit downwards — set solely on the board, the ring's
+    // lane silently resolved against the :root fallback and never moved.
+    document.documentElement.style.setProperty('--cell', size + 'px');
     boardEl.style.setProperty('--cell', size + 'px');
     boardEl.style.width = (size * n) + 'px';
     boardEl.style.height = (size * n) + 'px';
@@ -1775,16 +1995,39 @@ if (typeof module !== 'undefined' && module.exports) {
       slotEl.appendChild(numberEl);
 
       if (data) {
-        // The bus sits ON the slab as its own coloured block, rather than the
-        // whole slab (with its painted lines) turning into a flat colour.
         var vehicleEl = document.createElement('div');
         vehicleEl.className = 'bay-vehicle';
         vehicleEl.style.background = data.color;
+
+        // 4 side wheels
+        ['fl', 'fr', 'rl', 'rr'].forEach(function (pos) {
+          var w = document.createElement('div');
+          w.className = 'bay-wheel ' + pos;
+          vehicleEl.appendChild(w);
+        });
+
+        // 2 headlights at top front
+        var hl1 = document.createElement('div'); hl1.className = 'bay-headlight left';
+        var hl2 = document.createElement('div'); hl2.className = 'bay-headlight right';
+        vehicleEl.appendChild(hl1);
+        vehicleEl.appendChild(hl2);
+
+        // 2 taillights at bottom rear
+        var tl1 = document.createElement('div'); tl1.className = 'bay-taillight left';
+        var tl2 = document.createElement('div'); tl2.className = 'bay-taillight right';
+        vehicleEl.appendChild(tl1);
+        vehicleEl.appendChild(tl2);
+
+        var ws = document.createElement('div');
+        ws.className = 'bay-windscreen';
+        vehicleEl.appendChild(ws);
+
         var pipsWrap = document.createElement('div');
         pipsWrap.className = 'seat-pips';
+        pipsWrap.style.color = colorInfo(data.color).glyphColor;
         for (var s = 0; s < data.cap; s++) {
           var pip = document.createElement('span');
-          pip.className = 'pip' + (s < data.boarded ? ' filled' : '');
+          pip.className = 'pip' + (s < data.boarded ? ' filled' : ' empty');
           pipsWrap.appendChild(pip);
         }
         vehicleEl.appendChild(pipsWrap);
@@ -1914,28 +2157,202 @@ if (typeof module !== 'undefined' && module.exports) {
   }
 
   // ---------------- animation helpers ----------------
-  function wiggleElement(el) {
+  function shakeElement(el) {
     if (!el) return;
-    el.classList.remove('wiggle');
+    el.classList.remove('block-shake', 'wiggle');
     void el.offsetWidth; // force reflow so the animation can restart
-    el.classList.add('wiggle');
+    el.classList.add('block-shake');
     el.addEventListener('animationend', function handler() {
-      el.classList.remove('wiggle');
+      el.classList.remove('block-shake');
       el.removeEventListener('animationend', handler);
     });
   }
   function animateDriveOff(innerEl) {
     if (!innerEl) return;
-    // The outer element already carries the compass rotation, so "forward"
-    // is simply +X in the inner element's own (rotated) local frame — no
-    // per-direction vector math needed here any more.
-    var dist = (gameState.N + 2) * cellPx;
+    var dist = (gameState.N + 2.5) * cellPx;
     innerEl.classList.add('drive-off');
-    void innerEl.offsetWidth; // force a reflow so the transition actually engages,
-                               // rather than the class-add and transform-set
-                               // coalescing into a single paint with no animation
+    void innerEl.offsetWidth; // force a reflow so the transition engages
     innerEl.style.transform = 'translateX(' + dist + 'px)';
     innerEl.style.opacity = '0';
+  }
+
+  // ---------------- drive-to-bay flight ----------------
+  // A tapped bus doesn't just fade off the edge of the grid: it drives out
+  // along its own heading onto the perimeter road, follows the lane round to
+  // the side the bays are on, and turns into its bay. The grid clips its own
+  // overflow and the bays sit in a different container, so the bus that moves
+  // is a CLONE in the fixed .drive-layer over the whole page; the real board
+  // element is removed the instant the clone takes over.
+  //
+  // Everything is measured off live getBoundingClientRect() geometry rather
+  // than recomputed from --cell, so the path stays correct whatever the ring's
+  // padding, the board's size or the bays' wrapping happen to be.
+  var FLIGHT_PX_PER_MS = 1.5;
+  var FLIGHT_MIN_MS = 320, FLIGHT_MAX_MS = 820;
+  var FLIGHT_TURN = 0.05; // share of the flight spent pivoting at a corner
+
+  function clampTo(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+
+  // Picks the representation of `deg` within +/-180 of `prev`, so a bus
+  // turning from 170deg to -170deg swings 20deg the short way rather than
+  // spinning 340deg the wrong way.
+  function unwrapDeg(deg, prev) {
+    var a = deg;
+    while (a - prev > 180) a -= 360;
+    while (a - prev < -180) a += 360;
+    return a;
+  }
+
+  // The waypoints of one flight, in viewport pixels: grid position, the point
+  // where it meets the road, any corners it rounds, then the bay.
+  function flightWaypoints(start, headingRad, bayRect) {
+    var ring = roadRingEl.getBoundingClientRect();
+    var board = boardEl.getBoundingClientRect();
+    // Lane centres: halfway between the ring's outer edge and the grid's edge.
+    var laneTop = (ring.top + board.top) / 2;
+    var laneBottom = (ring.bottom + board.bottom) / 2;
+    var laneLeft = (ring.left + board.left) / 2;
+    var laneRight = (ring.right + board.right) / 2;
+
+    // How far along its own heading the bus travels before its centre lands on
+    // a lane. Whichever lane it reaches first is the side it exits by — which
+    // falls out of the same formula for diagonals as for N/S/E/W.
+    var ux = Math.cos(headingRad), uy = Math.sin(headingRad);
+    var tx = ux > 1e-3 ? (laneRight - start.x) / ux
+           : ux < -1e-3 ? (laneLeft - start.x) / ux : Infinity;
+    var ty = uy > 1e-3 ? (laneBottom - start.y) / uy
+           : uy < -1e-3 ? (laneTop - start.y) / uy : Infinity;
+    var t = Math.max(0, Math.min(tx, ty));
+    if (!isFinite(t)) return null;
+    var exitSide = (ty <= tx) ? (uy > 0 ? 'bottom' : 'top') : (ux > 0 ? 'right' : 'left');
+    var exit = {
+      x: clampTo(start.x + ux * t, laneLeft, laneRight),
+      y: clampTo(start.y + uy * t, laneTop, laneBottom)
+    };
+
+    // The bays are above the board today, but route to whichever lane is
+    // nearer the bay so a future layout change doesn't send buses the wrong way.
+    var bayCx = bayRect.left + bayRect.width / 2;
+    var bayCy = bayRect.top + bayRect.height / 2;
+    var entryTop = bayCy < (ring.top + ring.bottom) / 2;
+    var entrySide = entryTop ? 'top' : 'bottom';
+    var entryY = entryTop ? laneTop : laneBottom;
+
+    var pts = [start, exit];
+    if (exitSide === 'left' || exitSide === 'right') {
+      pts.push({ x: exitSide === 'right' ? laneRight : laneLeft, y: entryY });
+    } else if (exitSide !== entrySide) {
+      // Came out of the far lane: round whichever end of the lot is nearer.
+      var viaRight = Math.abs(exit.x - laneRight) <= Math.abs(exit.x - laneLeft);
+      var cornerX = viaRight ? laneRight : laneLeft;
+      pts.push({ x: cornerX, y: exit.y });
+      pts.push({ x: cornerX, y: entryY });
+    }
+    pts.push({ x: clampTo(bayCx, laneLeft, laneRight), y: entryY });
+    pts.push({ x: bayCx, y: bayCy });
+
+    // Drop waypoints the bus is effectively already standing on, so a bus that
+    // exits straight onto a corner doesn't get a zero-length segment (whose
+    // atan2 heading would be meaningless) inserted into the path.
+    var out = [pts[0]];
+    for (var i = 1; i < pts.length; i++) {
+      var prev = out[out.length - 1];
+      if (Math.hypot(pts[i].x - prev.x, pts[i].y - prev.y) > 1) out.push(pts[i]);
+    }
+    return out.length >= 2 ? out : null;
+  }
+
+  function animateDriveToBay(outerEl, vehicle, slotIndex) {
+    var slotEl = bayEls[slotIndex];
+    if (!outerEl || !slotEl || !driveLayerEl || typeof outerEl.animate !== 'function') return null;
+
+    var startRect = outerEl.getBoundingClientRect();
+    var bayRect = slotEl.getBoundingClientRect();
+    if (!startRect.width || !bayRect.width) return null;
+
+    var body = vehicleBodyRect(vehicle);
+    var headingRad = body.ang;
+    // The outer element is rotated about its own centre, so the centre of its
+    // axis-aligned bounding box is still the centre of the bus.
+    var start = { x: startRect.left + startRect.width / 2, y: startRect.top + startRect.height / 2 };
+    var pts = flightWaypoints(start, headingRad, bayRect);
+    if (!pts) return null;
+
+    var busLen = body.len * cellPx;   // nose-to-tail
+    var busWid = body.wid * cellPx;   // across
+    var ring = roadRingEl.getBoundingClientRect();
+    var board = boardEl.getBoundingClientRect();
+    var laneW = Math.max(1, board.top - ring.top);
+    // Ease the bus down to roughly lane width on the road (a sliver of overhang
+    // still reads fine) and down again to fit the bay it parks in.
+    var roadScale = clampTo((laneW * 1.15) / busWid, 0.55, 1);
+    var bayScale = clampTo(Math.min(
+      (bayRect.width * 0.78) / busWid,
+      (bayRect.height * 0.92) / busLen
+    ), 0.3, 1);
+
+    var clone = outerEl.cloneNode(true);
+    clone.className = 'vehicle drive-clone';
+    clone.style.left = '0px';
+    clone.style.top = '0px';
+    // The clone must keep the bus's UNROTATED box (buildVehicleEl's inline
+    // width/height), not startRect, which is the rotated bounding box.
+    clone.style.width = outerEl.style.width || (busLen + 'px');
+    clone.style.height = outerEl.style.height || (busWid + 'px');
+    var innerClone = innerOf(clone);
+    if (innerClone) innerClone.classList.remove('drive-off', 'block-shake', 'wiggle');
+
+    function tf(pt, deg, scale) {
+      return 'translate(-50%, -50%) translate(' + pt.x + 'px, ' + pt.y + 'px) ' +
+             'rotate(' + deg + 'deg) scale(' + scale + ')';
+    }
+
+    // Segment lengths and headings, with headings unwrapped so consecutive
+    // turns always take the short way round.
+    var segs = [], total = 0, prevDeg = headingRad * 180 / Math.PI;
+    for (var i = 1; i < pts.length; i++) {
+      var dx = pts[i].x - pts[i - 1].x, dy = pts[i].y - pts[i - 1].y;
+      var d = Math.hypot(dx, dy);
+      prevDeg = unwrapDeg(Math.atan2(dy, dx) * 180 / Math.PI, prevDeg);
+      segs.push({ d: d, deg: prevDeg });
+      total += d;
+    }
+    if (total < 1) return null;
+
+    // Two keyframes per interior waypoint — arrive on the old heading, pivot to
+    // the new one over a short beat — so the bus tracks each straight rather
+    // than rotating gradually across the whole leg.
+    var kfs = [{ offset: 0, transform: tf(pts[0], segs[0].deg, 1), easing: 'ease-in' }];
+    var cum = 0;
+    for (var k = 1; k < pts.length - 1; k++) {
+      cum += segs[k - 1].d;
+      var o = clampTo(cum / total, 0, 1);
+      var turn = Math.min(FLIGHT_TURN, (segs[k].d / total) * 0.5);
+      kfs.push({ offset: o, transform: tf(pts[k], segs[k - 1].deg, roadScale), easing: 'linear' });
+      kfs.push({ offset: clampTo(o + turn, o, 1), transform: tf(pts[k], segs[k].deg, roadScale), easing: 'linear' });
+    }
+    kfs.push({
+      offset: 1,
+      transform: tf(pts[pts.length - 1], segs[segs.length - 1].deg, bayScale),
+      easing: 'ease-out'
+    });
+
+    // Park the clone on frame 0 of the flight before it goes into the document:
+    // the cloned inline transform positions it relative to the BOARD, which
+    // would put it in the page's top-left corner inside the drive layer.
+    clone.style.transform = kfs[0].transform;
+    driveLayerEl.appendChild(clone);
+    var duration = clampTo(total / FLIGHT_PX_PER_MS, FLIGHT_MIN_MS, FLIGHT_MAX_MS);
+    var anim = clone.animate(kfs, { duration: duration, fill: 'forwards' });
+
+    // Resolves the moment the bus lands. The caller pops the real bay vehicle
+    // in straight away and the clone cross-fades out underneath it.
+    return anim.finished.then(function () {
+      var fade = clone.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: 'ease-out', fill: 'forwards' });
+      fade.finished.then(function () { clone.remove(); }, function () { clone.remove(); });
+    }, function () {
+      clone.remove();
+    });
   }
 
   // ---------------- core tap sequence ----------------
@@ -1958,12 +2375,12 @@ if (typeof module !== 'undefined' && module.exports) {
     if (!result.ok) {
       if (result.reason === 'BLOCKED') {
         sound.playWiggle();
-        wiggleElement(innerOf(el));
-        await wait(TIMING.wiggle);
+        shakeElement(innerOf(el));
+        await wait(500);
       } else if (result.reason === 'NO_BAY') {
         sound.playAlert();
-        wiggleElement(innerOf(el));
-        await wait(TIMING.wiggle);
+        shakeElement(innerOf(el));
+        await wait(500);
       }
       return;
     }
@@ -1974,10 +2391,23 @@ if (typeof module !== 'undefined' && module.exports) {
     }
 
     if (el) {
-      animateDriveOff(innerOf(el));
-      await wait(TIMING.drive);
-      el.remove();
-      vehicleEls.delete(vehicleId);
+      // Hand the bus over to a clone in the drive layer while the board copy is
+      // still in place — animateDriveToBay measures it to start the flight.
+      var flight = (arriveEv && !reducedMotion)
+        ? animateDriveToBay(el, vehicle, arriveEv.slot)
+        : null;
+      if (flight) {
+        el.remove(); // the clone has taken over; only one bus on screen
+        vehicleEls.delete(vehicleId);
+        await flight;
+      } else {
+        // Nothing to drive to, reduced motion, or the flight couldn't be
+        // measured: fall back to the plain drive-off at the grid's edge.
+        animateDriveOff(innerOf(el));
+        await wait(TIMING.drive);
+        el.remove();
+        vehicleEls.delete(vehicleId);
+      }
     }
 
     if (arriveEv) {
