@@ -235,23 +235,58 @@
   /* Concrete pavement: a touch lighter/warmer grey than the tarmac below so
      the two surfaces read as distinct materials. The passenger queue lives
      here, on the pavement, waiting to cross the kerb into the lot. */
+  /* The pavement band is now a little scene rather than a flat surface: sky at
+     the top, a hedge along the back, and the paved ground rising to about the
+     queue's shoulder height. Standing the passengers against greenery and sky
+     instead of more tarmac is what separates this band from the lot below it. */
   .pavement{
-    /* The darker concrete the tarmac used to wear, before the lot went to one
-       dark asphalt. The light grey that replaced it was too bright to read as
-       a real surface — it looked like a white UI band with people drawn on it,
-       and it left the queue floating rather than standing on something. */
-    /* Speckled like the tarmac, but on a tighter 10px tile at lower contrast:
-       concrete is a finer aggregate than asphalt, and that difference in grain
-       is what keeps the two surfaces reading as different materials now that
-       they are close in value. (Grain was left off entirely while this band
-       was light grey — on that, the dots read as noise rather than stone.) */
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(180deg,#4f9fd6 0%,#79bde6 55%,#a6d6ef 100%);
+    padding:0.85rem 1rem 0.75rem;
+    /* Distance from the bottom of the band up to the ground's top edge. JS
+       overwrites this with the measured shoulder line; the value here is only
+       what the very first paint uses. */
+    --ground-y:34px;
+  }
+  .pavement-scene{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+  /* Hedge along the back, standing ON the ground line. */
+  .ps-hedge{
+    position:absolute;
+    left:0; right:0;
+    bottom:var(--ground-y);
+    height:26px;
+    background-color:#2f6b3f;
+    background-image:
+      radial-gradient(circle at 50% 45%, rgba(255,255,255,0.14) 2px, transparent 3px),
+      radial-gradient(circle at 50% 55%, rgba(0,0,0,0.24) 2px, transparent 3px);
+    background-size:9px 9px, 12px 12px;
+    background-position:0 0, 5px 6px;
+    border-radius:4px 4px 0 0;
+    box-shadow:
+      inset 0 3px 0 rgba(255,255,255,0.10),
+      inset 0 -4px 6px rgba(0,0,0,0.28);
+  }
+  /* The paved ground the queue stands on. Same concrete as before — darker
+     than the light grey it once was, and speckled on a tighter 10px tile than
+     the tarmac below, because concrete is a finer aggregate than asphalt and
+     that difference in grain is what keeps the two reading as different
+     materials now that they are close in value. */
+  .ps-ground{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:var(--ground-y);
     background-color:var(--pavement);
     background-image:
       radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.2px),
       radial-gradient(rgba(0,0,0,0.15) 1px, transparent 1.3px);
     background-position:0 0, 5px 5px;
     background-size:10px 10px, 10px 10px;
-    padding:0.85rem 1rem 0.75rem;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,0.09);
   }
   /* An actual kerbstone rather than a painted stripe. Seen from the game's
      slightly-above angle a kerb is two faces, not a line: a lit top face, then
@@ -678,7 +713,9 @@
   }
 
   /* ---------- queue: styled as people lining up for the bays ---------- */
-  .queue-wrap{ width:100%; }
+  /* Above .pavement-scene, so the queue and the building stand in front of the
+     sky/hedge/ground rather than behind them. */
+  .queue-wrap{ position:relative; width:100%; }
   /* The pavement outside the bus centre: the line on the left, the building it
      files out of on the right, both standing on the same ground line. */
   /* Capped and centred rather than stretched to the full pavement: the
@@ -693,10 +730,17 @@
     width:100%;
     max-width:520px;
     margin-inline:auto;
-    gap:5px;
+    /* Where the doorway's centre sits relative to the building's left edge.
+       Declared on the lane because BOTH children need it: the facade to place
+       the door, and the queue to work out how far to overlap the building so
+       the last passenger lands in it. */
+    --bc-door-x:15px;
   }
   .queue{
     position:relative;
+    /* Above the building, so the passenger who has just stepped out is drawn
+       in front of the doorway rather than behind the facade. */
+    z-index:2;
     display:flex;
     align-items:flex-end;
     /* Right-aligned and free to shrink: the line grows leftwards OUT of the
@@ -705,17 +749,24 @@
     flex:0 1 auto;
     min-width:0;
     justify-content:flex-end;
-    padding:8px 2px 6px 6px;
+    /* No bottom padding, and a couple of pixels past the lane's baseline: the
+       building's doorway ends exactly on that baseline, so any gap here left
+       the passenger in the doorway hovering above the threshold. */
+    padding:8px 0 0 6px;
+    margin-bottom:-2px;
     background:transparent;
-    min-height:52px;
+    min-height:54px;
+    /* Pull the row far enough over the facade that the LAST passenger lands
+       centred on the doorway: half a body plus the door's own offset. */
+    margin-right:calc(-1 * (var(--qp-w) / 2 + var(--bc-door-x)));
     /* Per-passenger box and the step between them, both set from JS — a
        negative gap is an overlap. See sizeQueueRow. */
     --qp-w:22px;
     --qp-gap:5px;
   }
-  /* Each waiting passenger: a round head over a rounded shoulders/body
-     shape, coloured to match the bus colour they're waiting for. Built from
-     two stacked divs so it reads as a little person, not a plain dot. */
+  /* Each waiting passenger: head, torso and a pair of legs, coloured to match
+     the bus colour they are waiting for. The legs matter — torso alone read as
+     a figure chopped off at the waist rather than a person standing. */
   .queue-person{
     position:relative;
     display:flex;
@@ -738,32 +789,69 @@
   }
   .qp-body{
     width:calc(var(--qp-w) * 0.86);
-    height:calc(var(--qp-w) * 0.68);
-    border-radius:9px 9px 3px 3px;
+    height:calc(var(--qp-w) * 0.60);
+    border-radius:9px 9px 2px 2px;
     background:currentColor;
-    box-shadow:0 2px 4px rgba(0,0,0,0.35);
+    box-shadow:0 1px 3px rgba(0,0,0,0.3);
   }
-  /* The front-most passenger — next to board — is visibly larger with a
-     white outline, plus a small arrow "facing" toward the bays below. It also
-     needs room of its own: it outgrows --qp-w, and with the line overlapping
-     it would otherwise be crowded by the passenger behind it. */
-  .queue-person.front{ margin-right:4px; }
+  .qp-legs{
+    display:flex;
+    justify-content:space-between;
+    width:calc(var(--qp-w) * 0.62);
+    height:calc(var(--qp-w) * 0.34);
+  }
+  .qp-leg{
+    width:calc(var(--qp-w) * 0.25);
+    height:100%;
+    border-radius:0 0 2px 2px;
+    background:currentColor;
+    /* A shade darker than the torso so the legs read as separate from it even
+       where the line overlaps and bodies merge into a single band. */
+    filter:brightness(0.82);
+    box-shadow:0 2px 3px rgba(0,0,0,0.35);
+  }
+  /* The front-most passenger — next to board. Marked out by STANDING FORWARD:
+     feet a few pixels below the rest of the line, as if they had stepped off
+     the queue toward the kerb, helped along by a shadow and a fractionally
+     bigger build. The white outline this used to wear read as a UI selection
+     ring stuck onto a person rather than as anything happening in the scene.
+     They also need room of their own — with the line overlapping, the
+     passenger behind would otherwise crowd them. */
+  .queue-person.front{
+    margin-right:5px;
+    margin-bottom:-5px;
+    filter:drop-shadow(0 3px 3px rgba(0,0,0,0.45));
+  }
   .queue-person.front .qp-head{
-    width:calc(var(--qp-w) * 0.78);
-    height:calc(var(--qp-w) * 0.78);
-    box-shadow:0 0 0 3px #fff, 0 1px 3px rgba(0,0,0,0.4);
+    width:calc(var(--qp-w) * 0.62);
+    height:calc(var(--qp-w) * 0.62);
   }
   .queue-person.front .qp-body{
-    width:calc(var(--qp-w) * 1.18);
-    height:calc(var(--qp-w) * 0.95);
-    box-shadow:0 0 0 3px #fff, 0 2px 5px rgba(0,0,0,0.45);
+    width:calc(var(--qp-w) * 0.96);
+    height:calc(var(--qp-w) * 0.66);
   }
+  .queue-person.front .qp-legs{
+    width:calc(var(--qp-w) * 0.68);
+    height:calc(var(--qp-w) * 0.38);
+  }
+  .queue-person.front .qp-leg{
+    width:calc(var(--qp-w) * 0.27);
+  }
+  /* Hovers ABOVE the front passenger pointing down at them, and bobs, so the
+     "who boards next" marker is something moving in the player's peripheral
+     vision rather than a static wedge by their feet. */
   .qp-arrow{
     width:0; height:0;
-    margin-top:3px;
+    margin-bottom:3px;
     border-left:5px solid transparent;
     border-right:5px solid transparent;
-    border-top:6px solid rgba(255,255,255,0.6);
+    border-top:7px solid #ffffff;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,0.55));
+    animation: frontArrow 1.1s ease-in-out infinite;
+  }
+  @keyframes frontArrow{
+    0%,100%{ transform:translateY(-2px); }
+    50%{ transform:translateY(2px); }
   }
   .queue-person.boarding{
     animation: boardOut var(--dur-board) ease forwards;
@@ -771,22 +859,27 @@
   @keyframes boardOut{
     to{ transform: scale(0.15) translateY(-14px); opacity:0; }
   }
-  /* A gentle idle shift-of-weight so the line reads as people waiting
-     rather than static shapes. Staggered per position; skipped for the
-     front passenger (kept still so it stays the clear visual anchor) and
-     for anyone mid-board-animation. */
+  /* A barely-there shift of weight: these are people standing in a queue, so
+     the movement has to read as idling, not as a dance. Slow and shallow, with
+     the delays spread widely enough that no travelling wave forms down the
+     line. Skipped for the front passenger (kept still as the visual anchor)
+     and for anyone mid-board-animation. */
   @keyframes queueBob{
     0%,100%{ transform:translateY(0); }
-    50%{ transform:translateY(-2px); }
+    50%{ transform:translateY(-1px); }
   }
   .queue-person:not(.front):not(.boarding){
-    animation: queueBob 1.7s ease-in-out infinite;
+    animation: queueBob 3.8s ease-in-out infinite;
   }
-  .queue-person:nth-child(3n+1):not(.front):not(.boarding){ animation-delay:0.15s; }
-  .queue-person:nth-child(3n+2):not(.front):not(.boarding){ animation-delay:0.45s; }
-  .queue-person:nth-child(3n):not(.front):not(.boarding){ animation-delay:0.75s; }
+  .queue-person:nth-child(5n+1):not(.front):not(.boarding){ animation-delay:0s; }
+  .queue-person:nth-child(5n+2):not(.front):not(.boarding){ animation-delay:1.5s; }
+  .queue-person:nth-child(5n+3):not(.front):not(.boarding){ animation-delay:0.6s; }
+  .queue-person:nth-child(5n+4):not(.front):not(.boarding){ animation-delay:2.4s; }
+  .queue-person:nth-child(5n):not(.front):not(.boarding){ animation-delay:1.1s; }
   /* ---------- the bus centre ---------- */
   .bus-centre{
+    position:relative;
+    z-index:1;
     flex:0 0 auto;
     width:66px;
     display:flex;
@@ -833,10 +926,10 @@
   }
   .bc-body{
     width:100%;
-    height:38px;
+    height:46px;
     display:flex;
     align-items:stretch;
-    gap:4px;
+    gap:3px;
     padding:5px 5px 0;
     border-radius:0 0 3px 3px;
     background:linear-gradient(180deg,#454d5a,#343b46);
@@ -844,32 +937,39 @@
       inset 0 0 0 1px rgba(255,255,255,0.10),
       0 3px 7px rgba(0,0,0,0.45);
   }
-  /* The doorway, on the left — the side the queue files out of. */
+  /* The doorway, on the left — the side the queue files out of. The last
+     passenger in the line stands in it (see .queue's negative margin), so keep
+     it a plain dark opening: anything lit or arched fought with the person
+     standing in front of it. --bc-door-x is where its centre sits relative to
+     the building's left edge, and the queue's overlap is measured off it. */
+  /* Wide enough for a passenger to stand IN it rather than merely near it —
+     the avatar is --qp-w across, so a narrower opening left them straddling
+     the door frame. Its width and the 5px facade padding are what
+     --bc-door-x on .queue-lane has to stay in step with. */
   .bc-door{
-    width:15px;
+    width:20px;
     flex:0 0 auto;
     align-self:flex-end;
-    height:calc(100% - 4px);
-    border-radius:7px 7px 0 0;
-    background:linear-gradient(180deg, rgba(253,224,71,0.38), rgba(253,224,71,0.10));
-    box-shadow:inset 0 0 0 1px rgba(253,224,71,0.45);
+    height:calc(100% - 3px);
+    border-radius:1px 1px 0 0;
+    background:linear-gradient(180deg,#0d1219,#1b222d);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.09),
+      inset 0 5px 7px rgba(0,0,0,0.6);
   }
-  .bc-windows{
-    flex:1 1 auto;
-    display:grid;
-    grid-template-columns:repeat(2, 1fr);
-    grid-auto-rows:9px;
-    gap:4px;
-    align-content:start;
-  }
+  /* One pane, glazed like the buses' windscreens rather than lit yellow. Kept
+     small and set into the facade: at full width it stopped reading as a
+     window and turned the whole building into a white rectangle. */
   .bc-window{
-    border-radius:1px;
-    background:rgba(148,197,238,0.22);
-    box-shadow:inset 0 0 0 1px rgba(148,197,238,0.35);
-  }
-  .bc-window.lit{
-    background:rgba(253,224,71,0.40);
-    box-shadow:inset 0 0 0 1px rgba(253,224,71,0.5);
+    flex:1 1 auto;
+    align-self:flex-start;
+    height:18px;
+    margin-top:1px;
+    border-radius:2px;
+    background:linear-gradient(140deg, #eef2f7 0%, #b6c2d1 35%, #3d4756 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(15,23,42,0.7),
+      0 1px 2px rgba(0,0,0,0.35);
   }
   .queue-empty{
     color:#64748b;
@@ -972,7 +1072,8 @@
   .reduced-motion .vehicle-body.drive-off{
     transition-duration:0.001s !important;
   }
-  .reduced-motion .queue-person{
+  .reduced-motion .queue-person,
+  .reduced-motion .qp-arrow{
     animation:none !important;
   }
 
@@ -1043,6 +1144,13 @@
 
     <div class="carpark-scene">
       <div class="pavement">
+        <!-- Sky is the .pavement's own background; the hedge and the ground
+             are painted over it. The ground's top edge is set from JS to the
+             queue's shoulder line — see paintPavementHorizon. -->
+        <div class="pavement-scene" aria-hidden="true">
+          <div class="ps-hedge"></div>
+          <div class="ps-ground"></div>
+        </div>
         <div class="queue-wrap">
           <div class="queue-lane">
             <div id="queue" class="queue"></div>
@@ -1057,12 +1165,7 @@
               <div class="bc-roof" aria-hidden="true"></div>
               <div class="bc-body" aria-hidden="true">
                 <div class="bc-door"></div>
-                <div class="bc-windows">
-                  <div class="bc-window lit"></div>
-                  <div class="bc-window"></div>
-                  <div class="bc-window"></div>
-                  <div class="bc-window lit"></div>
-                </div>
+                <div class="bc-window"></div>
               </div>
             </div>
           </div>
@@ -1709,12 +1812,13 @@ if (typeof module !== 'undefined' && module.exports) {
 
   var SESSION_KEY = 'shuffle_bus_session';
   var STATS_KEY = 'shuffle_bus_stats';
-  // Bump whenever a change to the engine makes previously-saved boards invalid.
-  // A stale save still has the right grid size, bay count and shape, so the
-  // structural checks in loadSession() cannot catch it on their own — without
-  // this stamp an old save would restore a board built by the old geometry
-  // (e.g. one with crossing diagonal bodies) and it would never go away.
-  var SESSION_VERSION = 4;
+  // Bump whenever a change to the engine makes previously-saved boards invalid,
+  // OR whenever the save's own shape changes — as it just did, from a full
+  // {state} snapshot to a replayable {moves} log. Without the bump here, an
+  // old-format save (holding .state, no .moves) would fail the Array.isArray
+  // check in loadSession() and just be discarded, which is safe but relies on
+  // that being incidental; bumping makes the incompatibility explicit.
+  var SESSION_VERSION = 5;
   // How many passengers the line draws — the same number on every device.
   var QUEUE_WINDOW = 15;
 
@@ -1798,15 +1902,88 @@ if (typeof module !== 'undefined' && module.exports) {
     for (var d in CONFIG) out[d] = 0;
     return out;
   }
+  // Safe storage helper with multi-level fallback:
+  // 1. localStorage (if available & permitted)
+  // 2. document.cookie (cross-session fallback)
+  // 3. window.name (persists page refresh/navigation within tab even if storage+cookies disabled)
+  // 4. Memory store fallback
+  var memoryStore = {};
+  function readCookie(key) {
+    try {
+      var nameEQ = encodeURIComponent(key) + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+      }
+    } catch (e) {}
+    return null;
+  }
+  function writeCookie(key, val, days) {
+    try {
+      var expires = "";
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = encodeURIComponent(key) + "=" + encodeURIComponent(val) + expires + "; path=/; SameSite=Lax";
+    } catch (e) {}
+  }
+  function readWindowName(key) {
+    try {
+      if (window.name && window.name.charAt(0) === '{') {
+        var data = JSON.parse(window.name);
+        return data[key] !== undefined ? data[key] : null;
+      }
+    } catch (e) {}
+    return null;
+  }
+  function writeWindowName(key, val) {
+    try {
+      var data = {};
+      if (window.name && window.name.charAt(0) === '{') {
+        try { data = JSON.parse(window.name); } catch (e) {}
+      }
+      if (val === null) delete data[key];
+      else data[key] = val;
+      window.name = JSON.stringify(data);
+    } catch (e) {}
+  }
+  var storage = {
+    getItem: function (key) {
+      try {
+        var item = localStorage.getItem(key);
+        if (item !== null && item !== undefined) return item;
+      } catch (e) {}
+      var cookieVal = readCookie(key);
+      if (cookieVal !== null && cookieVal !== undefined) return cookieVal;
+      var winVal = readWindowName(key);
+      if (winVal !== null && winVal !== undefined) return winVal;
+      return memoryStore[key] !== undefined ? memoryStore[key] : null;
+    },
+    setItem: function (key, val) {
+      memoryStore[key] = val;
+      try { localStorage.setItem(key, val); } catch (e) {}
+      writeCookie(key, val, 365);
+      writeWindowName(key, val);
+    },
+    removeItem: function (key) {
+      delete memoryStore[key];
+      try { localStorage.removeItem(key); } catch (e) {}
+      writeCookie(key, "", -1);
+      writeWindowName(key, null);
+    }
+  };
+
   function loadStats() {
     var fresh = { played: 0, won: 0, wonByTier: emptyWonByTier() };
     try {
-      var raw = localStorage.getItem(STATS_KEY);
+      var raw = storage.getItem(STATS_KEY);
       if (!raw) return fresh;
       var obj = JSON.parse(raw);
       if (!obj || typeof obj.played !== 'number' || typeof obj.won !== 'number') return fresh;
-      // Stats saved before per-tier levels existed simply start every tier at
-      // level 1 rather than throwing the played/won totals away.
       var byTier = emptyWonByTier();
       if (obj.wonByTier) {
         for (var d in byTier) {
@@ -1816,43 +1993,59 @@ if (typeof module !== 'undefined' && module.exports) {
       return { played: obj.played, won: obj.won, wonByTier: byTier };
     } catch (e) { return fresh; }
   }
-  // The level about to be played on a tier: one more than the number of times
-  // it has been won.
   function levelFor(difficulty) {
     return ((stats.wonByTier && stats.wonByTier[difficulty]) || 0) + 1;
   }
   function saveStats() {
-    try { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e) { /* ignore */ }
+    try { storage.setItem(STATS_KEY, JSON.stringify(stats)); } catch (e) { /* ignore */ }
   }
+  // A full grid/vehicles/queue snapshot (via the engine's serialize()) is
+  // 3-10KB depending on tier — comfortably over the ~4KB cap every browser
+  // silently enforces on a single cookie. That made the cookie fallback tier
+  // (see storage.setItem) dead weight on Medium/Hard/Pro: exactly the tiers a
+  // returning player is most likely to be mid-level on. generateLevel is a
+  // pure function of (difficulty, seed), and tapVehicle is a deterministic
+  // mutation, so the level is fully reconstructible from the seed plus the
+  // ordered list of vehicles tapped — a few hundred bytes at most, which fits
+  // every tier including the cookie.
   function saveSession() {
     try {
-      localStorage.setItem(SESSION_KEY, JSON.stringify({
+      storage.setItem(SESSION_KEY, JSON.stringify({
         v: SESSION_VERSION,
         seed: gameState.seed,
         difficulty: gameState.difficulty,
-        state: serialize(gameState)
+        moves: sessionMoves
       }));
-    } catch (e) { /* ignore — file:// or blocked storage */ }
+    } catch (e) { /* ignore */ }
   }
+  // Returns { state, moves } on success, null if there's nothing to restore or
+  // the save doesn't replay cleanly — the latter should only happen if the
+  // engine changed shape since the save was written, which SESSION_VERSION is
+  // bumped to catch, but a replay is verified here too rather than trusted
+  // blindly, since a corrupted/tampered save is otherwise indistinguishable
+  // from a valid one until it's actually replayed.
   function loadSession() {
     try {
-      var raw = localStorage.getItem(SESSION_KEY);
+      var raw = storage.getItem(SESSION_KEY);
       if (!raw) return null;
       var obj = JSON.parse(raw);
       if (!obj || typeof obj !== 'object') return null;
-      // Saves from an older build describe boards the current engine would
-      // never generate; drop them and start fresh rather than restoring one.
       if (obj.v !== SESSION_VERSION) return null;
-      if (typeof obj.seed !== 'number' || !obj.difficulty || !CONFIG[obj.difficulty] || !obj.state) return null;
-      var st = deserialize(obj.state);
-      if (!st || !st.grid || !st.vehicles || !st.bays || !st.queue || !st.N || !st.status) return null;
-      if (st.N !== CONFIG[obj.difficulty].gridSize) return null;
-      if (!Array.isArray(st.bays) || st.bays.length !== CONFIG[obj.difficulty].bays) return null;
-      return st;
+      if (typeof obj.seed !== 'number' || !obj.difficulty || !CONFIG[obj.difficulty]) return null;
+      if (!Array.isArray(obj.moves) || obj.moves.length > CONFIG[obj.difficulty].count) return null;
+
+      var st = generateLevel(obj.difficulty, obj.seed);
+      for (var i = 0; i < obj.moves.length; i++) {
+        var moveId = obj.moves[i];
+        if (typeof moveId !== 'string') return null;
+        var result = tapVehicle(st, moveId);
+        if (!result.ok) return null;
+      }
+      return { state: st, moves: obj.moves };
     } catch (e) { return null; }
   }
   function clearSession() {
-    try { localStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
+    try { storage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
   }
   function randomSeed() {
     try {
@@ -1887,6 +2080,10 @@ if (typeof module !== 'undefined' && module.exports) {
   // Taps are ignored until they press Start.
   var awaitingStart = false;
   var overlayMode = null; // 'START' | 'WON' | 'LOST'
+  // The ordered list of vehicle ids successfully tapped so far this level.
+  // This — not the grid/vehicles/queue snapshot — is what gets persisted; see
+  // saveSession/loadSession for why.
+  var sessionMoves = [];
   var stats = loadStats();
   var vehicleEls = new Map();
   var bayEls = [];
@@ -1898,6 +2095,7 @@ if (typeof module !== 'undefined' && module.exports) {
   var baysEl = document.getElementById('bays');
   var queueEl = document.getElementById('queue');
   var queueCountEl = document.getElementById('queueCount');
+  var pavementEl = document.querySelector('.pavement');
   var statsLabelEl = document.getElementById('statsLabel');
   var overlayEl = document.getElementById('overlay');
   var overlayTitleEl = document.getElementById('overlayTitle');
@@ -2202,6 +2400,13 @@ if (typeof module !== 'undefined' && module.exports) {
       // receding back into the building rather than spilling out of it.
       person.style.zIndex = String(shown.length - idx);
 
+      if (idx === 0) {
+        // Sits ABOVE the head, so it has to be built before it.
+        var arrow = document.createElement('div');
+        arrow.className = 'qp-arrow';
+        person.appendChild(arrow);
+      }
+
       var head = document.createElement('div');
       head.className = 'qp-head';
       person.appendChild(head);
@@ -2210,13 +2415,11 @@ if (typeof module !== 'undefined' && module.exports) {
       body.className = 'qp-body';
       person.appendChild(body);
 
-      if (idx === 0) {
-        // The next passenger to board — a small arrow "facing" down toward
-        // the bays row directly below the queue.
-        var arrow = document.createElement('div');
-        arrow.className = 'qp-arrow';
-        person.appendChild(arrow);
-      }
+      var legs = document.createElement('div');
+      legs.className = 'qp-legs';
+      legs.appendChild(document.createElement('div')).className = 'qp-leg';
+      legs.appendChild(document.createElement('div')).className = 'qp-leg';
+      person.appendChild(legs);
 
       queueEl.appendChild(person);
     });
@@ -2228,6 +2431,30 @@ if (typeof module !== 'undefined' && module.exports) {
       doneMsg.className = 'queue-empty';
       doneMsg.textContent = 'All aboard!';
       queueEl.appendChild(doneMsg);
+    }
+    paintPavementHorizon();
+  }
+
+  // Puts the ground's top edge on the queue's shoulder line, so the passengers
+  // stand waist-deep in the paved band with their heads against the hedge.
+  // Measured off a real passenger rather than recomputed from the CSS ratios,
+  // which would mean maintaining those ratios in two places. The front
+  // passenger is deliberately skipped: it is drawn larger, so its shoulders sit
+  // higher than the line the rest of the queue defines.
+  var lastGroundY = 0;
+  function paintPavementHorizon() {
+    if (!pavementEl) return;
+    var sample = queueEl.querySelector('.queue-person:not(.front) .qp-body') ||
+                 queueEl.querySelector('.qp-body');
+    if (sample) {
+      var h = pavementEl.getBoundingClientRect().bottom -
+              sample.getBoundingClientRect().top;
+      if (h > 0) lastGroundY = Math.round(h);
+    }
+    // With nobody left to measure, hold the horizon where it was rather than
+    // letting it jump on the last boarding of the level.
+    if (lastGroundY > 0) {
+      pavementEl.style.setProperty('--ground-y', lastGroundY + 'px');
     }
   }
 
@@ -2502,6 +2729,12 @@ if (typeof module !== 'undefined' && module.exports) {
       return;
     }
 
+    // Recorded the instant the tap is confirmed successful — gameState itself
+    // was already mutated synchronously inside tapVehicle above, regardless of
+    // whether the animation below runs to completion, so the move log has to
+    // track that, not the animation.
+    sessionMoves.push(vehicleId);
+
     var arriveEv = null;
     for (var i = 0; i < result.events.length; i++) {
       if (result.events[i].type === 'ARRIVE') { arriveEv = result.events[i]; break; }
@@ -2620,6 +2853,7 @@ if (typeof module !== 'undefined' && module.exports) {
   function newGame(difficulty, optionalSeed) {
     var seed = (optionalSeed !== undefined) ? optionalSeed : randomSeed();
     gameState = generateLevel(difficulty, seed);
+    sessionMoves = []; // a fresh board has no move log yet
     stats.played++;
     saveStats();
     awaitingStart = (optionalSeed === undefined);
@@ -2637,9 +2871,11 @@ if (typeof module !== 'undefined' && module.exports) {
 
     var restored = loadSession();
     if (restored) {
-      gameState = restored;
+      gameState = restored.state;
+      sessionMoves = restored.moves;
     } else {
       gameState = generateLevel('easy', randomSeed());
+      sessionMoves = [];
       stats.played++;
       saveStats();
       // First ever load gets the start card too; a RESTORED game does not,
@@ -2713,6 +2949,20 @@ if (typeof module !== 'undefined' && module.exports) {
         // pack to fit does, so the row still has to be re-laid out here.
         renderQueue();
       }, 80);
+    });
+
+    // Save state on tab switch, screen lock, or backgrounding (essential on mobile/Kindle Fire)
+    var handleLifecycleSave = function () {
+      if (gameState && gameState.status === 'PLAYING') {
+        saveSession();
+      }
+      saveStats();
+    };
+    window.addEventListener('pagehide', handleLifecycleSave);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') {
+        handleLifecycleSave();
+      }
     });
   }
 
