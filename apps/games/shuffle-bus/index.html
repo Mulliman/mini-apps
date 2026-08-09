@@ -679,73 +679,83 @@
 
   /* ---------- queue: styled as people lining up for the bays ---------- */
   .queue-wrap{ width:100%; }
+  /* The pavement outside the bus centre: the line on the left, the building it
+     files out of on the right, both standing on the same ground line. */
+  /* Capped and centred rather than stretched to the full pavement: the
+     building stays put at the lane's right edge as passengers board (a
+     centred GROUP would drift sideways every time the line got shorter),
+     while the lane as a whole still sits in the middle of a wide screen
+     instead of hugging the far edge. */
+  .queue-lane{
+    display:flex;
+    align-items:flex-end;
+    justify-content:flex-end;
+    width:100%;
+    max-width:520px;
+    margin-inline:auto;
+    gap:5px;
+  }
   .queue{
     position:relative;
     display:flex;
     align-items:flex-end;
-    /* Hug the visible passengers and centre the row itself, rather than
-       stretching full-width and stranding the queue against the left edge.
-       Contents stay left-aligned on purpose: centring them would clip the
-       FRONT passenger once the row overflows on a narrow screen, and the
-       front passenger is the one the player needs to see. */
-    width:fit-content;
-    max-width:100%;
-    margin-inline:auto;
-    gap:8px;
-    padding:10px 10px 8px;
-    /* No panel behind the queue: the passengers should look like they are
-       standing ON the pavement, not sitting in a floating dark box. */
+    /* Right-aligned and free to shrink: the line grows leftwards OUT of the
+       building's door, so the far end (the front passenger, next to board) is
+       the end that moves. */
+    flex:0 1 auto;
+    min-width:0;
+    justify-content:flex-end;
+    padding:8px 2px 6px 6px;
     background:transparent;
-    border-radius:14px;
-    overflow:hidden;
     min-height:52px;
-  }
-  /* When the queue is longer than the visible window, the "N LEFT" badge is
-     pinned to the row's own right edge (not laid out inline after the last
-     avatar) so it can never be scrolled/clipped out of view by a long queue
-     on a narrow phone. The reserved padding keeps avatars from rendering
-     underneath it; the fade hints that the row continues beyond the edge. */
-  .queue.has-badge{ padding-right:74px; }
-  .queue.has-badge::after{
-    content:'';
-    position:absolute;
-    top:0; bottom:0; right:70px;
-    width:22px;
-    /* Fades into the pavement the queue now stands on, not the old panel. */
-    background:linear-gradient(to right, transparent, var(--pavement));
-    pointer-events:none;
+    /* Per-passenger box and the step between them, both set from JS — a
+       negative gap is an overlap. See sizeQueueRow. */
+    --qp-w:22px;
+    --qp-gap:5px;
   }
   /* Each waiting passenger: a round head over a rounded shoulders/body
      shape, coloured to match the bus colour they're waiting for. Built from
      two stacked divs so it reads as a little person, not a plain dot. */
   .queue-person{
+    position:relative;
     display:flex;
     flex-direction:column;
     align-items:center;
     flex:0 0 auto;
+    width:var(--qp-w);
     transition: transform 0.15s ease, opacity 0.15s ease;
   }
+  /* A negative gap is people standing shoulder-to-shoulder. JS decides how
+     much; the row never drops anyone to make space. */
+  .queue-person + .queue-person{ margin-left:var(--qp-gap); }
   .qp-head{
-    width:12px; height:12px;
+    width:calc(var(--qp-w) * 0.55);
+    height:calc(var(--qp-w) * 0.55);
     border-radius:50%;
     background:currentColor;
     box-shadow:0 1px 2px rgba(0,0,0,0.35);
     margin-bottom:2px;
   }
   .qp-body{
-    width:19px; height:15px;
+    width:calc(var(--qp-w) * 0.86);
+    height:calc(var(--qp-w) * 0.68);
     border-radius:9px 9px 3px 3px;
     background:currentColor;
     box-shadow:0 2px 4px rgba(0,0,0,0.35);
   }
   /* The front-most passenger — next to board — is visibly larger with a
-     white outline, plus a small arrow "facing" toward the bays below. */
+     white outline, plus a small arrow "facing" toward the bays below. It also
+     needs room of its own: it outgrows --qp-w, and with the line overlapping
+     it would otherwise be crowded by the passenger behind it. */
+  .queue-person.front{ margin-right:4px; }
   .queue-person.front .qp-head{
-    width:17px; height:17px;
+    width:calc(var(--qp-w) * 0.78);
+    height:calc(var(--qp-w) * 0.78);
     box-shadow:0 0 0 3px #fff, 0 1px 3px rgba(0,0,0,0.4);
   }
   .queue-person.front .qp-body{
-    width:27px; height:21px;
+    width:calc(var(--qp-w) * 1.18);
+    height:calc(var(--qp-w) * 0.95);
     box-shadow:0 0 0 3px #fff, 0 2px 5px rgba(0,0,0,0.45);
   }
   .qp-arrow{
@@ -775,21 +785,91 @@
   .queue-person:nth-child(3n+1):not(.front):not(.boarding){ animation-delay:0.15s; }
   .queue-person:nth-child(3n+2):not(.front):not(.boarding){ animation-delay:0.45s; }
   .queue-person:nth-child(3n):not(.front):not(.boarding){ animation-delay:0.75s; }
-  .queue-total-badge{
-    position:absolute;
-    top:50%; right:8px;
-    transform:translateY(-50%);
-    padding:0.3rem 0.6rem;
-    border-radius:999px;
-    /* Sits on the light concrete pavement, so it needs dark ink — the old
-       pale blue-on-blue was unreadable once the pavement went grey. */
-    background:rgba(24,28,34,0.82);
-    border:1px solid rgba(255,255,255,0.25);
-    color:#f1f5f9;
-    font-size:0.72rem;
+  /* ---------- the bus centre ---------- */
+  .bus-centre{
+    flex:0 0 auto;
+    width:66px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    user-select:none;
+  }
+  /* Rooftop sign. This is the ONLY place the real total appears, which is what
+     lets the line below be a fixed length — it no longer has to stand in for
+     the passengers it isn't drawing. */
+  .bc-sign{
+    width:100%;
+    padding:3px 2px 4px;
+    border-radius:4px 4px 2px 2px;
+    background:linear-gradient(180deg,#1f2937,#0b1220);
+    border:1px solid rgba(255,255,255,0.22);
+    box-shadow:0 0 9px rgba(56,189,248,0.22);
+    text-align:center;
+    line-height:1;
+  }
+  .bc-count{
+    display:block;
+    font-size:0.85rem;
     font-weight:800;
-    letter-spacing:0.03em;
-    white-space:nowrap;
+    color:#7dd3fc;
+    letter-spacing:0.01em;
+  }
+  .bc-sign-label{
+    display:block;
+    margin-top:2px;
+    font-size:0.42rem;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:rgba(226,232,240,0.55);
+  }
+  /* A slab of roof overhanging the facade on both sides. */
+  .bc-roof{
+    width:calc(100% + 9px);
+    height:5px;
+    border-radius:2px;
+    background:linear-gradient(180deg,#949cab,#5c6472);
+    box-shadow:0 2px 3px rgba(0,0,0,0.5);
+  }
+  .bc-body{
+    width:100%;
+    height:38px;
+    display:flex;
+    align-items:stretch;
+    gap:4px;
+    padding:5px 5px 0;
+    border-radius:0 0 3px 3px;
+    background:linear-gradient(180deg,#454d5a,#343b46);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,0.10),
+      0 3px 7px rgba(0,0,0,0.45);
+  }
+  /* The doorway, on the left — the side the queue files out of. */
+  .bc-door{
+    width:15px;
+    flex:0 0 auto;
+    align-self:flex-end;
+    height:calc(100% - 4px);
+    border-radius:7px 7px 0 0;
+    background:linear-gradient(180deg, rgba(253,224,71,0.38), rgba(253,224,71,0.10));
+    box-shadow:inset 0 0 0 1px rgba(253,224,71,0.45);
+  }
+  .bc-windows{
+    flex:1 1 auto;
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    grid-auto-rows:9px;
+    gap:4px;
+    align-content:start;
+  }
+  .bc-window{
+    border-radius:1px;
+    background:rgba(148,197,238,0.22);
+    box-shadow:inset 0 0 0 1px rgba(148,197,238,0.35);
+  }
+  .bc-window.lit{
+    background:rgba(253,224,71,0.40);
+    box-shadow:inset 0 0 0 1px rgba(253,224,71,0.5);
   }
   .queue-empty{
     color:#64748b;
@@ -964,7 +1044,28 @@
     <div class="carpark-scene">
       <div class="pavement">
         <div class="queue-wrap">
-          <div id="queue" class="queue"></div>
+          <div class="queue-lane">
+            <div id="queue" class="queue"></div>
+            <!-- The bus centre the queue files out of. Its rooftop sign carries
+                 the true number still to board, which is what frees the line
+                 itself to be a fixed length on every screen. -->
+            <div class="bus-centre">
+              <div class="bc-sign">
+                <span class="bc-count" id="queueCount">0</span>
+                <span class="bc-sign-label">waiting</span>
+              </div>
+              <div class="bc-roof" aria-hidden="true"></div>
+              <div class="bc-body" aria-hidden="true">
+                <div class="bc-door"></div>
+                <div class="bc-windows">
+                  <div class="bc-window lit"></div>
+                  <div class="bc-window"></div>
+                  <div class="bc-window"></div>
+                  <div class="bc-window lit"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="kerb" aria-hidden="true"></div>
@@ -1614,7 +1715,8 @@ if (typeof module !== 'undefined' && module.exports) {
   // this stamp an old save would restore a board built by the old geometry
   // (e.g. one with crossing diagonal bodies) and it would never go away.
   var SESSION_VERSION = 4;
-  var QUEUE_WINDOW = 14;
+  // How many passengers the line draws — the same number on every device.
+  var QUEUE_WINDOW = 15;
 
   var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var TIMING = reducedMotion
@@ -1795,6 +1897,7 @@ if (typeof module !== 'undefined' && module.exports) {
   var driveLayerEl = document.getElementById('driveLayer');
   var baysEl = document.getElementById('bays');
   var queueEl = document.getElementById('queue');
+  var queueCountEl = document.getElementById('queueCount');
   var statsLabelEl = document.getElementById('statsLabel');
   var overlayEl = document.getElementById('overlay');
   var overlayTitleEl = document.getElementById('overlayTitle');
@@ -2045,30 +2148,59 @@ if (typeof module !== 'undefined' && module.exports) {
   function renderBays() { paintBaySlots(baysDataFromState(), -1); }
 
   // ---------------- render: queue ----------------
-  // How many waiting passengers actually fit on this screen. A fixed window of
-  // 14 fits a desktop but overflows a phone, where the tail ends up crammed
-  // under the "N LEFT" badge. Measured against the full-width wrapper (the row
-  // itself is width:fit-content, so its own width would be circular).
-  function visibleQueueCount() {
-    var avail = (queueEl.parentElement && queueEl.parentElement.clientWidth) || 0;
-    var PERSON_W = 28;   // avatar plus its gap
-    var BADGE_W = 96;    // pinned badge plus the fade before it
-    var ROW_PAD = 20;
-    if (avail <= 0) return QUEUE_WINDOW;
-    var fits = Math.floor((avail - ROW_PAD - BADGE_W) / PERSON_W);
-    return Math.max(4, Math.min(QUEUE_WINDOW, fits));
+  // Fit a FIXED number of passengers into whatever width there is, by closing
+  // the gaps between them and then shrinking them — never by showing fewer.
+  // How many colours you can read ahead is the core planning information in
+  // this game, so making it depend on screen width quietly made the game
+  // harder on a phone than on a desktop.
+  function sizeQueueRow(n) {
+    if (n <= 1) {
+      queueEl.style.removeProperty('--qp-w');
+      queueEl.style.removeProperty('--qp-gap');
+      return;
+    }
+    var lane = queueEl.parentElement;
+    var building = lane.querySelector('.bus-centre');
+    var avail = lane.clientWidth -
+      (building ? building.offsetWidth : 0) -
+      24; // lane gap, the row's own padding, and the front passenger's margin
+    if (!isFinite(avail) || avail <= 0) return;
+
+    var W_MAX = 22, W_MIN = 11, G_MAX = 5;
+    // Bodies are allowed to merge into a crowd, but HEADS are the colour
+    // signal the player reads, so the overlap stops just short of the head
+    // width (0.55 of the box) and everyone shrinks instead. Past that point
+    // heads hide behind heads and the queue stops being countable.
+    var OVERLAP = 0.38;
+    var w = W_MAX;
+    var g = (avail - n * w) / (n - 1);
+    if (g < -OVERLAP * w) {
+      // Shoulder-to-shoulder still isn't enough — shrink everyone. Solving
+      // n*w + (n-1)*(-OVERLAP*w) = avail for w.
+      w = avail / (n - OVERLAP * (n - 1));
+      w = Math.max(W_MIN, Math.min(W_MAX, w));
+      g = -OVERLAP * w;
+    }
+    g = Math.min(G_MAX, g);
+    queueEl.style.setProperty('--qp-w', w.toFixed(2) + 'px');
+    queueEl.style.setProperty('--qp-gap', g.toFixed(2) + 'px');
   }
   function renderQueue(overrideArr) {
     var arr = overrideArr || gameState.queue;
     queueEl.innerHTML = '';
-    // Only a small window of DOM nodes is ever built here, however long the
-    // real queue is (a hard level can hold ~170 passengers) — the rest is
-    // summarised by the "LEFT" badge below, never rendered as individual nodes.
-    var shown = arr.slice(0, visibleQueueCount());
+    // Always the same number of people, whatever the screen: QUEUE_WINDOW of
+    // them, or the whole queue once it is shorter than that. However long the
+    // real queue is (a hard level can hold ~170), the rest is carried by the
+    // count on the bus centre's roof rather than by extra DOM nodes.
+    var shown = arr.slice(0, QUEUE_WINDOW);
+    sizeQueueRow(shown.length);
     shown.forEach(function (color, idx) {
       var person = document.createElement('div');
       person.className = 'queue-person' + (idx === 0 ? ' front' : '');
       person.style.color = color;
+      // Nearest the bays paints on top, so an overlapping line reads as
+      // receding back into the building rather than spilling out of it.
+      person.style.zIndex = String(shown.length - idx);
 
       var head = document.createElement('div');
       head.className = 'qp-head';
@@ -2088,24 +2220,9 @@ if (typeof module !== 'undefined' && module.exports) {
 
       queueEl.appendChild(person);
     });
-    // Pinned to the row's own edge (see .queue.has-badge in CSS) rather than
-    // laid out after the last avatar, so it stays visible even when the
-    // avatars alone already fill the row on a narrow phone.
-    // Compare against what was actually rendered, not the fixed maximum —
-    // otherwise a queue longer than the on-screen window but shorter than
-    // QUEUE_WINDOW would hide passengers with no badge to account for them.
-    queueEl.classList.toggle('has-badge', arr.length > shown.length);
-    queueEl.style.paddingRight = '';
-    if (arr.length > shown.length) {
-      var badge = document.createElement('div');
-      badge.className = 'queue-total-badge';
-      badge.textContent = arr.length + ' LEFT';
-      queueEl.appendChild(badge);
-      // Reserve exactly the space the badge actually takes. A fixed padding
-      // guess in CSS cannot know how wide "9 LEFT" vs "168 LEFT" renders, and
-      // when it under-reserves the badge sits on top of the last passenger.
-      queueEl.style.paddingRight = (badge.offsetWidth + 18) + 'px';
-    }
+    // The roof sign always carries the FULL remaining count, including the
+    // people still inside the building that the line doesn't draw.
+    queueCountEl.textContent = arr.length;
     if (arr.length === 0) {
       var doneMsg = document.createElement('div');
       doneMsg.className = 'queue-empty';
@@ -2592,8 +2709,8 @@ if (typeof module !== 'undefined' && module.exports) {
       resizeTimer = setTimeout(function () {
         computeAndApplyCellSize();
         renderBoard();
-        // The number of visible passengers is width-dependent, so it has to be
-        // recomputed on resize/orientation change too.
+        // The passenger COUNT no longer depends on width, but how tightly they
+        // pack to fit does, so the row still has to be re-laid out here.
         renderQueue();
       }, 80);
     });
