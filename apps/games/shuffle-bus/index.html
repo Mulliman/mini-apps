@@ -638,10 +638,15 @@
 // attemptPack for the exact contract the renderer depends on.
 
 const CONFIG = {
-  easy:   { gridSize: 5, colors: 3, bays: 5, vehicleLens: [2],    caps: [4],      count: 11, diagonals: true, diagMaxLen: 2 },
-  medium: { gridSize: 7, colors: 4, bays: 5, vehicleLens: [2,3],  caps: [4,6],    count: 18, diagonals: true, diagMaxLen: 2 },
-  hard:   { gridSize: 8, colors: 5, bays: 4, vehicleLens: [2,3],  caps: [4,6,8],  count: 23, diagonals: true, diagMaxLen: 2 },
-  pro:    { gridSize: 9, colors: 5, bays: 3, vehicleLens: [2,3],  caps: [4,6,8],  count: 27, diagonals: true, diagMaxLen: 2 },
+  // count is tuned to sit one step BELOW the packer's speed cliff, measured per
+  // tier. The random-retry packer degrades sharply as the board saturates
+  // (e.g. 11x11 is fine at 37 vehicles but blows past budget at 38), and the
+  // cliff arrives at lower occupancy on bigger grids, so these are empirical
+  // values rather than a fixed density target.
+  easy:   { gridSize: 6,  colors: 3, bays: 5, vehicleLens: [2],    caps: [4],      count: 15, diagonals: true, diagMaxLen: 2 },
+  medium: { gridSize: 9,  colors: 4, bays: 5, vehicleLens: [2,3],  caps: [4,6],    count: 27, diagonals: true, diagMaxLen: 2 },
+  hard:   { gridSize: 11, colors: 5, bays: 4, vehicleLens: [2,3],  caps: [4,6,8],  count: 36, diagonals: true, diagMaxLen: 2 },
+  pro:    { gridSize: 13, colors: 5, bays: 3, vehicleLens: [2,3],  caps: [4,6,8],  count: 46, diagonals: true, diagMaxLen: 2 },
 };
 const COLORS = ['#E6194B', '#4363D8', '#3CB44B', '#FFE119', '#911EB4']; // red, blue, green, gold, purple
 
@@ -830,142 +835,186 @@ function axisAnchorRange(N, len, sign) {
 }
 
 // ---- Generator: (A) reverse-pack the grid ----
-// One attempt at packing a fresh board. Returns the placed vehicles in
-// placement order, or null if it gave up. Every candidate is written into the
-// grid before isExitClear runs (a vehicle is transparent to its own body via
-// the occ !== vehicle.id check) and unwritten again if it is not exit-clear.
-function attemptPack(N, cfg, colors, dirPool, rng, maxRetriesPerVehicle, counters) {
-  const grid = makeEmptyGrid(N);
-  const placed = [];
-  let idCounter = 0;
-
-  // id -> vehicle for every committed vehicle, plus (transiently, only while
-  // its own isExitClear check runs) the current candidate. This mirrors the
-  // `vehicles` shape isExitClear expects from live state, so a candidate's
-  // own body is correctly excluded from its own exit-clear crossing check.
-  const placedMap = {};
-
-  while (placed.length < cfg.count) {
-    let placedThisVehicle = false;
-
-    for (let retry = 0; retry < maxRetriesPerVehicle; retry++) {
-      counters.totalRetries++;
-      let len = cfg.vehicleLens[Math.floor(rng() * cfg.vehicleLens.length)];
-      const cap = cfg.caps[Math.floor(rng() * cfg.caps.length)];
-      const color = colors[Math.floor(rng() * colors.length)];
-      const dir = dirPool[Math.floor(rng() * dirPool.length)];
-      const v = DIRS[dir];
-      // Diagonal staircases already read ~41% longer than an orthogonal run
-      // of the same cell-count (diagonally adjacent centres are sqrt(2)
-      // apart, not 1), so cap diagonal runs at cfg.diagMaxLen to keep them
-      // from reading as slivers -- this is a visible config knob, not a
-      // hidden packer rule.
-      const isDiagonalDir = v.x !== 0 && v.y !== 0;
-      if (isDiagonalDir && cfg.diagMaxLen) len = Math.min(len, cfg.diagMaxLen);
-
+//
+// Candidate placements (position x direction x length) are enumerated once
+// per grid size/config -- this is pure geometry, independent of rng state or
+// which vehicles happen to be placed -- then, for every vehicle "slot", that
+// list is shuffled with the seeded rng and walked in order. A slot is only
+// declared unplaceable after every candidate in its shuffled list has been
+// tried and rejected, not after a fixed number of unlucky random draws. This
+// keeps the near-saturation case (where blind random sampling degenerates
+// into tens/hundreds of thousands of retries) cheap: every candidate is
+// visited at most once per slot.
+//
+// cap/color are independent of geometry, so they're drawn once when a slot
+// is opened and stay fixed across every candidate tried for that slot
+// (including candidates tried after a backtrack re-enters the slot).
+function buildCandidateTemplates(N, cfg, dirPool) {
+  const templates = [];
+  for (const dir of dirPool) {
+    const v = DIRS[dir];
+    const isDiagonalDir = v.x !== 0 && v.y !== 0;
+    // Diagonal staircases already read ~41% longer than an orthogonal run of
+    // the same cell-count (diagonally adjacent centres are sqrt(2) apart,
+    // not 1), so cap diagonal runs at cfg.diagMaxLen -- a visible config
+    // knob, not a hidden packer rule. Dedupe lengths that collapse to the
+    // same capped value so each distinct geometry appears once.
+    const lens = new Set();
+    for (const l of cfg.vehicleLens) {
+      lens.add((isDiagonalDir && cfg.diagMaxLen) ? Math.min(l, cfg.diagMaxLen) : l);
+    }
+    for (const len of lens) {
       // A vehicle's body runs along its own travel axis: cells[i] = anchor +
-      // i * v, where v is the vehicle's own direction unit vector. N/S and
-      // E/W bodies come out as straight orthogonal runs (as before); NE/SW
-      // and SE/NW bodies come out as diagonal staircases. cells[0] is the
-      // REAR of the vehicle and cells[len - 1] is the NOSE -- i.e. for every
-      // consecutive pair, cells[i+1] - cells[i] === v, so the nose is always
-      // the cell furthest along the travel direction. The renderer relies on
-      // this ordering to draw the body as a rotated rect from rear to nose
-      // with the arrow at the front.
-      //
-      // Pick the anchor so every cell of the run lands in bounds up front,
-      // rather than placing blindly and rejecting out-of-bounds candidates --
-      // otherwise diagonal placements would waste most of the retry budget.
+      // i * v. N/S and E/W bodies come out as straight orthogonal runs;
+      // NE/SW and SE/NW bodies come out as diagonal staircases. cells[0] is
+      // the REAR and cells[len-1] is the NOSE -- the renderer relies on this
+      // ordering to draw the body as a rotated rect from rear to nose with
+      // the arrow at the front. Anchors are enumerated so every cell of the
+      // run lands in bounds, matching axisAnchorRange's contract.
       const xRange = axisAnchorRange(N, len, v.x);
       const yRange = axisAnchorRange(N, len, v.y);
       if (xRange[1] < xRange[0] || yRange[1] < yRange[0]) continue;
-
-      const x0 = xRange[0] + Math.floor(rng() * (xRange[1] - xRange[0] + 1));
-      const y0 = yRange[0] + Math.floor(rng() * (yRange[1] - yRange[0] + 1));
-
-      const cells = [];
-      for (let i = 0; i < len; i++) {
-        cells.push({ x: x0 + i * v.x, y: y0 + i * v.y });
+      for (let x0 = xRange[0]; x0 <= xRange[1]; x0++) {
+        for (let y0 = yRange[0]; y0 <= yRange[1]; y0++) {
+          const cells = [];
+          for (let i = 0; i < len; i++) cells.push({ x: x0 + i * v.x, y: y0 + i * v.y });
+          templates.push({ dir, cells });
+        }
       }
-
-      // Defensive bounds check even though the anchor range above already
-      // guarantees every cell lands in bounds.
-      let inBounds = true;
-      for (const c of cells) {
-        if (c.x < 0 || c.x >= N || c.y < 0 || c.y >= N) { inBounds = false; break; }
-      }
-      if (!inBounds) continue;
-
-      let free = true;
-      for (const c of cells) {
-        if (grid[c.y][c.x] !== null) { free = false; break; }
-      }
-      if (!free) continue;
-
-      // Body-overlap guard: reject a candidate whose drawn OBB overlaps the
-      // drawn body of any already-placed vehicle. Cell-occupancy above is
-      // the cheap first filter (no shared cells); this catches the case
-      // where two bodies occupy entirely disjoint cells yet still overlap
-      // visually because a rotated rect pokes outside its own two cells
-      // near a shared diagonal corner. Checked before writing the candidate
-      // into the grid since it depends only on `cells`/`dir`. A cheap
-      // Chebyshev-distance pre-filter skips placed vehicles that are far
-      // from every candidate cell, since attemptPack runs this loop
-      // thousands of times per level and most placed vehicles are nowhere
-      // near a given candidate.
-      const candRect = vehicleBodyRect({ dir, cells });
-      let bodyConflict = false;
-      for (const other of placed) {
-        if (!cellsNearby(cells, other.cells, 3)) continue;
-        if (rectsOverlap(candRect, vehicleBodyRect(other), BODY_GEOM.clearance)) { bodyConflict = true; break; }
-      }
-      if (bodyConflict) continue;
-
-      const id = 'v' + idCounter;
-      for (const c of cells) grid[c.y][c.x] = id;
-      const vehicle = { id, color, dir, cells, cap, boarded: 0, arrivalSeq: null };
-
-      // Include the candidate itself in the map passed to isExitClear so its
-      // own body's blocks are attributed to its own id and correctly
-      // excluded from its own crossing check, matching how tapVehicle passes
-      // state.vehicles (which still includes the tapped vehicle at check
-      // time). Roll this back on rejection.
-      placedMap[id] = vehicle;
-
-      if (isExitClear(vehicle, grid, N, placedMap)) {
-        idCounter++;
-        placed.push(vehicle);
-        placedThisVehicle = true;
-        break;
-      }
-      delete placedMap[id];
-      for (const c of cells) grid[c.y][c.x] = null;
     }
+  }
+  return templates;
+}
 
-    if (!placedThisVehicle) return null;
+// In-place Fisher-Yates shuffle drawing exclusively from the seeded rng, so
+// candidate order is fully reproducible for a given seed/call sequence.
+function shuffleWithRng(arr, rng) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  return arr;
+}
+
+// One attempt at packing a fresh board via iterative DFS with bounded
+// backtracking. `stack[i]` is the search frame for the i-th vehicle slot:
+// its own shuffled candidate list plus a cursor into it. Every candidate is
+// written into the grid before isExitClear runs (a vehicle is transparent to
+// its own body via the occ !== vehicle.id check) and unwritten again if it
+// is rejected or the search later backtracks past it -- undo is always a
+// clean, symmetric inverse of commit, so the invariants below hold for
+// whatever placement sequence finally succeeds:
+//   - every committed vehicle was exit-clear against exactly the vehicles
+//     committed before it (checked at the moment of commit, never revisited
+//     retroactively), which is what makes reverse(placement order) valid;
+//   - no two committed bodies overlap (cell-occupancy + SAT, both checked
+//     pre-commit).
+// Backtracking never violates either: a slot is undone completely (grid +
+// placedMap + stack entry) before the search tries anything else, so a
+// later, different placement sequence is evaluated fresh on its own merits.
+function attemptPack(N, cfg, colors, dirPool, rng, candidateTemplates, counters, maxSteps, maxBacktrackDepth) {
+  const grid = makeEmptyGrid(N);
+  const placedMap = {};
+  const stack = [];
+
+  function openSlot() {
+    const cap = cfg.caps[Math.floor(rng() * cfg.caps.length)];
+    const color = colors[Math.floor(rng() * colors.length)];
+    const candidates = shuffleWithRng(candidateTemplates.slice(), rng);
+    stack.push({ cap, color, candidates, idx: 0, committedId: null, cells: null, dir: null });
   }
 
-  return { grid, placed };
+  openSlot();
+  let steps = 0;
+  // Bounded backtracking: undo the last few placements on a dead end rather
+  // than either giving up outright (blind-restart) or exhaustively
+  // backtracking all the way to slot 0 (which degenerates into an expensive
+  // near-exhaustive search near saturation). `sinceProgress` counts
+  // consecutive backtrack-pops since the last successful commit; once it
+  // passes maxBacktrackDepth this attempt is abandoned so packGrid can start
+  // a fresh attempt (new shuffles, same rng stream -- still deterministic).
+  let sinceProgress = 0;
+
+  while (stack.length > 0) {
+    if (steps++ > maxSteps) return null;
+    const frame = stack[stack.length - 1];
+
+    if (frame.idx >= frame.candidates.length) {
+      // This slot has genuinely exhausted every candidate placement -- undo
+      // it (if it had ever committed one) and let the parent slot resume its
+      // own walk from where it left off.
+      stack.pop();
+      if (frame.committedId !== null) {
+        for (const c of frame.cells) grid[c.y][c.x] = null;
+        delete placedMap[frame.committedId];
+      }
+      counters.backtracks++;
+      sinceProgress++;
+      if (sinceProgress > maxBacktrackDepth) return null;
+      continue;
+    }
+
+    const cand = frame.candidates[frame.idx++];
+    counters.totalRetries++;
+
+    let free = true;
+    for (const c of cand.cells) {
+      if (grid[c.y][c.x] !== null) { free = false; break; }
+    }
+    if (!free) continue;
+
+    // Body-overlap guard: reject a candidate whose drawn OBB overlaps the
+    // drawn body of any already-committed vehicle. Cell-occupancy above is
+    // the cheap first filter; this catches disjoint-cell candidates whose
+    // rotated rects still overlap visually near a shared diagonal corner. A
+    // cheap Chebyshev-distance pre-filter skips committed vehicles far from
+    // every candidate cell.
+    const candRect = vehicleBodyRect(cand);
+    let bodyConflict = false;
+    for (const id in placedMap) {
+      const other = placedMap[id];
+      if (!cellsNearby(cand.cells, other.cells, 3)) continue;
+      if (rectsOverlap(candRect, vehicleBodyRect(other), BODY_GEOM.clearance)) { bodyConflict = true; break; }
+    }
+    if (bodyConflict) continue;
+
+    const id = 'v' + (stack.length - 1);
+    const vehicle = { id, color: frame.color, dir: cand.dir, cells: cand.cells, cap: frame.cap, boarded: 0, arrivalSeq: null };
+    for (const c of cand.cells) grid[c.y][c.x] = id;
+    placedMap[id] = vehicle;
+
+    if (isExitClear(vehicle, grid, N, placedMap)) {
+      frame.committedId = id;
+      frame.cells = cand.cells;
+      frame.dir = cand.dir;
+      sinceProgress = 0;
+      if (stack.length === cfg.count) {
+        const placed = stack.map(function (f) { return placedMap[f.committedId]; });
+        return { grid, placed };
+      }
+      openSlot();
+      continue;
+    }
+
+    delete placedMap[id];
+    for (const c of cand.cells) grid[c.y][c.x] = null;
+  }
+
+  return null; // backtracked all the way out of slot 0: this attempt failed
 }
 
 function packGrid(N, cfg, colors, rng) {
   const dirPool = cfg.diagonals ? Object.keys(DIRS) : ['N', 'E', 'S', 'W'];
-  const maxOuterAttempts = 4000;
-  const maxRetriesPerVehicle = 4000;
-  const counters = { totalRetries: 0 };
-  let outerAttempts = 0;
+  const candidateTemplates = buildCandidateTemplates(N, cfg, dirPool);
+  const maxOuterAttempts = 3000;
+  const maxStepsPerAttempt = 15000;
+  const maxBacktrackDepth = 6;
+  const counters = { totalRetries: 0, backtracks: 0 };
 
-  // Failed placements are normal even for a well-tuned packer. Bail to a
-  // fresh empty board when a vehicle can't be seated, then — only if that
-  // somehow never succeeds — retry far more patiently rather than throwing.
-  const passes = [maxRetriesPerVehicle, maxRetriesPerVehicle * 4];
-  for (const retriesPerVehicle of passes) {
-    for (let outer = 0; outer < maxOuterAttempts; outer++) {
-      outerAttempts++;
-      const result = attemptPack(N, cfg, colors, dirPool, rng, retriesPerVehicle, counters);
-      if (result) {
-        return { grid: result.grid, placed: result.placed, outerAttempts, totalRetries: counters.totalRetries };
-      }
+  for (let outer = 0; outer < maxOuterAttempts; outer++) {
+    const result = attemptPack(N, cfg, colors, dirPool, rng, candidateTemplates, counters, maxStepsPerAttempt, maxBacktrackDepth);
+    if (result) {
+      return { grid: result.grid, placed: result.placed, outerAttempts: outer + 1, totalRetries: counters.totalRetries, backtracks: counters.backtracks };
     }
   }
 
@@ -1454,7 +1503,7 @@ if (typeof module !== 'undefined' && module.exports) {
     // overflowed every phone. MIN_CELL is only a guard against degenerate
     // sizes on absurdly narrow screens; MAX_CELL stops a small grid ballooning
     // on a wide desktop.
-    var MIN_CELL = 18, MAX_CELL = 46;
+    var MIN_CELL = 16, MAX_CELL = 34;
     var raw = Math.floor(Math.min(availW, availH) / n);
     if (!isFinite(raw) || raw <= 0) raw = 32;
     var size = Math.max(MIN_CELL, Math.min(MAX_CELL, raw));
