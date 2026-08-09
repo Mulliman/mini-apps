@@ -612,6 +612,34 @@
     overflow:hidden;
     box-shadow:0 20px 60px rgba(0,0,0,0.5);
   }
+  .overlay-close-btn{
+    position:absolute;
+    top:12px;
+    right:14px;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.06);
+    color:#94a3b8;
+    font-size:1.25rem;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    z-index:10;
+    padding:0;
+  }
+  .overlay-close-btn:hover{
+    background:rgba(255,255,255,0.18);
+    color:#ffffff;
+    transform:scale(1.05);
+  }
+  .overlay-close-btn:active{
+    transform:scale(0.95);
+  }
   .confetti-layer{
     position:absolute; inset:0;
     overflow:hidden;
@@ -721,6 +749,7 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
+      <button id="overlayCloseBtn" class="overlay-close-btn" type="button" aria-label="Close modal">&times;</button>
       <div class="confetti-layer" id="confettiLayer"></div>
       <h2 class="overlay-title" id="overlayTitle"></h2>
       <p class="overlay-msg" id="overlayMsg"></p>
@@ -1531,6 +1560,7 @@ if (typeof module !== 'undefined' && module.exports) {
   var soundBtn = document.getElementById('soundBtn');
   var restartBtn = document.getElementById('restartBtn');
   var overlayRestartBtn = document.getElementById('overlayRestartBtn');
+  var overlayCloseBtn = document.getElementById('overlayCloseBtn');
   var diffBtns = Array.prototype.slice.call(document.querySelectorAll('.diff-btn'));
 
   function wait(ms) {
@@ -1818,12 +1848,12 @@ if (typeof module !== 'undefined' && module.exports) {
     } else if (status === 'WON') {
       overlayTitleEl.textContent = 'You did it!';
       overlayMsgEl.textContent = 'Every bus and every passenger made it. Great job!';
-      overlayRestartBtn.textContent = 'Play Again';
+      overlayRestartBtn.textContent = 'Next Level';
       spawnConfetti();
     } else {
       overlayTitleEl.textContent = "Let's try again!";
-      overlayMsgEl.textContent = 'The buses got a little stuck this time. Ready for a fresh grid?';
-      overlayRestartBtn.textContent = 'Play Again';
+      overlayMsgEl.textContent = 'The buses got a little stuck this time. Ready to try this level again?';
+      overlayRestartBtn.textContent = 'Try Again';
       confettiLayerEl.innerHTML = '';
     }
     overlayEl.classList.add('visible');
@@ -1991,12 +2021,12 @@ if (typeof module !== 'undefined' && module.exports) {
     }
   }
 
-  function newGame(difficulty) {
-    var seed = randomSeed();
+  function newGame(difficulty, optionalSeed) {
+    var seed = (optionalSeed !== undefined) ? optionalSeed : randomSeed();
     gameState = generateLevel(difficulty, seed);
     stats.played++;
     saveStats();
-    awaitingStart = true;
+    awaitingStart = (optionalSeed === undefined);
     saveSession();
     fullRender();
   }
@@ -2033,7 +2063,7 @@ if (typeof module !== 'undefined' && module.exports) {
       btn.addEventListener('click', function () {
         var d = btn.dataset.diff;
         if (inputLocked) return;
-        if (d !== gameState.difficulty) newGame(d);
+        if (d !== gameState.difficulty || awaitingStart) newGame(d);
       });
     });
 
@@ -2041,6 +2071,15 @@ if (typeof module !== 'undefined' && module.exports) {
       if (inputLocked) return;
       newGame(gameState.difficulty);
     });
+
+    if (overlayCloseBtn) {
+      overlayCloseBtn.addEventListener('click', function () {
+        if (inputLocked) return;
+        awaitingStart = false;
+        hideOverlay();
+      });
+    }
+
     overlayRestartBtn.addEventListener('click', function () {
       if (inputLocked) return;
       // On the start card this button just begins the level already generated
@@ -2049,6 +2088,10 @@ if (typeof module !== 'undefined' && module.exports) {
       if (overlayMode === 'START') {
         awaitingStart = false;
         hideOverlay();
+        return;
+      }
+      if (overlayMode === 'LOST') {
+        newGame(gameState.difficulty, gameState.seed);
         return;
       }
       newGame(gameState.difficulty);
