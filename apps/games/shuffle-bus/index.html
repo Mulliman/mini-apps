@@ -424,32 +424,55 @@
     user-select:none;
     transform-origin:center center;
   }
+  /* An open-top minibus, nose-to-tail: headlights, bonnet (carries the
+     direction arrow), windscreen, then the open-top roof — the passenger
+     area, seen from above — filling whatever length is left over. The
+     bonnet and windscreen are fixed-size regardless of the vehicle's own
+     length (a 4-cell bus doesn't have a bigger bonnet than a 2-cell one);
+     only the roof grows or shrinks, via flex:1 1 auto on .seat-dots rather
+     than a hardcoded fraction of the body. That's the whole reason this is
+     flexbox rather than the absolute+percentage layout it used to be. */
   .vehicle-body{
     position:absolute;
     inset:0;
-    border-radius:8px;
+    border-radius:4px;
     display:flex;
     align-items:center;
-    justify-content:space-between;
     gap: calc(var(--cell) * 0.045);
-    padding:0 9%;
+    /* Fixed margin from each end, in cell units — not a percentage of the
+       vehicle's own (variable) length. */
+    padding: 0 max(3px, calc(var(--cell) * 0.09));
     box-shadow:
       0 2px 6px rgba(0,0,0,0.45),
       inset 0 0 0 2px rgba(255,255,255,0.2),
       0 0 0 1.5px rgba(2,6,23,0.6);
     overflow:hidden;
   }
-  /* Seat dots: two rows, like seats down the aisle of a bus, showing how many
-     passengers this vehicle takes before it fills up and departs. Deliberately
-     low-contrast — the colour and the direction arrow stay the loud signals. */
+  /* Seat dots ARE the open-top roof panel, not a separate wrapper: flex:1 1
+     auto so this is the one thing in the row that grows, and a translucent
+     dark background (works over any of the five vehicle colours with no
+     per-colour computation) so it reads as looking down into the bus rather
+     than a solid roof. justify/align-content centre the dot cluster within
+     whatever space that turns out to be, since the grid's own tracks only
+     ever size to the dots themselves. */
   .seat-dots{
+    position:relative;
+    z-index:1;
+    flex:1 1 auto;
+    min-width:0;
+    height:70%;
     display:grid;
     grid-template-rows:repeat(2, auto);
     grid-auto-flow:column;
     gap: calc(var(--cell) * 0.045);
+    justify-content:center;
+    align-content:center;
     pointer-events:none;
-    flex:0 1 auto;
-    min-width:0;
+    border-radius:2px;
+    background:rgba(0,0,0,0.26);
+    box-shadow:
+      inset 0 1px 2px rgba(0,0,0,0.4),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
   }
   .seat-dot{
     /* floor in px so the dots don't vanish once cells shrink on a phone */
@@ -460,29 +483,67 @@
     opacity:0.85;
     box-shadow: 0 1px 2px rgba(0,0,0,0.35);
   }
+  /* Cab gap: a plain, undecorated fixed-size spacer between the windscreen and
+     the open-top roof — just the body's own colour showing through, the way
+     the cab deck between the windscreen and the load bed reads on a flatbed
+     truck. Purely a flex spacer; no background/box-shadow of its own. */
+  .v-cab-gap{
+    flex:0 0 auto;
+    width: max(2px, calc(var(--cell) * 0.10));
+  }
+  /* The cab, seen from above. Three panes clipped out of one shared box
+     (.ws-pane is position:absolute;inset:0, repeated) so they share a single
+     continuous gradient and stay aligned at any --cell: a windshield across the
+     nose plus a side window running rearward down each flank. What is NOT
+     glazed matters as much as what is — the body colour left between windshield
+     and side window reads as the A-pillar, and the body colour they enclose
+     reads as the cab roof.
+     The windshield is WIDEST at the nose and tapers back, and each side
+     window's inner edge simply CONTINUES that same diagonal, offset by the
+     width of the pillar. One shared angle running the length of the cab is
+     what makes it read as a vehicle; giving the side windows an angle of their
+     own leaves them looking like unrelated shapes stuck on beside the glass.
+     Each side window is therefore a wedge — near-pointed where it meets the
+     windshield at the nose, widening as the windshield tapers away from it.
+     Height is a percentage of the body rather than a --cell multiple, because
+     diagonal vehicles have a narrower body (BODY_GEOM.widthDiag 0.65 vs
+     widthOrtho 0.90) and a cell-based height overflowed them.
+     0% on the long axis is the cab-gap/roof end, 100% is the nose; see
+     .bay-windscreen for the same shape transposed to the bay's vertical
+     orientation. */
+  .vehicle-body .windscreen{
+    position:relative;
+    flex:0 0 auto;
+    width: max(10px, calc(var(--cell) * 0.52));
+    height:92%;
+    pointer-events:none;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 18%, #94a3b8 45%, #64748b 75%, #334155 100%);
+    clip-path: polygon(100% 18%, 100% 82%, 82% 100%, 0% 100%, 0% 86%, 52% 86%, 52% 14%, 0% 14%, 0% 0%, 82% 0%);
+    filter: drop-shadow(0 0 1px #020617) drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  }
+  .ws-pane{
+    position:absolute;
+    inset:0;
+    background:inherit;
+  }
+  /* Bonnet: fixed size (flex:0 0 auto), hosts the direction arrow. */
+  .v-bonnet{
+    flex:0 0 auto;
+    width: max(6px, calc(var(--cell) * 0.30));
+    height:60%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:2px;
+  }
   .vehicle-body .arrow{
     position:relative;
-    font-size: calc(var(--cell) * 0.32);
+    font-size: calc(var(--cell) * 0.34);
     line-height:1;
     pointer-events:none;
     display:block;
-    flex:0 1 auto;
-    min-width:0;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
-  }
-  /* Windscreen at the vehicle's nose end. */
-  .vehicle-body .windscreen{
-    flex:0 1 auto;
-    min-width:0;
-    align-self:center;
-    width: max(6px, calc(var(--cell) * 0.28));
-    height: max(9px, calc(var(--cell) * 0.58));
-    border-radius: max(3px, calc(var(--cell) * 0.12));
-    background: linear-gradient(140deg, #f8fafc 0%, #cbd5e1 35%, #475569 100%);
-    box-shadow:
-      inset 0 0 0 1px rgba(15,23,42,0.7),
-      0 0 3px rgba(0,0,0,0.3);
-    pointer-events:none;
+    color: #0f172a !important;
+    filter: drop-shadow(0 1px 1px rgba(255,255,255,0.4));
   }
   /* Bus details: side wheels, headlights, taillights */
   .v-wheel {
@@ -501,7 +562,7 @@
   .v-wheel.rr { bottom: -2px; left: 14%; }
 
   .v-headlight {
-    position: absolute; right: 2px;
+    position: absolute; right: 0;
     width: max(2px, calc(var(--cell) * 0.06));
     height: max(4px, calc(var(--cell) * 0.16));
     background: #fef08a;
@@ -514,7 +575,7 @@
   .v-headlight.bot { bottom: max(3px, calc(var(--cell) * 0.10)); }
 
   .v-taillight {
-    position: absolute; left: 2px;
+    position: absolute; left: 0;
     width: max(2px, calc(var(--cell) * 0.05));
     height: max(4px, calc(var(--cell) * 0.15));
     background: #ef4444;
@@ -613,12 +674,12 @@
     width:100%;
     min-height:80px;
     flex:0 0 auto;
-    border-radius:7px;
+    /* Matches .vehicle-body's tighter, boxier corners. */
+    border-radius:4px;
     padding:7px 3px 6px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:flex-start;
     gap:6px;
     position:relative;
     box-shadow:
@@ -642,7 +703,7 @@
   .bay-wheel.rr { bottom: 16%; right: -2px; }
 
   .bay-headlight{
-    position:absolute; top:3px;
+    position:absolute; top:0;
     width:7px; height:3px;
     background:#fef08a;
     border-radius:1px;
@@ -654,7 +715,7 @@
   .bay-headlight.right { right: 12%; }
 
   .bay-taillight{
-    position:absolute; bottom:3px;
+    position:absolute; bottom:0;
     width:7px; height:3px;
     background:#ef4444;
     border-radius:1px;
@@ -665,12 +726,30 @@
   .bay-taillight.left { left: 12%; }
   .bay-taillight.right { right: 12%; }
 
+  /* Fixed size (flex:0 0 auto — .bay-vehicle is a column flex). The same
+     seen-from-above cab as the board's .windscreen, transposed a quarter turn:
+     the board's long (nose) axis is X with the nose at 100%, here it is Y with
+     the nose at 0%, so every point (x, y) there maps to (y, 100% - x) here.
+     No separate bonnet on the parked version — there's no direction arrow to
+     put on one, so the cab sits straight below the (now flush-to-the-top)
+     headlights. */
   .bay-windscreen{
-    width:22px;
-    height:7px;
-    border-radius:2px;
-    background:linear-gradient(140deg, #f8fafc 0%, #cbd5e1 35%, #475569 100%);
-    box-shadow:inset 0 0 0 1px rgba(15,23,42,0.6);
+    position:relative;
+    flex:0 0 auto;
+    width:92%;
+    height:22px;
+    pointer-events:none;
+    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 18%, #94a3b8 45%, #64748b 75%, #334155 100%);
+    clip-path: polygon(18% 0%, 82% 0%, 100% 18%, 100% 100%, 86% 100%, 86% 48%, 14% 48%, 14% 100%, 0% 100%, 0% 18%);
+    filter: drop-shadow(0 0 1px #020617) drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  }
+  /* Plain fixed-size spacer below the cab, before the open-top roof — matches
+     the board's .v-cab-gap. No bonnet-equivalent needed above it (see
+     .bay-windscreen), but the breathing room before the passenger area applies
+     regardless of whether there's an arrow. */
+  .bay-cab-gap{
+    flex:0 0 auto;
+    height:3px;
   }
   .bay-empty-label{
     font-size:0.55rem;
@@ -679,18 +758,28 @@
     letter-spacing:0.04em;
     font-weight:700;
   }
-  /* Two columns running down the bus, which is the board's .seat-dots grid
-     turned through 90 degrees — a parked bus is nose-up, so its aisle runs
-     top-to-bottom rather than left-to-right. */
+  /* The open-top roof, rotated for the bay's nose-up orientation: seat pips
+     ARE the panel (matching the board's .seat-dots), flex:1 1 auto so it
+     fills whatever height is left below the fixed windscreen rather than a
+     hardcoded fraction of the parked body. align-self:stretch spans the full
+     width — .bay-vehicle's own align-items:center is what keeps the (fixed
+     size) windscreen from doing the same. */
   .seat-pips{
+    position:relative;
+    z-index:1;
+    flex:1 1 auto;
+    min-height:0;
+    align-self:stretch;
     display:grid;
     grid-template-columns:repeat(2, auto);
     gap:4px;
     justify-content:center;
-    /* Auto margins centre the seats in whatever body length is left below the
-       windscreen, so a 4-seater and an 8-seater both look laid out rather than
-       bunched up behind the driver. */
-    margin:auto 0;
+    align-content:center;
+    border-radius:3px;
+    background:rgba(0,0,0,0.26);
+    box-shadow:
+      inset 0 1px 2px rgba(0,0,0,0.4),
+      inset 0 0 0 1px rgba(255,255,255,0.05);
   }
   /* currentColor, set per-bus from colorInfo().glyphColor, so a seat dot on a
      yellow bus is dark and one on a blue bus is light — the same contrast rule
@@ -1505,11 +1594,25 @@ function attemptPack(N, cfg, colors, dirPool, rng, candidateTemplates, counters,
   const placedMap = {};
   const stack = [];
 
+  // The shortest length always seats 4 -- a 2-cell body drawn with 6 or 8
+  // seats crammed into it looked wrong and was the reason the pickup/minibus
+  // styling stayed cramped. Anything longer draws from whatever's left in
+  // cfg.caps once 4 is excluded (just 6 for medium; 6 or 8 for hard/pro).
+  const minLen = Math.min.apply(null, cfg.vehicleLens);
+  const longCaps = cfg.caps.filter(function (c) { return c !== 4; });
+
   function openSlot() {
-    const cap = cfg.caps[Math.floor(rng() * cfg.caps.length)];
     const color = colors[Math.floor(rng() * colors.length)];
+    // Drawn now, before any candidate is tried, so every candidate for this
+    // slot (including ones re-tried after a backtrack) sees the same frame —
+    // matching cap/color's existing "fixed once per slot-open" contract.
+    // Which of {4, longCap} actually gets USED is decided at commit time
+    // below, once a candidate's real length is known; for a config with no
+    // "long" bucket (easy: vehicleLens is just [2]) longCaps is empty and
+    // longCap is never read.
+    const longCap = longCaps.length ? longCaps[Math.floor(rng() * longCaps.length)] : 4;
     const candidates = shuffleWithRng(candidateTemplates.slice(), rng);
-    stack.push({ cap, color, candidates, idx: 0, committedId: null, cells: null, dir: null });
+    stack.push({ longCap, color, candidates, idx: 0, committedId: null, cells: null, dir: null });
   }
 
   openSlot();
@@ -1567,7 +1670,15 @@ function attemptPack(N, cfg, colors, dirPool, rng, candidateTemplates, counters,
     if (bodyConflict) continue;
 
     const id = 'v' + (stack.length - 1);
-    const vehicle = { id, color: frame.color, dir: cand.dir, cells: cand.cells, cap: frame.cap, boarded: 0, arrivalSeq: null };
+    // Keyed off the candidate's ACTUAL cell count, not the vehicleLens bucket
+    // it came from: a diagonal candidate drawn from the "3" bucket gets
+    // capped to diagMaxLen cells in buildCandidateTemplates (diagonal runs
+    // already read longer per cell), so by the time it lands here it may
+    // have the same cells.length as a genuine short orthogonal candidate —
+    // and it should get the same capacity, since capacity is about the
+    // rendered body length, not the config bucket.
+    const cap = cand.cells.length === minLen ? 4 : frame.longCap;
+    const vehicle = { id, color: frame.color, dir: cand.dir, cells: cand.cells, cap: cap, boarded: 0, arrivalSeq: null };
     for (const c of cand.cells) grid[c.y][c.x] = id;
     placedMap[id] = vehicle;
 
@@ -2184,8 +2295,10 @@ if (typeof module !== 'undefined' && module.exports) {
 
     var info = colorInfo(v.color);
 
-    // Capacity shown as two rows of seat dots. Caps are always even (4/6/8),
-    // so this splits cleanly; guard anyway so an odd cap still renders sanely.
+    // The open-top roof: capacity shown as two rows of seat dots, flex-grown
+    // to fill whatever length is left once the fixed bonnet+windscreen are
+    // laid out (see .seat-dots). Caps are always even (4/6/8), so this splits
+    // cleanly into two rows; guarded anyway so an odd cap still renders sanely.
     var dots = document.createElement('div');
     dots.className = 'seat-dots';
     dots.style.color = info.glyphColor;
@@ -2197,20 +2310,35 @@ if (typeof module !== 'undefined' && module.exports) {
     }
     inner.appendChild(dots);
 
+    // Cab gap: a plain fixed-size spacer between the roof and the windscreen.
+    var cabGap = document.createElement('div');
+    cabGap.className = 'v-cab-gap';
+    inner.appendChild(cabGap);
+
+    // Windscreen: fixed size, between the cab gap and the bonnet. Three
+    // clipped panes (main windshield + two flaring side windows) sharing one
+    // box — see .ws-pane/.ws-main/.ws-side-a/.ws-side-b.
+    var windscreen = document.createElement('div');
+    windscreen.className = 'windscreen';
+    ['ws-main ws-pane', 'ws-side-a ws-pane', 'ws-side-b ws-pane'].forEach(function (cls) {
+      var pane = document.createElement('div');
+      pane.className = cls;
+      windscreen.appendChild(pane);
+    });
+    inner.appendChild(windscreen);
+
+    // Bonnet: fixed size, carries the direction arrow, sits just behind the
+    // headlights at the very nose. The body itself is rotated to face the
+    // travel direction, so a right-pointing glyph here always points the
+    // right way without any independent glyph rotation.
+    var bonnet = document.createElement('div');
+    bonnet.className = 'v-bonnet';
     var arrow = document.createElement('span');
     arrow.className = 'arrow';
     arrow.style.color = info.glyphColor;
-    // The body itself is rotated to face the travel direction, so a
-    // right-pointing glyph at the nose end always points the right way
-    // without any independent glyph rotation.
     arrow.textContent = '▶';
-    inner.appendChild(arrow);
-
-    // Windscreen: sits at the nose end, after the arrow, so the body reads
-    // rear-to-nose as seats, arrow, windscreen (see .vehicle-body CSS).
-    var windscreen = document.createElement('div');
-    windscreen.className = 'windscreen';
-    inner.appendChild(windscreen);
+    bonnet.appendChild(arrow);
+    inner.appendChild(bonnet);
 
     // Front headlights
     var hl1 = document.createElement('div'); hl1.className = 'v-headlight top';
@@ -2321,7 +2449,16 @@ if (typeof module !== 'undefined' && module.exports) {
 
         var ws = document.createElement('div');
         ws.className = 'bay-windscreen';
+        ['bay-ws-main ws-pane', 'bay-ws-side-a ws-pane', 'bay-ws-side-b ws-pane'].forEach(function (cls) {
+          var pane = document.createElement('div');
+          pane.className = cls;
+          ws.appendChild(pane);
+        });
         vehicleEl.appendChild(ws);
+
+        var bayCabGap = document.createElement('div');
+        bayCabGap.className = 'bay-cab-gap';
+        vehicleEl.appendChild(bayCabGap);
 
         var pipsWrap = document.createElement('div');
         pipsWrap.className = 'seat-pips';
