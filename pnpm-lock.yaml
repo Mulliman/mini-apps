@@ -108,6 +108,8 @@ importers:
         specifier: ^6.2.0
         version: 6.4.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.1)(tsx@4.21.0)
 
+  apps/games/shuffle-bus: {}
+
   apps/homepage:
     dependencies:
       react:
