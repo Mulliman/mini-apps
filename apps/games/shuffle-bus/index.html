@@ -1348,10 +1348,10 @@ function makeRng(seed) {
 // the same rectangle the renderer draws -- these constants and the rect
 // derivation below are that one shared definition.
 const BODY_GEOM = {
-  capCells: 0.78,      // added to the rear->nose centre distance to get drawn length
+  capCells: 0.74,      // added to the rear->nose centre distance to get drawn length
   widthOrtho: 0.90,    // body width for N/S/E/W vehicles -- stays under 1.0 - clearance so
                         // two adjacent parallel orthogonal bodies (centrelines 1.0 apart) never conflict
-  widthDiag: 0.65,     // body width for the four diagonal vehicles -- stays under 1/sqrt(2) - clearance
+  widthDiag: 0.64,     // body width for the four diagonal vehicles -- stays under 1/sqrt(2) - clearance
                         // (parallel diagonal centrelines are only ~0.707 apart); crossing that ceiling
                         // makes adjacent parallel diagonals illegal and boards get sparser, not denser
   clearance: 0.05       // minimum gap required between two bodies
