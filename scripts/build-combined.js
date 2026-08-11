@@ -3,6 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import workboxBuild from 'workbox-build';
+import { vendorExternals } from './vendor-externals.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,7 +69,28 @@ async function build() {
 
   console.log('✅ Combined build complete! Output is in ./dist');
 
-  // 4. Generate Service Worker
+  // 4. Pull runtime CDN dependencies (Tailwind Play CDN, Google Fonts) into
+  //    dist/vendor/ so the precache below can actually cover them. Must happen
+  //    before the service worker is generated.
+  console.log('📦 Vendoring external dependencies...');
+  try {
+    const v = await vendorExternals(distDir);
+    if (v.urls === 0 && v.failures.length === 0) {
+      console.log('   Nothing external to vendor.');
+    } else {
+      console.log(
+        `   Vendored ${v.urls} URL(s) + ${v.fontFiles} font file(s), rewrote ${v.files} file(s), ` +
+        `dropped ${v.subsetsDropped} unused font subset(s).`
+      );
+      if (v.failures.length) {
+        console.warn(`   ⚠️ ${v.failures.length} left on the CDN — those apps need a network.`);
+      }
+    }
+  } catch (error) {
+    console.warn('⚠️ Vendoring step failed, apps stay online-only:', error.message);
+  }
+
+  // 5. Generate Service Worker
   console.log('🛠 Generating Service Worker...');
   try {
     const { count, size, warnings } = await workboxBuild.generateSW({

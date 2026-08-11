@@ -315,6 +315,89 @@ body {
   font-size: 0.8rem;
 }
 
+/* Tablet range — sized against the Fire HD 8's ~960x600 CSS viewport, where the
+   desktop layout only reached about three apps per screenful. Height is auto
+   rather than fixed: the glass box is taller than any fixed header we would
+   want here, and a fixed height clips it. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .portal-header {
+    height: auto;
+    padding: 1rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .header-glass {
+    padding: 0.9rem 2.5rem;
+    border-radius: 28px;
+  }
+  .portal-header h1 {
+    font-size: 2.1rem;
+  }
+  .apps-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .app-card {
+    border-radius: 24px;
+  }
+  .app-card-image {
+    height: 160px;
+  }
+  .app-card-content {
+    padding: 1.1rem 1.35rem;
+  }
+  .app-title {
+    font-size: 1.35rem;
+    margin-bottom: 0.4rem;
+  }
+  .app-desc {
+    font-size: 0.92rem;
+    line-height: 1.45;
+    margin-bottom: 0.9rem;
+    /* Two lines is enough to tell the games apart; the child recognises them by
+       artwork anyway, and unclamped copy was costing a whole row. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .app-card-footer {
+    padding: 0.9rem 1.35rem;
+  }
+  .category-title {
+    font-size: 1.9rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Landscape on a small tablet is short before it is narrow, so vertical space
+   is the scarce axis. Declared after the block above so it wins where both match. */
+@media (max-height: 700px) {
+  .portal-header {
+    height: auto;
+    padding: 0.6rem 1.5rem;
+    margin-bottom: 0.9rem;
+  }
+  .header-glass {
+    padding: 0.7rem 2rem;
+  }
+  .portal-header h1 {
+    font-size: 1.8rem;
+  }
+  .app-card-image {
+    height: 125px;
+  }
+  .category-title {
+    font-size: 1.6rem;
+    margin-bottom: 0.9rem;
+  }
+  .portal-main {
+    padding-bottom: 2rem;
+  }
+  .portal-footer {
+    padding: 2rem 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .portal-header {
     height: auto;
