@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Device Check &mdash; Sam's MiniApps</title>
+<!--
+  Standalone diagnostic page. Deliberately written in ES5 with no build step,
+  no imports and no modern CSS: it has to run and be readable on whatever
+  ancient WebView we point it at, because the whole point is to find out how
+  ancient that WebView is. If this page itself fails to render, that is the
+  answer.
+-->
+<style>
+  body{margin:0;padding:16px;background:#0c0f1a;color:#e2e8f0;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+       font-size:15px;line-height:1.45;}
+  h1{font-size:1.3rem;margin:0 0 4px;}
+  p.sub{margin:0 0 18px;color:#94a3b8;font-size:0.85rem;}
+  h2{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;
+     color:#94a3b8;margin:22px 0 8px;font-weight:700;}
+  table{border-collapse:collapse;width:100%;}
+  td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,0.08);
+     vertical-align:top;font-size:0.87rem;word-break:break-word;}
+  td.k{color:#94a3b8;width:47%;}
+  td.v{font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .ok{color:#4ade80;}
+  .bad{color:#f87171;}
+  .warn{color:#fbbf24;}
+  .verdict{border-radius:12px;padding:14px 16px;margin:18px 0;
+           border:1px solid rgba(255,255,255,0.1);background:rgba(25,30,50,0.6);}
+  .verdict b{display:block;font-size:1.05rem;margin-bottom:4px;}
+  #copy{margin:18px 0 40px;padding:12px 18px;font-size:0.9rem;font-weight:600;
+        border:none;border-radius:10px;background:#6366f1;color:#fff;}
+  textarea{width:100%;height:150px;background:#020617;color:#cbd5e1;
+           border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px;
+           font-family:ui-monospace,Menlo,Consolas,monospace;font-size:0.72rem;}
+  /* Deliberate canaries: if the swatch is grey the WebView dropped the rule. */
+  .swatch{display:inline-block;width:20px;height:20px;border-radius:4px;
+          vertical-align:middle;margin-right:8px;background:#64748b;}
+  .sw-oklch{background:oklch(0.72 0.19 145);}
+  .sw-mix{background:color-mix(in srgb,#22c55e 100%,#000 0%);}
+</style>
+</head>
+<body>
+<h1>Device Check</h1>
+<p class="sub">Open this on the Fire tablet. It reports what the browser here can actually do.</p>
+
+<div class="verdict" id="verdict"><b>Checking&hellip;</b><span id="verdictText">&nbsp;</span></div>
+
+<h2>Browser</h2>
+<table id="tBrowser"></table>
+
+<h2>Screen</h2>
+<table id="tScreen"></table>
+
+<h2>CSS support &mdash; decides if 4 apps work</h2>
+<table id="tCss"></table>
+<p style="font-size:0.85rem;color:#94a3b8;">
+  <span class="swatch sw-oklch"></span>oklch swatch &mdash; must be green<br>
+  <span class="swatch sw-mix"></span>color-mix swatch &mdash; must be green
+</p>
+
+<h2>JavaScript &amp; APIs</h2>
+<table id="tJs"></table>
+
+<button id="copy" type="button">Copy all results</button>
+<textarea id="dump" readonly></textarea>
+
+<script>
+/* eslint-disable */
+(function () {
+  var rows = {};
+
+  function add(tableId, key, value, state) {
+    var t = document.getElementById(tableId);
+    var tr = t.insertRow(-1);
+    var td1 = tr.insertCell(0); td1.className = 'k'; td1.appendChild(document.createTextNode(key));
+    var td2 = tr.insertCell(1); td2.className = 'v' + (state ? ' ' + state : '');
+    td2.appendChild(document.createTextNode(String(value)));
+    rows[key] = String(value);
+  }
+
+  function supportsCss(prop, val) {
+    try {
+      if (window.CSS && CSS.supports) return CSS.supports(prop, val);
+    } catch (e) {}
+    // Fallback for WebViews predating CSS.supports.
+    try {
+      var el = document.createElement('div');
+      el.style[prop] = val;
+      return el.style[prop] !== '';
+    } catch (e) { return false; }
+  }
+
+  function yn(b) { return b ? 'yes' : 'NO'; }
+  function state(b) { return b ? 'ok' : 'bad'; }
+
+  var ua = navigator.userAgent;
+
+  // Chromium version is the number that actually decides everything else.
+  var chromeMatch = /Chrom(?:e|ium)\/(\d+)(?:\.(\d+))?/.exec(ua);
+  var chromeMajor = chromeMatch ? parseInt(chromeMatch[1], 10) : null;
+
+  add('tBrowser', 'Chromium version', chromeMajor === null ? 'not detected' : chromeMajor,
+      chromeMajor === null ? 'warn' : (chromeMajor >= 111 ? 'ok' : 'bad'));
+  add('tBrowser', 'Is Amazon Silk', yn(/Silk/i.test(ua)));
+  add('tBrowser', 'Is Android WebView', yn(/\bwv\b/.test(ua)));
+  add('tBrowser', 'Android version', (/Android (\d+(?:\.\d+)?)/.exec(ua) || [, 'n/a'])[1]);
+  add('tBrowser', 'Standalone / installed', yn(
+      (window.matchMedia && matchMedia('(display-mode: standalone)').matches) ||
+      navigator.standalone === true));
+  add('tBrowser', 'User agent', ua);
+
+  add('tScreen', 'CSS viewport', window.innerWidth + ' x ' + window.innerHeight);
+  add('tScreen', 'Screen (CSS px)', screen.width + ' x ' + screen.height);
+  add('tScreen', 'Device pixel ratio', window.devicePixelRatio || 1);
+  add('tScreen', 'Physical pixels', Math.round((screen.width || 0) * (window.devicePixelRatio || 1)) +
+      ' x ' + Math.round((screen.height || 0) * (window.devicePixelRatio || 1)));
+  add('tScreen', 'Orientation', (window.innerWidth >= window.innerHeight) ? 'landscape' : 'portrait');
+
+  // These four are the ones Tailwind v4 emits. If any is "NO", the apps built
+  // with Tailwind v4 will render with dropped colours on this device.
+  var css = {
+    'oklch()': supportsCss('color', 'oklch(0.7 0.1 145)'),
+    'color-mix()': supportsCss('color', 'color-mix(in srgb, red 50%, blue)'),
+    '@property': (function () {
+      try { return typeof CSS !== 'undefined' && typeof CSS.registerProperty === 'function'; }
+      catch (e) { return false; }
+    })(),
+    'cascade layers (@layer)': (function () {
+      try { return typeof CSSLayerBlockRule !== 'undefined'; } catch (e) { return false; }
+    })(),
+    ':has()': supportsCss('selector(:has(*))', '') || (function () {
+      try { return CSS.supports('selector(:has(a))'); } catch (e) { return false; }
+    })(),
+    'backdrop-filter': supportsCss('backdrop-filter', 'blur(4px)') ||
+                       supportsCss('-webkit-backdrop-filter', 'blur(4px)'),
+    'gap in flexbox': supportsCss('gap', '1rem'),
+    'aspect-ratio': supportsCss('aspect-ratio', '1 / 1')
+  };
+  var tailwindV4Ok = css['oklch()'] && css['color-mix()'] && css['@property'];
+  for (var k in css) { if (css.hasOwnProperty(k)) add('tCss', k, yn(css[k]), state(css[k])); }
+
+  var js = {
+    'optional chaining (?.)': (function () { try { return eval('({a:1})?.a === 1'); } catch (e) { return false; } })(),
+    'nullish coalescing (??)': (function () { try { return eval('(null ?? 2) === 2'); } catch (e) { return false; } })(),
+    'logical assignment (??=)': (function () { try { return eval('(function(){var x=null;x??=3;return x===3})()'); } catch (e) { return false; } })(),
+    'class fields': (function () { try { return eval('(function(){class C{x=1};return new C().x===1})()'); } catch (e) { return false; } })(),
+    'static blocks': (function () { try { return eval('(function(){class C{static{}};return true})()'); } catch (e) { return false; } })(),
+    'Array.at()': typeof Array.prototype.at === 'function',
+    'structuredClone': typeof structuredClone === 'function',
+    'service worker': ('serviceWorker' in navigator),
+    'Cache Storage': (typeof caches !== 'undefined'),
+    'localStorage': (function () { try { localStorage.setItem('_t', '1'); localStorage.removeItem('_t'); return true; } catch (e) { return false; } })(),
+    'Web Audio': (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined'),
+    'WebGL': (function () { try { return !!document.createElement('canvas').getContext('webgl'); } catch (e) { return false; } })(),
+    'online now': navigator.onLine
+  };
+  for (var j in js) { if (js.hasOwnProperty(j)) add('tJs', j, yn(js[j]), state(js[j])); }
+
+  // Service worker state matters for offline: report it once settled.
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      add('tJs', 'SW registrations', regs.length ? regs.length + ' (' + regs[0].scope + ')' : 'none yet');
+      if (typeof caches !== 'undefined' && caches.keys) {
+        caches.keys().then(function (keys) { add('tJs', 'Cache buckets', keys.length ? keys.join(', ') : 'none yet'); });
+      }
+    })['catch'](function () {});
+  }
+
+  var v = document.getElementById('verdict');
+  var vt = document.getElementById('verdictText');
+  var head = v.getElementsByTagName('b')[0];
+  if (tailwindV4Ok && js['nullish coalescing (??)']) {
+    head.className = 'ok';
+    head.firstChild.nodeValue = 'All clear';
+    vt.appendChild(document.createTextNode(
+      'This WebView (Chromium ' + (chromeMajor || '?') + ') supports everything the apps use. ' +
+      'No compatibility work needed — package the APK as planned.'));
+  } else if (!tailwindV4Ok) {
+    head.className = 'bad';
+    head.firstChild.nodeValue = 'Modern CSS missing';
+    vt.appendChild(document.createTextNode(
+      'This WebView (Chromium ' + (chromeMajor || '?') + ') cannot parse the colour syntax Tailwind v4 emits. ' +
+      'Pattern Playtime, Simple Sums, Poly Pals and Solar System Explorer will render with broken colours ' +
+      'and need a compatibility pass before this goes on the tablet.'));
+  } else {
+    head.className = 'warn';
+    head.firstChild.nodeValue = 'Old JavaScript engine';
+    vt.appendChild(document.createTextNode(
+      'CSS is fine but this engine is missing modern JavaScript syntax the bundles use. ' +
+      'The build target needs lowering.'));
+  }
+
+  // One tap to get everything off the tablet and into a message.
+  var lines = [];
+  for (var key in rows) { if (rows.hasOwnProperty(key)) lines.push(key + ': ' + rows[key]); }
+  var text = lines.join('\n');
+  document.getElementById('dump').value = text;
+  document.getElementById('copy').onclick = function () {
+    var ta = document.getElementById('dump');
+    ta.focus(); ta.select();
+    var done = false;
+    try { done = document.execCommand('copy'); } catch (e) {}
+    if (!done && navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () { done = true; })['catch'](function () {});
+    }
+    this.innerHTML = done ? 'Copied' : 'Select the text below and copy';
+  };
+})();
+</script>
+</body>
+</html>

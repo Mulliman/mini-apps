@@ -3,6 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import workboxBuild from 'workbox-build';
+import { vendorExternals } from './vendor-externals.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +25,19 @@ async function build() {
   execSync('pnpm --filter @miniapps/homepage run build', { cwd: rootDir, stdio: 'inherit' });
   fs.copySync(path.resolve(rootDir, 'apps/homepage/dist'), distDir);
 
-  // 3. Find other apps
+  // 3. Publish the shared brand icons at /branding/. Single source of truth for
+  //    the manifest, the install prompt and every mini app's favicon.
+  const brandingSrc = path.resolve(rootDir, 'apps/shared/branding');
+  if (fs.existsSync(brandingSrc)) {
+    console.log('🎨 Copying shared branding...');
+    fs.copySync(brandingSrc, path.join(distDir, 'branding'), {
+      filter: src => path.extname(src).toLowerCase() !== '.md',
+    });
+  } else {
+    console.warn('⚠️ apps/shared/branding not found — icons will 404.');
+  }
+
+  // 4. Find other apps
   const appsBaseDir = path.resolve(rootDir, 'apps');
   const categories = fs.readdirSync(appsBaseDir).filter(f => 
     fs.statSync(path.join(appsBaseDir, f)).isDirectory() && 
@@ -68,7 +81,28 @@ async function build() {
 
   console.log('✅ Combined build complete! Output is in ./dist');
 
-  // 4. Generate Service Worker
+  // 5. Pull runtime CDN dependencies (Tailwind Play CDN, Google Fonts) into
+  //    dist/vendor/ so the precache below can actually cover them. Must happen
+  //    before the service worker is generated.
+  console.log('📦 Vendoring external dependencies...');
+  try {
+    const v = await vendorExternals(distDir);
+    if (v.urls === 0 && v.failures.length === 0) {
+      console.log('   Nothing external to vendor.');
+    } else {
+      console.log(
+        `   Vendored ${v.urls} URL(s) + ${v.fontFiles} font file(s), rewrote ${v.files} file(s), ` +
+        `dropped ${v.subsetsDropped} unused font subset(s).`
+      );
+      if (v.failures.length) {
+        console.warn(`   ⚠️ ${v.failures.length} left on the CDN — those apps need a network.`);
+      }
+    }
+  } catch (error) {
+    console.warn('⚠️ Vendoring step failed, apps stay online-only:', error.message);
+  }
+
+  // 6. Generate Service Worker
   console.log('🛠 Generating Service Worker...');
   try {
     const { count, size, warnings } = await workboxBuild.generateSW({

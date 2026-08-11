@@ -9,6 +9,14 @@
         "dev"
       ],
       "port": 5173
+    },
+    {
+      "name": "dist-preview",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/serve-dist.js"
+      ],
+      "port": 4173
     }
   ]
 }

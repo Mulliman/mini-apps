@@ -82,7 +82,7 @@ export function PWAInstallPrompt() {
     <div style={styles.container}>
       <div style={styles.card}>
         <div style={styles.header}>
-          <img src="./vite.svg" alt="App Icon" style={styles.icon} />
+          <img src="/branding/icon-192.png" alt="App Icon" style={styles.icon} />
           <h3 style={styles.title}>Install MiniApps</h3>
         </div>
 

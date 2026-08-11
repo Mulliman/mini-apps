@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "pnpm -r run build",
     "build:deploy": "node scripts/build-combined.js",
+    "preview:dist": "node scripts/serve-dist.js",
     "lint": "pnpm -r run lint",
     "clean": "pnpm -r exec rm -rf node_modules dist .turbo .next"
   },
