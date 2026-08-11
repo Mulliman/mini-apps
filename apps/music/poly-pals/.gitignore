@@ -1,6 +1,8 @@
 node_modules/
 build/
 dist/
+# Rendered videos are build artifacts — the spec in public/specs is the source.
+out/
 coverage/
 .DS_Store
 *.log

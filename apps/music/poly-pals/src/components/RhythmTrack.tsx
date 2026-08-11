@@ -3,178 +3,190 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Rhythm } from '../types';
-import { Volume2, VolumeX, Trash2, Settings } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useEffect, useRef } from 'react';
+import { Volume2, VolumeX, Trash2 } from 'lucide-react';
 import ExpressionFace from './ExpressionFace';
+import { ANIM, type SampledLane } from '../video/spec';
 
 interface RhythmTrackProps {
-  rhythm: Rhythm;
-  currentTime: number;      // master time in seconds
-  barDuration: number;      // master loop duration in seconds
+  lane: SampledLane;
+  /** Seconds elapsed within the current bar. */
+  timeInBar: number;
+  barDuration: number;
   isPlaying: boolean;
-  isSelected: boolean;
-  onEdit: (rhythmId: string) => void;
-  onRemove: (rhythmId: string) => void;
-  onToggleMute: (rhythmId: string) => void;
-  onPlayNoteTrigger: (frequency: number, isFirst: boolean, volume: number) => void;
+  /** Live mode fires the synth from here; renders use the offline audio pass. */
+  audible: boolean;
+  interactive: boolean;
+  isSelected?: boolean;
+  onEdit?: (rhythmId: string) => void;
+  onRemove?: (rhythmId: string) => void;
+  onToggleMute?: (rhythmId: string) => void;
+  onPlayNoteTrigger?: (frequency: number, isFirst: boolean, volume: number) => void;
+}
+
+/** Expanding ring left behind by an impact, derived from time rather than a spring. */
+function Ripple({ phase, color }: { phase: number; color: string }) {
+  if (phase < 0 || phase >= 1) return null;
+  const scale = 0.1 + phase * 2.1;
+  const opacity = 0.8 * (1 - phase);
+  return (
+    <div
+      style={{
+        transform: `translate(-50%, -50%) scale(${scale})`,
+        opacity,
+        borderColor: color,
+        boxShadow: `0 0 12px ${color}`,
+        width: 'calc(var(--pp-ball) * 0.9)',
+        height: 'calc(var(--pp-ball) * 0.28)',
+      }}
+      className="absolute left-1/2 top-1/2 border-2 rounded-full pointer-events-none"
+    />
+  );
 }
 
 export default function RhythmTrack({
-  rhythm,
-  currentTime,
+  lane,
+  timeInBar,
   barDuration,
   isPlaying,
-  isSelected,
+  audible,
+  interactive,
+  isSelected = false,
   onEdit,
   onRemove,
   onToggleMute,
   onPlayNoteTrigger,
 }: RhythmTrackProps) {
-  const { id, timeSignature, noteName, frequency, color, name, volume, isMuted, expression } = rhythm;
+  const { id, timeSignature, noteName, frequency, color, volume, isMuted, expression } = lane.rhythm;
 
-  const prevBeatRef = useRef<number>(-1);
-  const [ripplePulse, setRipplePulse] = useState(0);
-
-  // Math for the bounce:
   const beatPeriod = barDuration / timeSignature;
-  const continuousBeats = currentTime / beatPeriod;
+  const continuousBeats = timeInBar / beatPeriod;
   const currentBeat = Math.floor(continuousBeats) % timeSignature;
   const beatProgress = continuousBeats % 1;
 
-  // Parabolic bounce formula:
-  // Height ranges from 0 (at start and end of beat) to 1 (at midpoint/apex)
+  // Parabola: 0 at the floor on each beat boundary, 1 at the apex mid-beat.
   const bounceHeight = 1 - 4 * Math.pow(beatProgress - 0.5, 2);
 
-  // Monitor beat triggers for audio and ripple effects
+  // Ripples, derived. The previous ring is drawn too so that fast lanes — where the
+  // beat period is shorter than the ripple — keep the overlapping wash they had
+  // when this was an AnimatePresence stack.
+  const sinceStrike = beatProgress * beatPeriod;
+  const ripplePhase = isPlaying ? sinceStrike / ANIM.ripple : -1;
+  const previousRipplePhase = isPlaying ? (sinceStrike + beatPeriod) / ANIM.ripple : -1;
+
+  // Live audio still fires on beat crossings; renders take the offline path instead.
+  const prevBeatRef = useRef<number>(-1);
   useEffect(() => {
-    if (!isPlaying) {
+    if (!audible || !isPlaying) {
       prevBeatRef.current = -1;
       return;
     }
-
-    const integerBeatFloat = Math.floor(continuousBeats);
-    if (integerBeatFloat !== prevBeatRef.current) {
-      const triggeredBeat = integerBeatFloat % timeSignature;
-      const isFirstBeatOfBar = triggeredBeat === 0;
-
-      // Play the physical synth note if not muted
+    const absoluteBeat = Math.floor(continuousBeats);
+    if (absoluteBeat !== prevBeatRef.current) {
       if (!isMuted) {
-        onPlayNoteTrigger(frequency, isFirstBeatOfBar, volume);
+        onPlayNoteTrigger?.(frequency, absoluteBeat % timeSignature === 0, volume);
       }
-
-      // Trigger the bottom hit ripple flash
-      setRipplePulse((prev) => prev + 1);
-      
-      prevBeatRef.current = integerBeatFloat;
+      prevBeatRef.current = absoluteBeat;
     }
-  }, [continuousBeats, isPlaying, isMuted, frequency, timeSignature, volume, onPlayNoteTrigger]);
+  }, [audible, continuousBeats, isPlaying, isMuted, frequency, timeSignature, volume, onPlayNoteTrigger]);
 
   return (
     <div
       id={`lane-${id}`}
-      className={`relative flex flex-col justify-end items-center text-white transition-all duration-300 flex-1 min-w-0 max-w-[120px] group select-none ${
-        isSelected ? 'scale-105' : ''
+      className={`relative flex flex-col justify-end items-center text-white group select-none shrink-0 ${
+        interactive ? 'cursor-pointer' : ''
       }`}
-      onClick={(e) => {
-        e.stopPropagation();
-        onEdit(id);
-      }}
+      style={{ width: 'var(--pp-lane-pitch)' }}
+      onClick={interactive ? (e) => { e.stopPropagation(); onEdit?.(id); } : undefined}
     >
-      {/* Floating control buttons on high opacity hover */}
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleMute(id);
-          }}
-          style={{ color: isMuted ? '#ff4b4b' : '#a1a1aa' }}
-          className="p-1.5 rounded-full hover:bg-white/10 transition-colors bg-black/50 backdrop-blur"
-          title={isMuted ? "Unmute Lane" : "Mute Lane"}
-        >
-          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-        </button>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove(id);
-          }}
-          className="p-1.5 rounded-full text-zinc-500 hover:text-red-400 hover:bg-white/10 transition-colors bg-black/50 backdrop-blur"
-          title="Delete track"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      </div>
+      {interactive && (
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onToggleMute?.(id); }}
+            style={{ color: isMuted ? '#ff4b4b' : '#a1a1aa' }}
+            className="p-1.5 rounded-full hover:bg-white/10 transition-colors bg-black/50 backdrop-blur"
+            title={isMuted ? 'Unmute Lane' : 'Mute Lane'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onRemove?.(id); }}
+            className="p-1.5 rounded-full text-zinc-500 hover:text-red-400 hover:bg-white/10 transition-colors bg-black/50 backdrop-blur"
+            title="Delete track"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
-      {/* Note frequency header info */}
-      <div 
-        style={{ color: color }} 
-        className="absolute -top-10 flex flex-col items-center text-xs font-bold font-mono tracking-widest z-10 transition-all duration-300 pointer-events-none"
+      {/* Time signature and pitch */}
+      <div
+        style={{ color, height: 'var(--pp-label-block)', fontSize: 'var(--pp-label-font)' }}
+        className="flex flex-col items-center justify-end pb-[0.4em] font-bold font-mono tracking-widest z-10 pointer-events-none leading-tight"
       >
         <span>{timeSignature}♩</span>
-        <span>{noteName} {isMuted && <span className="text-[9px] text-red-500 uppercase ml-1 opacity-80">(Muted)</span>}</span>
+        <span className="whitespace-nowrap">
+          {noteName}
+          {isMuted && <span className="text-[0.7em] text-red-500 uppercase ml-1 opacity-80">(muted)</span>}
+        </span>
       </div>
 
-      {/* Bouncing runway track-line */}
-      <div className="relative w-[2px] h-[60vh] min-h-[110px] max-h-[600px] md:h-[50vh] bg-white/5 my-0.5 z-10 pointer-events-none mb-8 md:mb-16">
-        
-        {/* Glowing impact floor ripple */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[10px] flex items-center justify-center">
-          <div className="w-4 h-[1px] bg-white/20 rounded-full" />
-          <AnimatePresence>
-            {ripplePulse > 0 && (
-              <motion.div
-                key={ripplePulse}
-                initial={{ scale: 0.1, opacity: 0.8 }}
-                animate={{ scale: 2.2, opacity: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                style={{ 
-                  borderColor: color,
-                  boxShadow: `0 0 12px ${color}`
-                }}
-                className="absolute w-8 h-2 border-2 rounded-full"
-              />
-            )}
-          </AnimatePresence>
+      {/* Headroom for the ball at the top of its arc. */}
+      <div style={{ height: 'var(--pp-ball-clearance)' }} className="shrink-0" />
+
+      {/* Runway */}
+      <div
+        className="relative w-[2px] bg-white/5 z-10 pointer-events-none"
+        style={{ height: 'var(--pp-runway)' }}
+      >
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-[1px] bg-white/20 rounded-full" />
+
+        <div className="absolute bottom-0 left-0 w-full h-0">
+          <Ripple phase={previousRipplePhase} color={color} />
+          <Ripple phase={ripplePhase} color={color} />
         </div>
 
-        {/* Parabolic bouncing ball */}
-        <div 
+        <div
           style={{
             bottom: `${bounceHeight * 100}%`,
             left: '50%',
+            width: 'var(--pp-ball)',
+            height: 'var(--pp-ball)',
             transform: 'translate(-50%, 50%)',
             backgroundColor: color,
             boxShadow: isSelected ? `0 0 30px ${color}` : `0 0 20px ${color}`,
-            border: isSelected ? '2px solid white' : 'none'
+            border: isSelected ? '2px solid white' : 'none',
+            opacity: isMuted ? 0.45 : 1,
           }}
-          className="absolute w-[clamp(1.4rem,6vw,5.5rem)] h-[clamp(1.4rem,6vw,5.5rem)] rounded-full pointer-events-auto flex items-center justify-center will-change-transform transition-[border,box-shadow]"
+          className="absolute rounded-full pointer-events-auto flex items-center justify-center will-change-transform"
         >
-          {/* Subtle reflection core shine */}
           <div className="w-[15%] h-[15%] bg-white/40 rounded-full absolute top-[15%] left-[15%] pointer-events-none" />
           <ExpressionFace type={expression} className="w-full h-full opacity-60 text-black" />
         </div>
       </div>
 
-      {/* Dynamic current beat index (The Number) */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center pb-2">
-        <div 
-          className="w-10 h-10 rounded-md flex items-center justify-center shadow-lg transition-colors border border-white/20"
-          style={{ 
-            backgroundColor: isPlaying ? color : 'rgba(255,255,255,0.05)',
-            boxShadow: isPlaying ? `0 0 15px ${color}80` : 'none',
-            color: isPlaying ? '#000' : 'rgba(255,255,255,0.3)'
-          }}
-        >
-          <span className="text-xl font-black font-mono tracking-tighter">
-            {isPlaying ? (currentBeat + 1) : '-'}
-          </span>
-        </div>
+      {/* Clearance so a ball resting on the floor doesn't sit over the counter. */}
+      <div style={{ height: 'var(--pp-ball-clearance)' }} className="shrink-0" />
+
+      {/* Beat counter */}
+      <div style={{ height: 'var(--pp-beat-gap)' }} className="shrink-0" />
+      <div
+        className="rounded-md flex items-center justify-center shadow-lg border border-white/20"
+        style={{
+          width: 'var(--pp-beat-box)',
+          height: 'var(--pp-beat-box)',
+          backgroundColor: isPlaying ? color : 'rgba(255,255,255,0.05)',
+          boxShadow: isPlaying ? `0 0 15px ${color}80` : 'none',
+          color: isPlaying ? '#000' : 'rgba(255,255,255,0.3)',
+        }}
+      >
+        <span className="font-black font-mono tracking-tighter" style={{ fontSize: 'calc(var(--pp-beat-box) * 0.55)' }}>
+          {isPlaying ? currentBeat + 1 : '-'}
+        </span>
       </div>
+      <div style={{ height: 'var(--pp-bottom-pad)' }} className="shrink-0" />
     </div>
   );
 }

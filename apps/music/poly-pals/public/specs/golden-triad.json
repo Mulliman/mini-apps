@@ -1,0 +1,13 @@
+{
+  "name": "Golden Triad",
+  "description": "3 against 4 against 5 against 6, held steady. No events, so it loops seamlessly.",
+  "bars": 8,
+  "barDuration": 4.0,
+  "rhythms": [
+    { "id": "a", "timeSignature": 3, "noteName": "C4", "frequency": 261.63, "color": "#00f0ff", "name": "Rhythm A", "volume": 0.8, "isMuted": false, "expression": "happy" },
+    { "id": "b", "timeSignature": 4, "noteName": "E4", "frequency": 329.63, "color": "#fffb00", "name": "Rhythm B", "volume": 0.8, "isMuted": false, "expression": "cool" },
+    { "id": "c", "timeSignature": 5, "noteName": "G4", "frequency": 392.0, "color": "#ff007f", "name": "Rhythm C", "volume": 0.8, "isMuted": false, "expression": "excited" },
+    { "id": "d", "timeSignature": 6, "noteName": "C5", "frequency": 523.25, "color": "#b026ff", "name": "Rhythm D", "volume": 0.75, "isMuted": false, "expression": "silly" }
+  ],
+  "events": []
+}
