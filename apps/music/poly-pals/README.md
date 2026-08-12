@@ -88,6 +88,34 @@ lands on a downbeat, where the balls align.
 *see* the rhythm they stopped hearing. `update` keeps a lane in place, where
 `remove` + `add` would make it visibly leave and return.
 
+## House rules
+
+Leave `volume`, `expression` and `frequency` out of a spec and let the normaliser
+derive them:
+
+```bash
+pnpm --filter @miniapps/poly-pals normalise cmaj7-arc          # rewrite in place
+pnpm --filter @miniapps/poly-pals normalise cmaj7-arc --check  # report only
+```
+
+- **Mix level from pitch** — `0.85 × (C4 / freq)^0.5`, so C3 sits at 0.95 and C6 at
+  0.43. Hearing peaks around 3–4 kHz, so a high note at equal amplitude simply
+  sounds louder; pulling it back is closer to equal loudness than flat gain, and it
+  keeps the downbeat from clipping.
+- **Each lane's face from the interval it forms on arrival** — measured against the
+  bass, since that's what gives a chord its quality. A semitone rub or a tritone
+  against *any* sounding note overrides, because the ear flags those regardless of
+  the bass.
+
+It also validates the spec: signatures in range, notes in the palette (naturals
+C3–C6 only), ids unique among sounding lanes, events on real bars targeting live
+lanes.
+
+Composition itself stays a human decision. `.claude/skills/polypals-video/` carries
+the style — how to read a brief like *"a Cmaj7 in 4s with a complementing chord in
+threes"*, how to voice chords across rhythmic families, and the build-and-unwind
+arc. `public/specs/cmaj7-arc.json` is a worked example.
+
 A spec with **no events loops seamlessly** — the renderer emits the half-open frame
 range so the loop point isn't a duplicated frame, and the final decay tails are
 folded back over the start. Any `add` or `remove` means the end state differs from
