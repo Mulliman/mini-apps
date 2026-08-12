@@ -81,6 +81,7 @@ export default function Board({
                 isPlaying={isPlaying}
                 audible={audible}
                 interactive={interactive}
+                compactLabel={layout.compactLabel}
                 isSelected={selectedId === lane.rhythm.id}
                 onEdit={onEdit}
                 onRemove={onRemove}

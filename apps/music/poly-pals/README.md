@@ -69,6 +69,7 @@ lands on a downbeat, where the balls align.
 ```jsonc
 {
   "name": "Layers",
+  "title": "Can you hear the 7 leave?",  // optional, shown across the top
   "bars": 16,              // total length in bars
   "barDuration": 3.2,      // seconds per bar at the start
   "rhythms": [ /* the arrangement at bar 0 */ ],
@@ -91,6 +92,35 @@ A spec with **no events loops seamlessly** — the renderer emits the half-open 
 range so the loop point isn't a duplicated frame, and the final decay tails are
 folded back over the start. Any `add` or `remove` means the end state differs from
 the start, so it can't loop.
+
+## Frame layout
+
+The frame is split vertically into a title band, the arrangement, and the PolyPals
+wordmark — **1.5 / 8 / 1.5** in portrait, **1.1 / 9 / 1.1** in landscape:
+
+```
+┌─────────────────┐
+│      title      │  1.5   ← clear of the platform's top overlays
+├─────────────────┤
+│                 │
+│  the bouncing   │   8
+│                 │
+├─────────────────┤
+│   PolyPals.     │  1.5   ← clear of captions and the scrubber
+└─────────────────┘
+```
+
+The bands are reserved whether or not a spec sets a `title`. Their real job is
+keeping the balls — which spend most of their time near the floor — out from under
+the controls Shorts and TikTok draw over the bottom of the video. Landscape players
+auto-hide their controls, so 16:9 reserves less: it would be paying height for
+protection it doesn't need.
+
+Landscape also folds each lane's label onto one line (`3♩ C4` rather than stacked)
+and allows a slightly fatter ball relative to its runway. Height is the scarce
+resource in a wide frame, and both changes buy it back where it shows.
+
+Note that the title is baked into every frame: changing it means re-rendering.
 
 ## Record a spec instead of writing one
 

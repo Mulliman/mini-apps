@@ -20,11 +20,21 @@ import { useEffect, useState, type RefObject } from 'react';
  * needs the parabola to read as *travel*; much above ~1/7 and it stops looking
  * like a bounce and starts looking like a ball wobbling in place.
  */
-const BALL_RUNWAY_RATIO = 1 / 9;
+const BALL_RUNWAY_RATIO = 1 / 8;
+/**
+ * A wide frame has far less height to spend, so holding it to the portrait ratio
+ * leaves the balls tiny. Trading a little travel for a bigger ball reads better
+ * there; much past 1/7 and the bounce stops looking like travel at all.
+ */
+const BALL_RUNWAY_RATIO_WIDE = 1 / 7;
 /** Ball diameter as a fraction of lane pitch, so lanes never visually collide. */
 const BALL_PITCH_RATIO = 0.62;
-/** Stops two lanes in a 16:9 frame from drifting to opposite edges. */
-const PITCH_BALL_RATIO = 3.2;
+/**
+ * Stops a couple of lanes in a 16:9 frame from drifting to opposite edges. Only
+ * binds when the frame is wide relative to its lane count — 9:16 is always
+ * width-limited instead, so this has no effect there.
+ */
+const PITCH_BALL_RATIO = 4.4;
 
 const MIN_BALL = 14;
 
@@ -40,6 +50,8 @@ export interface BoardLayout {
   labelBlock: number;
   beatBox: number;
   beatGap: number;
+  /** Wide frames put the lane's signature and note on one line to save height. */
+  compactLabel: boolean;
   /**
    * Space reserved above and below the runway. The ball is positioned by its
    * centre, so at the apex it overhangs the runway top by a radius and at the
@@ -55,11 +67,22 @@ const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi 
 export function computeLayout(width: number, height: number, laneCount: number): BoardLayout {
   const lanes = Math.max(1, laneCount);
 
+  // Labels and counters belong to a *lane*, so their natural size comes from the
+  // lane's width, bounded by the height available. Driving them from height alone
+  // made them near-illegible in 16:9, where the body band is short but wide.
   // Upper bounds are generous on purpose: clamping too low breaks proportionality
-  // between the 16:9 and 9:16 cuts, which is the whole point of one layout system.
-  const labelFont = clamp(height * 0.016, 10, 34);
-  const labelBlock = labelFont * 2.8;
-  const beatBox = clamp(height * 0.034, 26, 76);
+  // between the two cuts, which is the whole point of one layout system.
+  // Height is the scarce resource in a wide frame, so the two label lines get
+  // folded onto one — worth roughly 40% of the label block back.
+  const compactLabel = height > 0 && width / height > 1.5;
+  const basePitch = Math.min(width / lanes, width * 0.26);
+  const labelFont = clamp(
+    Math.min(basePitch * (compactLabel ? 0.11 : 0.15), height * 0.045),
+    11,
+    44
+  );
+  const labelBlock = labelFont * (compactLabel ? 1.7 : 2.8);
+  const beatBox = clamp(Math.min(basePitch * 0.36, height * 0.095), 24, 100);
   const beatGap = beatBox * 0.4;
   // Keeps the labels off the top edge and the counters off the bottom one.
   const topPad = height * 0.02;
@@ -70,8 +93,9 @@ export function computeLayout(width: number, height: number, laneCount: number):
 
   // Solve the runway/ball circularity in closed form: the ball overhangs by half
   // its diameter at each end of the runway, so a full diameter in total.
-  const runwayIfBallLimited = avail / (1 + BALL_RUNWAY_RATIO);
-  const ballMax = runwayIfBallLimited * BALL_RUNWAY_RATIO;
+  const ballRunwayRatio = compactLabel ? BALL_RUNWAY_RATIO_WIDE : BALL_RUNWAY_RATIO;
+  const runwayIfBallLimited = avail / (1 + ballRunwayRatio);
+  const ballMax = runwayIfBallLimited * ballRunwayRatio;
 
   const lanePitch = Math.min(width / lanes, ballMax * PITCH_BALL_RATIO);
   const ballSize = Math.max(MIN_BALL, Math.min(lanePitch * BALL_PITCH_RATIO, ballMax));
@@ -87,6 +111,7 @@ export function computeLayout(width: number, height: number, laneCount: number):
     labelBlock,
     beatBox,
     beatGap,
+    compactLabel,
     ballClearance: ballSize / 2,
     bottomPad,
   };

@@ -1,5 +1,6 @@
 {
   "name": "Golden Triad",
+  "title": "3 : 4 : 5 : 6",
   "description": "3 against 4 against 5 against 6, held steady. No events, so it loops seamlessly.",
   "bars": 8,
   "barDuration": 4.0,

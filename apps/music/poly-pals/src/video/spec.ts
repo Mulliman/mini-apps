@@ -40,6 +40,12 @@ export type VideoEvent =
 export interface VideoSpec {
   name: string;
   description?: string;
+  /**
+   * Shown across the top of the video for its whole duration. Optional — the
+   * header band is reserved either way, since its real job is keeping the
+   * arrangement clear of the platform's own overlays.
+   */
+  title?: string;
   /** Total length in bars. Wall-clock length depends on tempo events. */
   bars: number;
   /** Bar duration in seconds at bar 0. */

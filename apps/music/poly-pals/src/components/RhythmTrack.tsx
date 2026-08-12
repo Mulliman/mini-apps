@@ -17,6 +17,8 @@ interface RhythmTrackProps {
   /** Live mode fires the synth from here; renders use the offline audio pass. */
   audible: boolean;
   interactive: boolean;
+  /** Signature and note on one line — wide frames can't spare the height. */
+  compactLabel: boolean;
   isSelected?: boolean;
   onEdit?: (rhythmId: string) => void;
   onRemove?: (rhythmId: string) => void;
@@ -51,6 +53,7 @@ export default function RhythmTrack({
   isPlaying,
   audible,
   interactive,
+  compactLabel,
   isSelected = false,
   onEdit,
   onRemove,
@@ -124,10 +127,12 @@ export default function RhythmTrack({
       {/* Time signature and pitch */}
       <div
         style={{ color, height: 'var(--pp-label-block)', fontSize: 'var(--pp-label-font)' }}
-        className="flex flex-col items-center justify-end pb-[0.4em] font-bold font-mono tracking-widest z-10 pointer-events-none leading-tight"
+        className={`flex items-center justify-center pb-[0.3em] font-bold font-mono tracking-widest z-10 pointer-events-none leading-tight whitespace-nowrap ${
+          compactLabel ? 'flex-row gap-[0.5em]' : 'flex-col justify-end'
+        }`}
       >
         <span>{timeSignature}♩</span>
-        <span className="whitespace-nowrap">
+        <span>
           {noteName}
           {isMuted && <span className="text-[0.7em] text-red-500 uppercase ml-1 opacity-80">(muted)</span>}
         </span>

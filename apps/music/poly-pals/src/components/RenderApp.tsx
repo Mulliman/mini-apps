@@ -10,6 +10,32 @@ import { compileSpec, loadSpec, sampleAt, type CompiledSpec } from '../video/spe
 import { renderSpecAudio, toBase64 } from '../video/renderAudio';
 import { initAudio } from '../utils/audio';
 
+/**
+ * Vertical split of the frame: title band, the arrangement, the wordmark.
+ *
+ * Portrait reserves more because that's where the bands earn their keep — Shorts
+ * and TikTok draw captions and a scrubber straight over the bottom of the frame,
+ * exactly where the balls sit at rest. Landscape players auto-hide their controls,
+ * so the same inset would cost height for protection it doesn't need.
+ */
+const BANDS = {
+  portrait: { header: 1.5, body: 8, footer: 1.5 },
+  landscape: { header: 1.1, body: 9, footer: 1.1 },
+};
+
+function useBands() {
+  const [landscape, setLandscape] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth / window.innerHeight > 1.5
+  );
+  useEffect(() => {
+    const onResize = () => setLandscape(window.innerWidth / window.innerHeight > 1.5);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return landscape ? BANDS.landscape : BANDS.portrait;
+}
+
 interface RenderAppProps {
   specName: string | null;
   /** Wait for `__polypals.seek()` instead of free-running on rAF. */
@@ -43,6 +69,7 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
   const [compiled, setCompiled] = useState<CompiledSpec | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [seekTick, setSeekTick] = useState(0);
+  const bands = useBands();
 
   const clock = useClock(!stepped && compiled !== null && error === null);
   const { setTime } = clock;
@@ -178,18 +205,49 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
       style={{ height: '100vh' }}
       onClick={stepped ? undefined : () => initAudio()}
     >
-      <Board
-        lanes={sample.lanes}
-        timeInBar={sample.timeInBar}
-        barDuration={sample.barDuration}
-        isPlaying
-        audible={!stepped}
-        framed={false}
-        interactive={false}
-      />
-      <div className="absolute bottom-3 right-4 text-white/15 font-black italic tracking-tighter select-none pointer-events-none text-[1.4vmin]">
-        PolyPals<span className="text-[#FF007A]/40">.</span>
+      {/*
+        Band ratios come from BANDS above and depend on the aspect. They are
+        reserved whether or not they hold anything — keeping the bouncing clear of
+        the platform's own overlays is the point, not the title. Type is sized in
+        vh so both cuts stay proportional to their frame.
+      */}
+      <header
+        className="flex items-center justify-center text-center overflow-hidden px-[7%] min-h-0"
+        style={{ flex: `${bands.header} 1 0` }}
+      >
+        {compiled.spec.title && (
+          <h1
+            className="font-semibold tracking-tight text-white/90"
+            style={{ fontSize: '5vh', lineHeight: 1.12 }}
+          >
+            {compiled.spec.title}
+          </h1>
+        )}
+      </header>
+
+      <div className="flex flex-col min-h-0" style={{ flex: `${bands.body} 1 0` }}>
+        <Board
+          lanes={sample.lanes}
+          timeInBar={sample.timeInBar}
+          barDuration={sample.barDuration}
+          isPlaying
+          audible={!stepped}
+          framed={false}
+          interactive={false}
+        />
       </div>
+
+      <footer
+        className="flex items-center justify-center overflow-hidden min-h-0 select-none"
+        style={{ flex: `${bands.footer} 1 0` }}
+      >
+        <span
+          className="font-black italic tracking-tighter text-white/30"
+          style={{ fontSize: '4.2vh' }}
+        >
+          PolyPals<span className="text-[#FF007A]/80">.</span>
+        </span>
+      </footer>
     </div>
   );
 }
