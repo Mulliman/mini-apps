@@ -1,0 +1,20 @@
+{
+  "name": "Layers",
+  "title": "Can you hear the 7 leave?",
+  "description": "Lanes enter one per bar, the 7 drops out to be heard by its absence, then the tempo tightens.",
+  "bars": 16,
+  "barDuration": 3.2,
+  "rhythms": [
+    { "id": "four", "timeSignature": 4, "noteName": "C4", "frequency": 261.63, "color": "#00f0ff", "name": "Four", "volume": 0.85, "isMuted": false, "expression": "cool" }
+  ],
+  "events": [
+    { "at": 2, "type": "add", "rhythm": { "id": "three", "timeSignature": 3, "noteName": "G3", "frequency": 196.0, "color": "#39ff14", "name": "Three", "volume": 0.8, "isMuted": false, "expression": "happy" } },
+    { "at": 4, "type": "add", "rhythm": { "id": "five", "timeSignature": 5, "noteName": "E4", "frequency": 329.63, "color": "#fffb00", "name": "Five", "volume": 0.8, "isMuted": false, "expression": "excited" } },
+    { "at": 6, "type": "add", "rhythm": { "id": "seven", "timeSignature": 7, "noteName": "A4", "frequency": 440.0, "color": "#ff007f", "name": "Seven", "volume": 0.75, "isMuted": false, "expression": "silly" } },
+    { "at": 9, "type": "mute", "id": "seven" },
+    { "at": 11, "type": "unmute", "id": "seven" },
+    { "at": 12, "type": "tempo", "barDuration": 2.4 },
+    { "at": 12, "type": "add", "rhythm": { "id": "nine", "timeSignature": 9, "noteName": "C5", "frequency": 523.25, "color": "#b026ff", "name": "Nine", "volume": 0.7, "isMuted": false, "expression": "surprised" } },
+    { "at": 14, "type": "remove", "id": "three" }
+  ]
+}

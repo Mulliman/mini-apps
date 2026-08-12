@@ -1,0 +1,147 @@
+{
+  "name": "Cmaj7 against Am",
+  "title": "Cmaj7 in 4s · Am in 3s",
+  "description": "C major 7 voiced across the binary family (2,4,8,16) in cool colours, A minor across the ternary family (3,6,12) in warm ones. Builds to seven, unwinds in reverse, ends on one silent bar.",
+  "bars": 22,
+  "barDuration": 2.6,
+  "rhythms": [
+    {
+      "id": "c3",
+      "timeSignature": 2,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "Root C3",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "e4",
+        "timeSignature": 4,
+        "noteName": "E4",
+        "color": "#00ffd0",
+        "name": "Third E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "g4",
+        "timeSignature": 8,
+        "noteName": "G4",
+        "color": "#39ff14",
+        "name": "Fifth G4",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "b4",
+        "timeSignature": 16,
+        "noteName": "B4",
+        "color": "#ccff00",
+        "name": "Seventh B4",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "dizzy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "a3",
+        "timeSignature": 3,
+        "noteName": "A3",
+        "color": "#ff007f",
+        "name": "Am root A3",
+        "frequency": 220,
+        "volume": 0.93,
+        "expression": "excited",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 10,
+      "type": "add",
+      "rhythm": {
+        "id": "c5",
+        "timeSignature": 6,
+        "noteName": "C5",
+        "color": "#ff5f00",
+        "name": "Am third C5",
+        "frequency": 523.25,
+        "volume": 0.6,
+        "expression": "angry",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 12,
+      "type": "add",
+      "rhythm": {
+        "id": "e5",
+        "timeSignature": 12,
+        "noteName": "E5",
+        "color": "#fffb00",
+        "name": "Am fifth E5",
+        "frequency": 659.25,
+        "volume": 0.54,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "e5"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "c5"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "a3"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "b4"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "g4"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "e4"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "c3"
+    }
+  ]
+}

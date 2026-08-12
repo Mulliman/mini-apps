@@ -3,32 +3,67 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Rhythm, COLOR_PALETTE, NOTE_PRESETS, BUILTIN_PRESETS } from './types';
 import { initAudio, playSynthNote, setMasterVolume } from './utils/audio';
-import RhythmTrack from './components/RhythmTrack';
+import Board from './components/Board';
+import RenderApp from './components/RenderApp';
 import SettingsPanel from './components/SettingsPanel';
 import { getRandomExpression } from './components/ExpressionFace';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  Plus, 
-  SlidersHorizontal, 
-  Volume2, 
-  Sparkles, 
+import { useBarGrid, useClock } from './video/clock';
+import { getRenderMode } from './video/renderMode';
+import { downloadSpec, useRecorder } from './video/recorder';
+import { ANIM, type SampledLane, type SpecRhythm } from './video/spec';
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Plus,
+  SlidersHorizontal,
+  Volume2,
+  Sparkles,
   HelpCircle,
   X,
   Keyboard,
-  Music4,
   CheckCircle2,
   Settings,
-  MoreVertical
+  MoreVertical,
+  Circle,
+  Square
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header from '../../../shared/Header';
 
 export default function App() {
+  // Read once: switching modes mid-session isn't a thing, and re-reading would let
+  // a render pick up live state.
+  const [mode] = useState(() => getRenderMode());
+  if (mode.active) {
+    return <RenderApp specName={mode.specName} stepped={mode.stepped} />;
+  }
+  return <LiveApp />;
+}
+
+/** Layout bookkeeping a lane needs beyond its own properties. */
+interface LaneMeta {
+  order: number;
+  enterTime: number;
+}
+
+interface LeavingLane {
+  rhythm: Rhythm;
+  order: number;
+  exitTime: number;
+}
+
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+const toSpecRhythm = (rhythm: Rhythm): SpecRhythm => ({
+  ...rhythm,
+  expression: rhythm.expression && rhythm.expression !== 'none' ? rhythm.expression : 'happy',
+});
+
+function LiveApp() {
   // Load initial rhythms from first preset or localStorage
   const [rhythms, setRhythms] = useState<Rhythm[]>(() => {
     try {
@@ -60,23 +95,40 @@ export default function App() {
   const [showGlobalSettings, setShowGlobalSettings] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [audioInitialized, setAudioInitialized] = useState(false);
+  const [leaving, setLeaving] = useState<LeavingLane[]>([]);
 
-  // Animation cursor states (uses refs to keep it buttery fast in RAF loop)
-  const [currentTimeState, setCurrentTimeState] = useState(0);
-  const currentTimeRef = useRef(0);
-  const isPlayingRef = useRef(isPlaying);
-  const barDurationRef = useRef(barDuration);
-  const lastTimeRef = useRef(0);
-  const requestIdRef = useRef<number | null>(null);
+  // The same clock the renderer uses — here it's just driven by rAF instead of by
+  // a stepping loop.
+  const clock = useClock(isPlaying);
+  const clockRef = useRef(0);
+  clockRef.current = clock.time;
 
-  // Sync refs with react states
-  useEffect(() => {
-    isPlayingRef.current = isPlaying;
-  }, [isPlaying]);
+  const grid = useBarGrid(clock.time, barDuration);
+  const recorder = useRecorder(grid, clock.time);
 
-  useEffect(() => {
-    barDurationRef.current = barDuration;
-  }, [barDuration]);
+  // Deferred actions run after their closure was created, so they read state
+  // through refs and write it functionally rather than capturing stale values.
+  const rhythmsRef = useRef(rhythms);
+  rhythmsRef.current = rhythms;
+  const pendingPatches = useRef(new Map<string, Partial<Rhythm>>());
+
+  const metaRef = useRef(new Map<string, LaneMeta>());
+  const orderRef = useRef(0);
+
+  const ensureMeta = useCallback((list: Rhythm[], enterTime: number) => {
+    for (const rhythm of list) {
+      if (!metaRef.current.has(rhythm.id)) {
+        metaRef.current.set(rhythm.id, { order: orderRef.current++, enterTime });
+      }
+    }
+  }, []);
+
+  // Seed metadata for whatever was restored from storage, entering at t=0.
+  const seededRef = useRef(false);
+  if (!seededRef.current) {
+    ensureMeta(rhythms, 0);
+    seededRef.current = true;
+  }
 
   // Save to LocalStorage whenever rhythms change
   useEffect(() => {
@@ -87,34 +139,7 @@ export default function App() {
     localStorage.setItem('polyrhythm_bar_duration', barDuration.toString());
   }, [barDuration]);
 
-  // Master clock loop running at up to 120Hz
-  useEffect(() => {
-    const loop = (timestamp: number) => {
-      if (!lastTimeRef.current) {
-        lastTimeRef.current = timestamp;
-      }
-      const deltaTime = (timestamp - lastTimeRef.current) / 1000; // delta in seconds
-      lastTimeRef.current = timestamp;
-
-      if (isPlayingRef.current) {
-        // Accumulate and wrap around complete bar duration
-        currentTimeRef.current = (currentTimeRef.current + deltaTime) % barDurationRef.current;
-        setCurrentTimeState(currentTimeRef.current);
-      }
-
-      requestIdRef.current = requestAnimationFrame(loop);
-    };
-
-    requestIdRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      if (requestIdRef.current) {
-        cancelAnimationFrame(requestIdRef.current);
-      }
-    };
-  }, []);
-
-  // Keyboard shortcut listener for spacebar layout toggling
+  // Keyboard shortcut listener for spacebar playback toggling
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Avoid firing when user is editing labels
@@ -127,7 +152,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPlaying]);
+  }, [isPlaying, audioInitialized]);
 
   const togglePlay = () => {
     // Lazy ignite standard browser AudioContext
@@ -135,26 +160,18 @@ export default function App() {
       initAudio();
       setAudioInitialized(true);
     }
-    
-    // Resume audio context just in case
+
     const ctx = initAudio();
     if (ctx && ctx.state === 'suspended') {
       ctx.resume();
     }
 
-    if (isPlaying) {
-      setIsPlaying(false);
-    } else {
-      lastTimeRef.current = performance.now();
-      setIsPlaying(true);
-    }
+    setIsPlaying((prev) => !prev);
   };
 
   const handleRestart = () => {
-    currentTimeRef.current = 0;
-    setCurrentTimeState(0);
-    lastTimeRef.current = performance.now();
-    
+    clock.setTime(0);
+
     // Brief visual flash / pop
     const tracksContainer = document.getElementById('tracks-container');
     if (tracksContainer) {
@@ -165,21 +182,29 @@ export default function App() {
 
   const loadPreset = (presetIndex: number) => {
     const targetPreset = BUILTIN_PRESETS[presetIndex];
-    if (targetPreset) {
-      // Discard active selects
-      setSelectedRhythmId(null);
-      
-      // Load copies to state with random expressions assigned
-      const presetRhythms = targetPreset.rhythms.map((r) => ({
-        ...r,
-        expression: getRandomExpression()
-      })) as Rhythm[];
-      setRhythms(presetRhythms);
-      
-      // Reset clock timers
-      currentTimeRef.current = 0;
-      setCurrentTimeState(0);
-    }
+    if (!targetPreset) return;
+
+    setSelectedRhythmId(null);
+
+    const presetRhythms = targetPreset.rhythms.map((r) => ({
+      ...r,
+      expression: getRandomExpression()
+    })) as Rhythm[];
+
+    metaRef.current.clear();
+    ensureMeta(presetRhythms, clockRef.current);
+    setLeaving([]);
+    setRhythms(presetRhythms);
+    clock.setTime(0);
+  };
+
+  const handleSetBarDuration = (value: number) => {
+    recorder.run(
+      'tempo',
+      `Tempo → ${value.toFixed(1)}s`,
+      () => setBarDuration(value),
+      (bar) => ({ at: bar, type: 'tempo', barDuration: value })
+    );
   };
 
   const handleAddRhythm = () => {
@@ -216,38 +241,105 @@ export default function App() {
       expression: getRandomExpression(),
     };
 
-    setRhythms([...rhythms, newRhythm]);
-    setSelectedRhythmId(newRhythm.id); // auto highlight newly created track parameters
+    recorder.run(
+      `add:${newRhythm.id}`,
+      `Add ${newRhythm.timeSignature}♩`,
+      () => {
+        ensureMeta([newRhythm], clockRef.current);
+        setRhythms((prev) => (prev.length >= 10 ? prev : [...prev, newRhythm]));
+        setSelectedRhythmId(newRhythm.id); // auto highlight newly created track parameters
+      },
+      (bar) => ({ at: bar, type: 'add', rhythm: toSpecRhythm(newRhythm) })
+    );
+  };
+
+  const applyRemoveRhythm = (rhythmId: string) => {
+    const departing = rhythmsRef.current.find((r) => r.id === rhythmId);
+    const meta = metaRef.current.get(rhythmId);
+    if (departing && meta) {
+      const exitTime = clockRef.current;
+      setLeaving((prev) => [
+        // Drop anything whose exit animation has already finished.
+        ...prev.filter((l) => exitTime - l.exitTime < ANIM.exit),
+        { rhythm: departing, order: meta.order, exitTime },
+      ]);
+    }
+    metaRef.current.delete(rhythmId);
+    setRhythms((prev) => prev.filter((r) => r.id !== rhythmId));
+    setSelectedRhythmId((prev) => (prev === rhythmId ? null : prev));
   };
 
   const handleRemoveRhythm = (rhythmId: string) => {
-    setRhythms(rhythms.filter((r) => r.id !== rhythmId));
-    if (selectedRhythmId === rhythmId) {
-      setSelectedRhythmId(null);
-    }
+    recorder.run(
+      `remove:${rhythmId}`,
+      'Remove lane',
+      () => applyRemoveRhythm(rhythmId),
+      (bar) => ({ at: bar, type: 'remove', id: rhythmId })
+    );
   };
 
-  const handleUpdateRhythm = (rhythmId: string, updates: Partial<Rhythm>) => {
-    setRhythms(
-      rhythms.map((r) => {
-        if (r.id === rhythmId) {
-          const merged = { ...r, ...updates };
-          // If update changed time signatures, let's update default label if not custom modified
-          if (updates.timeSignature && r.name === `Rhythm ${r.timeSignature}-Beats`) {
-            merged.name = `Rhythm ${updates.timeSignature}-Beats`;
-          }
-          return merged;
+  const applyUpdateRhythm = (rhythmId: string, updates: Partial<Rhythm>) => {
+    setRhythms((prev) =>
+      prev.map((r) => {
+        if (r.id !== rhythmId) return r;
+        const merged = { ...r, ...updates };
+        // If update changed time signatures, let's update default label if not custom modified
+        if (updates.timeSignature && r.name === `Rhythm ${r.timeSignature}-Beats`) {
+          merged.name = `Rhythm ${updates.timeSignature}-Beats`;
         }
-        return r;
+        return merged;
       })
     );
   };
 
-  const handleToggleMute = (rhythmId: string) => {
-    setRhythms(
-      rhythms.map((r) => (r.id === rhythmId ? { ...r, isMuted: !r.isMuted } : r))
+  const handleUpdateRhythm = (rhythmId: string, updates: Partial<Rhythm>) => {
+    if (recorder.status !== 'recording') {
+      applyUpdateRhythm(rhythmId, updates);
+      return;
+    }
+    // Dragging a slider fires many times before the downbeat; merge them into one
+    // patch so the spec records the value you settled on, not every step.
+    const merged = { ...(pendingPatches.current.get(rhythmId) ?? {}), ...updates };
+    pendingPatches.current.set(rhythmId, merged);
+    recorder.run(
+      `update:${rhythmId}`,
+      'Update lane',
+      () => {
+        pendingPatches.current.delete(rhythmId);
+        applyUpdateRhythm(rhythmId, merged);
+      },
+      (bar) => ({ at: bar, type: 'update', id: rhythmId, patch: merged as Partial<Omit<SpecRhythm, 'id'>> })
     );
   };
+
+  const handleToggleMute = (rhythmId: string) => {
+    const willMute = !rhythmsRef.current.find((r) => r.id === rhythmId)?.isMuted;
+    recorder.run(
+      `mute:${rhythmId}`,
+      willMute ? 'Mute lane' : 'Unmute lane',
+      () => setRhythms((prev) => prev.map((r) => (r.id === rhythmId ? { ...r, isMuted: willMute } : r))),
+      (bar) => ({ at: bar, type: willMute ? 'mute' : 'unmute', id: rhythmId })
+    );
+  };
+
+  const handleToggleRecord = () => {
+    if (recorder.status === 'idle') {
+      if (!isPlaying) togglePlay();
+      recorder.arm(rhythmsRef.current, barDuration);
+      return;
+    }
+    const spec = recorder.stop();
+    if (spec) downloadSpec(spec);
+  };
+
+  // A take needs a running clock: without one nothing ever reaches a downbeat and
+  // queued actions would pile up unrecorded. Pausing simply ends the take.
+  useEffect(() => {
+    if (!isPlaying && recorder.status !== 'idle') {
+      const spec = recorder.stop();
+      if (spec) downloadSpec(spec);
+    }
+  }, [isPlaying, recorder.status]);
 
   const handlePreviewNote = (frequency: number) => {
     if (!audioInitialized) {
@@ -265,19 +357,48 @@ export default function App() {
   // Assuming a standard quarter-note bar has 4 quarter beats:
   const impliedBpm = Math.round((60 / barDuration) * 4);
 
+  const timeInBar = grid.timeInBar;
+
+  // Present the live arrangement in the same shape a compiled spec produces, so the
+  // board can't tell the two apart.
+  const lanes: SampledLane[] = [];
+  for (const rhythm of rhythms) {
+    const meta = metaRef.current.get(rhythm.id);
+    if (!meta) continue;
+    lanes.push({
+      key: `${rhythm.id}#${meta.order}`,
+      order: meta.order,
+      rhythm,
+      enterProgress: clamp01((clock.time - meta.enterTime) / ANIM.enter),
+      exitProgress: 0,
+    });
+  }
+  for (const lane of leaving) {
+    const exitProgress = clamp01((clock.time - lane.exitTime) / ANIM.exit);
+    if (exitProgress >= 1) continue;
+    lanes.push({
+      key: `${lane.rhythm.id}#${lane.order}`,
+      order: lane.order,
+      rhythm: lane.rhythm,
+      enterProgress: 1,
+      exitProgress,
+    });
+  }
+  lanes.sort((a, b) => a.order - b.order);
+
   return (
     <div className="relative h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden antialiased selection:bg-zinc-800">
       <Header title="PolyPals" />
-      
+
       {/* Decorator background */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[340px] bg-gradient-to-b from-zinc-800/10 to-transparent blur-3xl rounded-full pointer-events-none" />
 
       {/* Main Dashboard Board */}
       <main className="main-dashboard flex-grow relative z-10 flex flex-col p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-2 sm:gap-4 min-h-0 overflow-hidden pb-0">
-        
+
         {/* Active Bouncing Track Lanes Grid Workspace */}
         <div id="tracks-outer" className="w-full flex-1 min-h-0 flex flex-col relative z-10">
-          {rhythms.length === 0 ? (
+          {lanes.length === 0 ? (
             <div className="w-full h-full bg-white/[0.01] rounded-3xl border border-white/10 border-dashed flex flex-col items-center justify-center text-center p-8">
               <Sparkles className="w-10 h-10 text-zinc-600 mb-4 animate-pulse" />
               <p className="font-semibold text-zinc-300">No Rhythms Active</p>
@@ -292,46 +413,51 @@ export default function App() {
               </button>
             </div>
           ) : (
-            <div 
-              id="tracks-container"
-              className="tracks-container-board flex-1 flex justify-around items-end bg-white/[0.02] border border-white/5 rounded-2xl md:rounded-3xl p-2 sm:p-4 md:p-8 pb-6 sm:pb-8 md:pb-16 relative overflow-hidden w-full min-h-0"
-            >
-              <AnimatePresence mode="popLayout">
-                {rhythms.map((rhythm) => (
-                  <motion.div
-                    key={rhythm.id}
-                    layout="position"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.3 }}
-                    className="h-full flex items-end justify-center px-0.5 sm:px-1 md:px-4 min-w-0"
-                  >
-                    <RhythmTrack
-                      rhythm={rhythm}
-                      currentTime={currentTimeState}
-                      barDuration={barDuration}
-                      isPlaying={isPlaying}
-                      isSelected={selectedRhythmId === rhythm.id}
-                      onEdit={setSelectedRhythmId}
-                      onRemove={handleRemoveRhythm}
-                      onToggleMute={handleToggleMute}
-                      onPlayNoteTrigger={playSynthNote}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              
-              {/* Common floor line */}
-              <div className="absolute bottom-6 sm:bottom-8 left-6 sm:left-8 right-6 sm:right-8 h-[2px] bg-white/5 rounded-full pointer-events-none" />
-            </div>
+            <Board
+              lanes={lanes}
+              timeInBar={timeInBar}
+              barDuration={barDuration}
+              isPlaying={isPlaying}
+              audible
+              framed
+              interactive
+              bounce="equalSpeed"
+              referenceSignature={Math.min(...lanes.map((l) => l.rhythm.timeSignature))}
+              selectedId={selectedRhythmId}
+              onEdit={setSelectedRhythmId}
+              onRemove={handleRemoveRhythm}
+              onToggleMute={handleToggleMute}
+              onPlayNoteTrigger={playSynthNote}
+            />
           )}
         </div>
       </main>
 
+      {/* Recording status: armed countdown, bar counter, and queued actions. */}
+      {recorder.status !== 'idle' && (
+        <div className="absolute bottom-24 md:bottom-28 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 pointer-events-none">
+          {recorder.pending.map((action) => (
+            <div
+              key={action.key}
+              className="px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur text-[11px] font-mono text-zinc-200 flex items-center gap-2"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF007A] animate-pulse" />
+              {action.label}
+              <span className="text-zinc-500">lands in {recorder.untilDownbeat.toFixed(1)}s</span>
+            </div>
+          ))}
+          <div className="px-3 py-1.5 rounded-full bg-black/70 border border-red-500/40 backdrop-blur text-[11px] font-mono text-red-300 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            {recorder.status === 'armed'
+              ? `Recording starts in ${recorder.untilDownbeat.toFixed(1)}s`
+              : `Recording · bar ${recorder.bar + 1}`}
+          </div>
+        </div>
+      )}
+
       {/* Bottom Action UI */}
       <div className="bottom-action-bar w-full relative z-20 px-3 py-2.5 sm:py-3 md:px-6 md:py-4 flex flex-row items-center justify-between gap-2 md:gap-0 bg-black border-t border-white/5 shrink-0 select-none">
-        
+
         {/* Left: Logo */}
         <div className="flex items-center justify-start flex-1 hidden sm:flex">
           <h1 className="text-xl md:text-3xl font-black italic tracking-tighter whitespace-nowrap">
@@ -352,14 +478,14 @@ export default function App() {
             id="action-play-pause-btn"
             onClick={togglePlay}
             className={`w-10 h-10 md:w-14 md:h-14 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-              isPlaying 
-                ? 'bg-white text-black shadow-[0_0_25px_rgba(255,255,255,0.2)]' 
+              isPlaying
+                ? 'bg-white text-black shadow-[0_0_25px_rgba(255,255,255,0.2)]'
                 : 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
             }`}
           >
             {isPlaying ? <Pause className="w-5 h-5 md:w-6 md:h-6 fill-current" /> : <Play className="w-5 h-5 md:w-6 md:h-6 fill-current translate-x-0.5" />}
           </button>
-          
+
           <button
             id="action-add-pal-btn"
             onClick={handleAddRhythm}
@@ -373,9 +499,9 @@ export default function App() {
 
         {/* Right: Controls (Help, Tempo, Settings) */}
         <div className="flex items-center justify-end flex-1 relative">
-          
+
           {/* Mobile Extra Options Menu Toggle */}
-          <button 
+          <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
             className="md:hidden w-10 h-10 bg-white/10 border border-white/10 text-white hover:bg-white/20 rounded-full flex items-center justify-center transition-all cursor-pointer shrink-0"
             title="More Options"
@@ -391,6 +517,21 @@ export default function App() {
             transition-all duration-200
           `}>
             <button
+              id="action-record-btn"
+              onClick={() => { handleToggleRecord(); setShowMobileMenu(false); }}
+              className={`w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all cursor-pointer shrink-0 border ${
+                recorder.status === 'idle'
+                  ? 'bg-white/10 border-white/10 text-zinc-300 hover:bg-white/20'
+                  : 'bg-red-500/20 border-red-500/60 text-red-300 shadow-[0_0_20px_rgba(239,68,68,0.35)]'
+              }`}
+              title={recorder.status === 'idle' ? 'Record a video spec' : 'Stop and download the spec'}
+            >
+              {recorder.status === 'idle'
+                ? <Circle className="w-4 h-4 md:w-5 md:h-5 fill-current" />
+                : <Square className="w-4 h-4 md:w-5 md:h-5 fill-current" />}
+            </button>
+
+            <button
               id="action-help-btn"
               onClick={() => { setShowInfo(true); setShowMobileMenu(false); }}
               className="w-10 h-10 md:w-14 md:h-14 bg-white/10 border border-white/10 text-white hover:bg-white/20 rounded-full flex items-center justify-center transition-all cursor-pointer shrink-0"
@@ -398,7 +539,7 @@ export default function App() {
             >
               <HelpCircle className="w-5 h-5" />
             </button>
-            
+
             <button
               onClick={() => { setShowGlobalSettings(true); setShowMobileMenu(false); }}
               className="w-10 h-10 md:w-14 md:h-14 bg-white/10 border border-white/10 text-white hover:bg-white/20 rounded-full flex flex-col items-center justify-center transition-all cursor-pointer shrink-0"
@@ -408,7 +549,7 @@ export default function App() {
               <span className="text-[7px] md:text-[9px] font-mono opacity-50 uppercase tracking-widest mt-0.5">BPM</span>
             </button>
 
-            <button 
+            <button
               id="action-global-settings-btn"
               onClick={() => { setShowGlobalSettings((prev) => !prev); setShowMobileMenu(false); }}
               className="w-10 h-10 md:w-14 md:h-14 bg-white text-black rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center cursor-pointer shrink-0"
@@ -437,7 +578,7 @@ export default function App() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-xl border-t border-white/10 p-3 md:p-6 pt-6 md:pt-10 rounded-t-2xl md:rounded-t-3xl shadow-2xl max-w-6xl mx-auto max-h-[95vh] sm:max-h-[85vh] overflow-y-auto custom-scrollbar"
             >
-              <button 
+              <button
                 onClick={() => setShowGlobalSettings(false)}
                 className="absolute top-2 right-2 md:top-4 md:right-4 p-2 text-zinc-500 hover:text-white transition-colors"
                 title="Close settings"
@@ -446,11 +587,11 @@ export default function App() {
               </button>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 md:gap-5 items-stretch mb-4 md:mb-6 mt-4 md:mt-0">
-                
+
                 {/* Main big play trigger block */}
                 <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-xl md:rounded-2xl p-4 md:p-5 flex flex-col justify-between relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-r from-white/[0.01] to-transparent pointer-events-none" />
-                  
+
                   <div className="flex items-center justify-between z-10">
                     <span className="text-[9px] md:text-[10px] font-mono opacity-50 uppercase tracking-widest">
                       Playback State
@@ -469,8 +610,8 @@ export default function App() {
                         borderColor: isPlaying ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.1)',
                       }}
                       className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer shrink-0 ${
-                        isPlaying 
-                          ? 'bg-white text-black' 
+                        isPlaying
+                          ? 'bg-white text-black'
                           : 'bg-white/5 hover:bg-white/10 text-white'
                       }`}
                     >
@@ -503,10 +644,10 @@ export default function App() {
                         Loop Time
                       </span>
                       <span className="text-xs md:text-sm font-mono font-bold text-white tracking-tight mt-1 md:mt-1.5">
-                        {currentTimeState.toFixed(3)}s
+                        {timeInBar.toFixed(3)}s
                       </span>
                     </div>
-                    
+
                     <div className="h-4 md:h-6 w-[1px] bg-white/10" />
 
                     <div className="text-right">
@@ -526,7 +667,7 @@ export default function App() {
                     <label htmlFor="master-duration-slider" className="text-[9px] md:text-[10px] font-mono text-zinc-450 uppercase tracking-widest flex items-center gap-1.5 opacity-60">
                       <SlidersHorizontal className="w-3 h-3 md:w-4 md:h-4" /> Global Cycle Speed
                     </label>
-                    
+
                     <div className="text-right flex items-baseline gap-1.5 flex-wrap justify-end">
                       <span className="text-xs md:text-sm font-mono font-bold text-white leading-none">
                         {barDuration.toFixed(2)}s
@@ -545,7 +686,7 @@ export default function App() {
                       max={12.0}
                       step={0.1}
                       value={barDuration}
-                      onChange={(e) => setBarDuration(parseFloat(e.target.value))}
+                      onChange={(e) => handleSetBarDuration(parseFloat(e.target.value))}
                       className="w-full accent-white bg-white/10 h-1 rounded-lg cursor-pointer my-2 md:my-3"
                     />
                     <div className="flex items-center justify-between text-[8px] md:text-[10px] font-mono text-zinc-500">
@@ -598,20 +739,34 @@ export default function App() {
                 </div>
 
               </div>
-              
+
+              {/* Preset shortcuts */}
+              <div className="w-full flex flex-wrap gap-2 mb-3">
+                {BUILTIN_PRESETS.map((preset, index) => (
+                  <button
+                    key={preset.name}
+                    onClick={() => loadPreset(index)}
+                    title={preset.description}
+                    className="px-3 py-2 bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 rounded-lg text-[10px] font-mono uppercase tracking-wider text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    {preset.name}
+                  </button>
+                ))}
+              </div>
+
               {/* Sync alignment visual grid bar (The downbeat unified bar) */}
               <div className="w-full bg-black border border-white/10 p-3 rounded-xl flex items-center gap-4 relative overflow-hidden">
                 <div className="text-[10px] font-mono text-zinc-400 font-bold shrink-0 tracking-widest">
                   BAR TIMELINE
                 </div>
-                
+
                 {/* Master progress line */}
                 <div className="flex-1 bg-white/5 h-1 rounded-full overflow-hidden relative">
-                  <div 
-                    style={{ width: `${(currentTimeState / barDuration) * 100}%` }}
+                  <div
+                    style={{ width: `${(timeInBar / barDuration) * 100}%` }}
                     className="h-full bg-gradient-to-r from-[#FF007A]/80 to-[#7928CA]/80 shadow-[0_0_8px_#FF007A] transition-transform duration-75 ease-linear"
                   />
-                  
+
                   {/* Beat alignments dots overlays based on active signatures */}
                   <div className="absolute inset-0 flex justify-between px-0.5 pointer-events-none">
                     <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 z-10 -translate-y-[1px] shadow-[0_0_6px_#facc15]" title="Downbeat Master Peak" />
@@ -643,7 +798,7 @@ export default function App() {
               onClick={() => setSelectedRhythmId(null)}
               className="fixed inset-0 bg-black z-40 cursor-default"
             />
-            
+
             <SettingsPanel
               rhythm={selectedRhythm}
               onUpdate={handleUpdateRhythm}
@@ -666,7 +821,7 @@ export default function App() {
               onClick={() => setShowInfo(false)}
               className="absolute inset-0 bg-black"
             />
-            
+
             {/* Inner box dialogue */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
@@ -718,7 +873,7 @@ export default function App() {
                   <div>
                     <h5 className="font-semibold text-zinc-200">Pre-arranged Sound Scales</h5>
                     <p className="text-[11px] text-zinc-500 mt-0.5">
-                      Use the <strong>Presets list</strong> in the top header menu to instantly load beautiful mathematical combinations like <em>Golden Triad</em>, <em>Celestial Pentatonic</em>, or chaotic metallic clatters!
+                      Use the <strong>Presets list</strong> in the global settings drawer to instantly load beautiful mathematical combinations like <em>Golden Triad</em>, <em>Celestial Pentatonic</em>, or chaotic metallic clatters!
                     </p>
                   </div>
                 </div>
