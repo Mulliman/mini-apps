@@ -6,7 +6,7 @@
 import React, { useRef } from 'react';
 import RhythmTrack from './RhythmTrack';
 import { layoutVars, useBoardLayout } from '../video/layout';
-import type { SampledLane } from '../video/spec';
+import type { BounceMode, SampledLane } from '../video/spec';
 
 interface BoardProps {
   lanes: SampledLane[];
@@ -17,6 +17,8 @@ interface BoardProps {
   /** The bordered container. Off for renders, which go edge-to-edge black. */
   framed: boolean;
   interactive: boolean;
+  bounce: BounceMode;
+  referenceSignature: number;
   selectedId?: string | null;
   onEdit?: (id: string) => void;
   onRemove?: (id: string) => void;
@@ -34,6 +36,8 @@ export default function Board({
   audible,
   framed,
   interactive,
+  bounce,
+  referenceSignature,
   selectedId = null,
   onEdit,
   onRemove,
@@ -82,6 +86,8 @@ export default function Board({
                 audible={audible}
                 interactive={interactive}
                 compactLabel={layout.compactLabel}
+                bounce={bounce}
+                referenceSignature={referenceSignature}
                 isSelected={selectedId === lane.rhythm.id}
                 onEdit={onEdit}
                 onRemove={onRemove}

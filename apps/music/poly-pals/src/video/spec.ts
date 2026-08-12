@@ -37,9 +37,43 @@ export type VideoEvent =
   | { at: number; type: 'tempo'; barDuration: number }
   | { at: number; type: 'update'; id: string; patch: Partial<Omit<SpecRhythm, 'id'>> };
 
+/**
+ * How high each lane bounces relative to the others.
+ *
+ * Peak speed is `4h/T`, so with one shared height a lane's ball gets faster in
+ * direct proportion to its time signature. At 60fps a 16-beat lane travels over
+ * four ball-widths per frame — consecutive frames don't overlap, so it reads as
+ * teleporting rather than bouncing and its face is unreadable.
+ *
+ * - `uniform`    — one height for every lane. The classic look, but only safe
+ *                  when the fastest and slowest signatures are close.
+ * - `equalSpeed` — `h ∝ T`, which makes peak speed identical across lanes. Fast
+ *                  lanes bounce low and stay legible.
+ * - `gravity`    — `h ∝ T²`, what real gravity does. Correct, and usually too
+ *                  aggressive: an 8× signature range leaves the fast lane
+ *                  vibrating on the floor.
+ */
+export type BounceMode = 'uniform' | 'equalSpeed' | 'gravity';
+
+/** Never let a lane's arc collapse to nothing, however fast it is. */
+const MIN_BOUNCE_SCALE = 0.08;
+
+export function bounceScale(
+  mode: BounceMode,
+  timeSignature: number,
+  referenceSignature: number
+): number {
+  if (mode === 'uniform') return 1;
+  const ratio = referenceSignature / timeSignature;
+  const scaled = mode === 'gravity' ? ratio * ratio : ratio;
+  return Math.max(MIN_BOUNCE_SCALE, Math.min(1, scaled));
+}
+
 export interface VideoSpec {
   name: string;
   description?: string;
+  /** Defaults to `equalSpeed`. */
+  bounce?: BounceMode;
   /**
    * Shown across the top of the video for its whole duration. Optional — the
    * header band is reserved either way, since its real job is keeping the
@@ -87,6 +121,13 @@ export interface CompiledSpec {
   totalBars: number;
   totalDuration: number;
   lanes: CompiledLane[];
+  bounce: BounceMode;
+  /**
+   * The slowest signature anywhere in the spec, so bounce heights stay fixed for
+   * the whole video. Deriving it from whatever is on screen would make every
+   * lane jump whenever one was added or removed.
+   */
+  referenceSignature: number;
   /** True when the spec is a pure loop — no events, so end state == start state. */
   isLoopable: boolean;
 }
@@ -195,6 +236,13 @@ export function compileSpec(spec: VideoSpec): CompiledSpec {
     totalBars: spec.bars,
     totalDuration,
     lanes: [],
+    bounce: spec.bounce ?? 'equalSpeed',
+    referenceSignature: Math.min(
+      ...spec.rhythms.map((r) => r.timeSignature),
+      ...(spec.events ?? [])
+        .filter((e): e is Extract<VideoEvent, { type: 'add' }> => e.type === 'add')
+        .map((e) => e.rhythm.timeSignature)
+    ),
     isLoopable: (spec.events ?? []).length === 0,
   };
 

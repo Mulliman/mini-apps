@@ -66,6 +66,18 @@ A spec with events cannot loop, which is fine for an arc. If you want a seamless
 looper instead, use no events at all — the renderer then emits a half-open frame
 range and folds the audio tail over the start.
 
+## Bounce height
+
+Leave `bounce` unset. It defaults to `equalSpeed`, which scales each lane's arc to
+its beat period so every ball has the same peak speed — slow lanes arc high and
+lazy, fast ones stay low and busy, and every face stays readable.
+
+This matters most for exactly the briefs this skill invites. A "4s" family spanning
+2 to 16 is an 8× spread; with a single shared height the 16-lane crosses **four
+ball-widths per frame at 60fps** and turns into an unreadable streak. Only reach
+for `bounce: "uniform"` — the classic equal-height look — when fastest ÷ slowest is
+about 4 or less.
+
 ## Colour
 
 Give each rhythmic family its own end of the palette — cool for one, warm for the

@@ -116,6 +116,27 @@ the style — how to read a brief like *"a Cmaj7 in 4s with a complementing chor
 threes"*, how to voice chords across rhythmic families, and the build-and-unwind
 arc. `public/specs/cmaj7-arc.json` is a worked example.
 
+## Bounce height
+
+`bounce` controls how high each lane travels relative to the others. It defaults
+to `equalSpeed` and you rarely want anything else.
+
+A ball's peak speed is `4h/T`, so if every lane shares one height, speed scales
+directly with the time signature. On a 2–16 spread that put the fastest ball at
+**408px per frame at 60fps — over four times its own diameter.** Consecutive
+frames don't overlap, so it reads as teleporting and its face is unreadable. No
+practical framerate fixes that; you'd need about 250fps.
+
+| Mode | | sig 16 apex, 1109px runway |
+|---|---|---|
+| `equalSpeed` | `h ∝ T` — identical peak speed on every lane | 139px |
+| `uniform` | one height for all; the classic look, but only safe when fastest ÷ slowest ≲ 4 | 1109px |
+| `gravity` | `h ∝ T²`, what real gravity does — usually too aggressive | 17px |
+
+Under `equalSpeed` a lane's height becomes a readout of its speed: slow lanes
+arc high and lazy, fast ones stay low and busy. The normaliser warns if you
+select `uniform` with a spread wide enough to smear.
+
 A spec with **no events loops seamlessly** — the renderer emits the half-open frame
 range so the loop point isn't a duplicated frame, and the final decay tails are
 folded back over the start. Any `add` or `remove` means the end state differs from

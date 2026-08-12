@@ -148,6 +148,8 @@ function main() {
   const spec = JSON.parse(original);
   const changes = [];
   const problems = [];
+  const warnings = [];
+  const signatures = [];
 
   /** id -> rhythm, for lanes sounding at the moment a new one arrives. */
   const alive = new Map();
@@ -187,6 +189,7 @@ function main() {
     }
 
     if (rhythm.isMuted === undefined) rhythm.isMuted = false;
+    signatures.push(rhythm.timeSignature);
     alive.set(rhythm.id, rhythm);
   };
 
@@ -223,6 +226,27 @@ function main() {
       default:
         problems.push(`${where}: unknown event type "${event.type}"`);
     }
+  }
+
+  // A lane's peak speed is proportional to its signature, so with one shared
+  // bounce height a wide spread leaves the fastest ball crossing several
+  // ball-widths per frame — it stops reading as a bounce and its face is
+  // unreadable. `equalSpeed` (the default) removes the problem entirely.
+  if (spec.bounce === 'uniform' && signatures.length > 1) {
+    const spread = Math.max(...signatures) / Math.min(...signatures);
+    if (spread > 4) {
+      warnings.push(
+        `bounce is "uniform" with a ${spread.toFixed(0)}x signature spread ` +
+          `(${Math.min(...signatures)}–${Math.max(...signatures)}); the fastest lane will ` +
+          `smear at 60fps. Drop the \`bounce\` key to use equalSpeed.`
+      );
+    }
+  }
+
+  if (warnings.length) {
+    console.warn('');
+    for (const warning of warnings) console.warn(`  ! ${warning}`);
+    console.warn('');
   }
 
   if (problems.length) {

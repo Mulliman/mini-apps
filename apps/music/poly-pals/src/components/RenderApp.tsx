@@ -234,6 +234,8 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
           audible={!stepped}
           framed={false}
           interactive={false}
+          bounce={compiled.bounce}
+          referenceSignature={compiled.referenceSignature}
         />
       </div>
 

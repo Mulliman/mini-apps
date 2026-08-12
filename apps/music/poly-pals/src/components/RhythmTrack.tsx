@@ -6,7 +6,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Trash2 } from 'lucide-react';
 import ExpressionFace from './ExpressionFace';
-import { ANIM, type SampledLane } from '../video/spec';
+import { ANIM, bounceScale, type BounceMode, type SampledLane } from '../video/spec';
 
 interface RhythmTrackProps {
   lane: SampledLane;
@@ -19,6 +19,9 @@ interface RhythmTrackProps {
   interactive: boolean;
   /** Signature and note on one line — wide frames can't spare the height. */
   compactLabel: boolean;
+  bounce: BounceMode;
+  /** Slowest signature in the arrangement; bounce heights are relative to it. */
+  referenceSignature: number;
   isSelected?: boolean;
   onEdit?: (rhythmId: string) => void;
   onRemove?: (rhythmId: string) => void;
@@ -54,6 +57,8 @@ export default function RhythmTrack({
   audible,
   interactive,
   compactLabel,
+  bounce,
+  referenceSignature,
   isSelected = false,
   onEdit,
   onRemove,
@@ -67,8 +72,12 @@ export default function RhythmTrack({
   const currentBeat = Math.floor(continuousBeats) % timeSignature;
   const beatProgress = continuousBeats % 1;
 
-  // Parabola: 0 at the floor on each beat boundary, 1 at the apex mid-beat.
-  const bounceHeight = 1 - 4 * Math.pow(beatProgress - 0.5, 2);
+  // Parabola: 0 at the floor on each beat boundary, 1 at the apex mid-beat —
+  // scaled so a fast lane doesn't have to cross the whole runway in a fraction of
+  // the time a slow one gets, which is what makes its face unreadable.
+  const bounceHeight =
+    (1 - 4 * Math.pow(beatProgress - 0.5, 2)) *
+    bounceScale(bounce, timeSignature, referenceSignature);
 
   // Ripples, derived. The previous ring is drawn too so that fast lanes — where the
   // beat period is shorter than the ripple — keep the overlapping wash they had

@@ -421,6 +421,8 @@ function LiveApp() {
               audible
               framed
               interactive
+              bounce="equalSpeed"
+              referenceSignature={Math.min(...lanes.map((l) => l.rhythm.timeSignature))}
               selectedId={selectedRhythmId}
               onEdit={setSelectedRhythmId}
               onRemove={handleRemoveRhythm}
