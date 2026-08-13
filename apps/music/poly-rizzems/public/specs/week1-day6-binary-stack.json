@@ -1,0 +1,107 @@
+{
+  "name": "Binary Acceleration (1,2,4,8,16)",
+  "title": "Pure Binary Stack",
+  "description": "Pure binary acceleration doubling from 1 to 16 in C Major, opening with a 4-bar metronomic pulse on 1.",
+  "bars": 22,
+  "barDuration": 2.6,
+  "rhythms": [
+    {
+      "id": "one",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "Anchor C3",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "two",
+        "timeSignature": 2,
+        "noteName": "C3",
+        "color": "#00ffd0",
+        "name": "Root C3",
+        "frequency": 130.81,
+        "volume": 0.95,
+        "expression": "sleepy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "four",
+        "timeSignature": 4,
+        "noteName": "G3",
+        "color": "#39ff14",
+        "name": "Fifth G3",
+        "frequency": 196,
+        "volume": 0.95,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "eight",
+        "timeSignature": 8,
+        "noteName": "C4",
+        "color": "#ccff00",
+        "name": "Octave C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "expression": "sleepy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 10,
+      "type": "add",
+      "rhythm": {
+        "id": "sixteen",
+        "timeSignature": 16,
+        "noteName": "E5",
+        "color": "#fffb00",
+        "name": "Tenth E5",
+        "frequency": 659.25,
+        "volume": 0.54,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "sixteen"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "eight"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "four"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "two"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "one"
+    }
+  ]
+}

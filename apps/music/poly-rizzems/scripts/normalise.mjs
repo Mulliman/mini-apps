@@ -160,8 +160,8 @@ function main() {
       return;
     }
     if (alive.has(rhythm.id)) problems.push(`${where}: id "${rhythm.id}" is already sounding`);
-    if (!Number.isInteger(rhythm.timeSignature) || rhythm.timeSignature < 2 || rhythm.timeSignature > 19) {
-      problems.push(`${where}: timeSignature ${rhythm.timeSignature} must be an integer 2–19`);
+    if (!Number.isInteger(rhythm.timeSignature) || rhythm.timeSignature < 1 || rhythm.timeSignature > 19) {
+      problems.push(`${where}: timeSignature ${rhythm.timeSignature} must be an integer 1–19`);
     }
     if (!(rhythm.noteName in NOTES)) {
       problems.push(`${where}: note "${rhythm.noteName}" is not in the palette (naturals C3–C6 only)`);

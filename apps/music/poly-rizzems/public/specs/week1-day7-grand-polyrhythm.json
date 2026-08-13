@@ -1,0 +1,147 @@
+{
+  "name": "Grand Polyrhythmic Cascade",
+  "title": "Grand Polyrhythm (1,2,3,4,5,6,8)",
+  "description": "The week 1 finale: 6 rhythmic families colliding over a C Major 9 chord, opening with a 4-bar metronomic pulse on 1.",
+  "bars": 24,
+  "barDuration": 2.4,
+  "rhythms": [
+    {
+      "id": "one",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "Anchor C3",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "two",
+        "timeSignature": 2,
+        "noteName": "C3",
+        "color": "#00ffd0",
+        "name": "Root C3",
+        "frequency": 130.81,
+        "volume": 0.95,
+        "expression": "sleepy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "three",
+        "timeSignature": 3,
+        "noteName": "E3",
+        "color": "#ff007f",
+        "name": "Third E3",
+        "frequency": 164.81,
+        "volume": 0.95,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "four",
+        "timeSignature": 4,
+        "noteName": "G4",
+        "color": "#39ff14",
+        "name": "Fifth G4",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 10,
+      "type": "add",
+      "rhythm": {
+        "id": "five",
+        "timeSignature": 5,
+        "noteName": "B4",
+        "color": "#ff5f00",
+        "name": "Seventh B4",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "dizzy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 12,
+      "type": "add",
+      "rhythm": {
+        "id": "six",
+        "timeSignature": 6,
+        "noteName": "D5",
+        "color": "#fffb00",
+        "name": "Ninth D5",
+        "frequency": 587.33,
+        "volume": 0.57,
+        "expression": "silly",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 14,
+      "type": "add",
+      "rhythm": {
+        "id": "eight",
+        "timeSignature": 8,
+        "noteName": "G5",
+        "color": "#00ffd0",
+        "name": "Octave Fifth G5",
+        "frequency": 783.99,
+        "volume": 0.49,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "eight"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "six"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "five"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "four"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "three"
+    },
+    {
+      "at": 22,
+      "type": "remove",
+      "id": "two"
+    },
+    {
+      "at": 23,
+      "type": "remove",
+      "id": "one"
+    }
+  ]
+}

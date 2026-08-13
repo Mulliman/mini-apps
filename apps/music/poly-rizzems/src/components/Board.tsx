@@ -10,6 +10,7 @@ import type { BounceMode, SampledLane } from '../video/spec';
 
 interface BoardProps {
   lanes: SampledLane[];
+  bar?: number;
   timeInBar: number;
   barDuration: number;
   isPlaying: boolean;
@@ -30,6 +31,7 @@ const smoothstep = (p: number) => p * p * (3 - 2 * p);
 
 export default function Board({
   lanes,
+  bar = 0,
   timeInBar,
   barDuration,
   isPlaying,
@@ -80,6 +82,7 @@ export default function Board({
             <div className="shrink-0 origin-bottom" style={{ opacity, transform: `scale(${scale})` }}>
               <RhythmTrack
                 lane={lane}
+                bar={bar}
                 timeInBar={timeInBar}
                 barDuration={barDuration}
                 isPlaying={isPlaying}

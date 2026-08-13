@@ -8,7 +8,9 @@ import Board from './Board';
 import { useClock } from '../video/clock';
 import { compileSpec, loadSpec, sampleAt, type CompiledSpec } from '../video/spec';
 import { renderSpecAudio, toBase64 } from '../video/renderAudio';
-import { initAudio } from '../utils/audio';
+import { initAudio, playSynthNote } from '../utils/audio';
+import { computeLiveBpm, computeLiveChord, computeLivePolyrhythm } from '../video/harmony';
+import { Volume2 } from 'lucide-react';
 
 /**
  * Vertical split of the frame: title band, the arrangement, the wordmark.
@@ -69,7 +71,13 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
   const [compiled, setCompiled] = useState<CompiledSpec | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [seekTick, setSeekTick] = useState(0);
+  const [hasAudioStarted, setHasAudioStarted] = useState(false);
   const bands = useBands();
+
+  const startAudio = useCallback(() => {
+    initAudio();
+    setHasAudioStarted(true);
+  }, []);
 
   const clock = useClock(!stepped && compiled !== null && error === null);
   const { setTime } = clock;
@@ -201,10 +209,17 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
 
   return (
     <div
-      className="w-screen bg-black text-white font-sans overflow-hidden antialiased flex flex-col"
+      className="w-screen bg-black text-white font-sans overflow-hidden antialiased flex flex-col relative select-none"
       style={{ height: '100vh' }}
-      onClick={stepped ? undefined : () => initAudio()}
+      onClick={stepped ? undefined : startAudio}
     >
+      {!stepped && !hasAudioStarted && (
+        <div className="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs font-mono px-3 py-1.5 rounded-full flex items-center gap-1.5 cursor-pointer animate-pulse transition-all">
+          <Volume2 className="w-3.5 h-3.5 text-[#FF007A]" />
+          <span>Click anywhere to enable audio</span>
+        </div>
+      )}
+
       {/*
         Band ratios come from BANDS above and depend on the aspect. They are
         reserved whether or not they hold anything — keeping the bouncing clear of
@@ -212,22 +227,79 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
         vh so both cuts stay proportional to their frame.
       */}
       <header
-        className="flex items-center justify-center text-center overflow-hidden px-[7%] min-h-0"
+        className="flex flex-col items-center justify-center text-center overflow-hidden px-[5%] min-h-0"
         style={{ flex: `${bands.header} 1 0` }}
       >
         {compiled.spec.title && (
           <h1
-            className="font-semibold tracking-tight text-white/90"
-            style={{ fontSize: '5vh', lineHeight: 1.12 }}
+            className="font-black italic tracking-tighter text-white uppercase"
+            style={{ fontSize: '4.2vh', lineHeight: 1.1 }}
           >
             {compiled.spec.title}
           </h1>
         )}
+
+        <div className="flex items-center justify-center gap-2 sm:gap-3 mt-2 font-mono select-none">
+          <div
+            className="bg-white/10 rounded-full border border-white/15 inline-flex items-center justify-center gap-1.5 backdrop-blur-sm"
+            style={{ height: '2.8vh', padding: '0 1.3vh' }}
+          >
+            <span
+              className="text-[#FF007A] font-black uppercase tracking-wider leading-none flex items-center"
+              style={{ fontSize: '1.15vh' }}
+            >
+              Chord
+            </span>
+            <span
+              className="font-bold text-white tracking-tight leading-none flex items-center"
+              style={{ fontSize: '1.4vh' }}
+            >
+              {computeLiveChord(sample.lanes)}
+            </span>
+          </div>
+
+          <div
+            className="bg-white/10 rounded-full border border-white/15 inline-flex items-center justify-center gap-1.5 backdrop-blur-sm"
+            style={{ height: '2.8vh', padding: '0 1.3vh' }}
+          >
+            <span
+              className="text-[#00f0ff] font-black uppercase tracking-wider leading-none flex items-center"
+              style={{ fontSize: '1.15vh' }}
+            >
+              Ratio
+            </span>
+            <span
+              className="font-bold text-white tracking-tight leading-none flex items-center"
+              style={{ fontSize: '1.4vh' }}
+            >
+              {computeLivePolyrhythm(sample.lanes)}
+            </span>
+          </div>
+
+          <div
+            className="bg-white/10 rounded-full border border-white/15 inline-flex items-center justify-center gap-1.5 backdrop-blur-sm"
+            style={{ height: '2.8vh', padding: '0 1.3vh' }}
+          >
+            <span
+              className="text-[#39ff14] font-black uppercase tracking-wider leading-none flex items-center"
+              style={{ fontSize: '1.15vh' }}
+            >
+              Tempo
+            </span>
+            <span
+              className="font-bold text-white tracking-tight leading-none flex items-center"
+              style={{ fontSize: '1.4vh' }}
+            >
+              {computeLiveBpm(sample.barDuration)} BPM
+            </span>
+          </div>
+        </div>
       </header>
 
       <div className="flex flex-col min-h-0" style={{ flex: `${bands.body} 1 0` }}>
         <Board
           lanes={sample.lanes}
+          bar={sample.bar}
           timeInBar={sample.timeInBar}
           barDuration={sample.barDuration}
           isPlaying
@@ -236,6 +308,7 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
           interactive={false}
           bounce={compiled.bounce}
           referenceSignature={compiled.referenceSignature}
+          onPlayNoteTrigger={playSynthNote}
         />
       </div>
 
@@ -244,10 +317,10 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
         style={{ flex: `${bands.footer} 1 0` }}
       >
         <span
-          className="font-black italic tracking-tighter"
+          className="font-black italic tracking-tighter text-white"
           style={{ fontSize: '4.2vh' }}
         >
-          <span className="text-[#FF007A]">POLY</span><span className="text-white/30">RIZZEMS</span><span className="text-[#FF007A]/80">.</span>
+          <span className="text-[#FF007A]">POLY</span>RIZZEMS<span className="text-[#FF007A]">.</span>
         </span>
       </footer>
     </div>

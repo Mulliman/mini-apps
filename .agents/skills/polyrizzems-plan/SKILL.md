@@ -104,4 +104,4 @@ When the user asks to plan a week of videos:
 4. **Generate the 7 `.md` files**:
    - Write each file into `apps/music/poly-rizzems/videos/plan/week-<N>-<theme>/`.
 5. **Cross-Reference `polyrizzems-video`**:
-   - Ensure all voicings follow POLYRIZZEMS house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), arc build-and-unwind, under 60s runtime.
+   - Ensure all voicings follow POLYRIZZEMS house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), 4 bars of signature 1 tempo setup, arc build-and-unwind, targeting ~1-minute runtime (55s–60s) for Shorts.

@@ -2,11 +2,13 @@ import numberBusImg from './assets/number-bus.png';
 import bingoBuddyImg from './assets/bingo-buddy.png';
 import numberPlatePopImg from './assets/number-plate-pop.png';
 import periodicExplorerImg from './assets/periodic-explorer.png';
+import littleEmotesMatchImg from './assets/little-emotes-match.png';
 import christmasCountdownImg from './assets/christmas-countdown-preview.png';
 import patternPlaytimeImg from './assets/pattern-playtime.png';
 import solarSystemExplorerImg from './assets/solar-system-explorer.png';
 import simpleSumsImg from './assets/simple-sums.png';
 import polyRizzemsImg from './assets/poly-rizzems.png';
+import shuffleBusImg from './assets/shuffle-bus.png';
 
 export interface AppInfo {
   id: string;
@@ -55,7 +57,8 @@ export const appsData: AppInfo[] = [
     title: "Little Emotes Match",
     category: "Games",
     description: "A fun and simple emoji matching game for kids to help identify feelings and objects.",
-    url: "/apps/games/little-emotes-match/index.html"
+    url: "/apps/games/little-emotes-match/index.html",
+    image: littleEmotesMatchImg
   },
   {
     id: "christmas-countdown",
@@ -102,7 +105,8 @@ export const appsData: AppInfo[] = [
     title: "Shuffle Bus",
     category: "Games",
     description: "A colourful bus puzzle where kids drive matching-colour buses off the grid to board waiting passengers.",
-    url: "/apps/games/shuffle-bus/index.html"
+    url: "/apps/games/shuffle-bus/index.html",
+    image: shuffleBusImg
   }
 ];
 

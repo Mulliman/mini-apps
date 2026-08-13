@@ -47,20 +47,19 @@ across C4–C5.
 
 ## The arc
 
-The house shape is **build up, then unwind**:
+The house shape is **tempo set, build up, then unwind**:
 
-1. Open on **one** lane — the root.
-2. Add one lane every **2 bars**, primary family first, then the second family.
-   The moment the second family enters is when the polyrhythm appears; give it
-   room.
-3. Hold the full arrangement for **2–3 bars**.
-4. Remove one lane every **1 bar**, in **reverse order of arrival** — it unwinds
-   back down to the root. The descent can move faster than the build.
-5. Remove the last lane **one bar before the end**, leaving exactly **one silent
-   bar** to close on.
+1. **Set the tempo (Bars 0–3):** Open on **signature `1`** — the root note downbeat pulse solo for **4 bars**. This acts as the visual and auditory metronome, setting the bar tempo before subdivisions arrive.
+2. **Build up:** Add one lane every **2 bars** (starting at Bar 4), primary family first, then the second family. The moment the second family enters is when the polyrhythm appears; give it room.
+3. **Peak:** Hold the full arrangement for **2–4 bars**.
+4. **Unwind:** Remove one lane every **1 bar**, in **reverse order of arrival** — it unwinds back down to the root. The descent can move faster than the build.
+5. **Silence:** Remove the last lane **one bar before the end**, leaving exactly **one silent bar** to close on.
 
-Check the runtime: `bars × barDuration`. **Keep it under 60s** for Shorts. Seven
-lanes at 2 bars apart wants roughly 22 bars, so about 2.6s per bar.
+### Runtime Target
+
+- **Aim for ~1 minute** (55s–60s) for Shorts to maximize retention while staying strictly under the 60s hard ceiling.
+- Compute: `bars × barDuration ≈ 56–59s`.
+  - For example: **24 bars at 2.4s** = 57.6s, or **22 bars at 2.6s** = 57.2s.
 
 A spec with events cannot loop, which is fine for an arc. If you want a seamless
 looper instead, use no events at all — the renderer then emits a half-open frame
@@ -117,8 +116,8 @@ sounding lanes, events landing on real bars and targeting live lanes.
 
 - **Notes are naturals only, C3–C6** — no sharps or flats. Chords needing one (E
   major wants G♯) **cannot be voiced**. Say so rather than quietly substituting.
-- `timeSignature` is an integer **2–19**, so the binary family stops at 16 and the
-  ternary at 12.
+- `timeSignature` is an integer **1–19**, so the binary family stops at 16 and the
+  ternary at 12. Signature 1 provides a single downbeat pulse per bar.
 - `at` is a whole bar index and must be `< bars`.
 - Ten lanes is the live app's cap; past about eight, a 1080-wide frame is crowded.
 

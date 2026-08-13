@@ -13,7 +13,7 @@ export interface RhythmPreset {
 
 export interface Rhythm {
   id: string;
-  timeSignature: number; // 2 to 19
+  timeSignature: number; // 1 to 19
   noteName: string;      // e.g. "C4"
   frequency: number;     // in Hz
   color: string;         // hex value (e.g. "#00f0ff")

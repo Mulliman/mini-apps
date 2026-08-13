@@ -334,8 +334,8 @@ export function compileSpec(spec: VideoSpec): CompiledSpec {
 function normaliseRhythm(rhythm: SpecRhythm): SpecRhythm {
   if (!rhythm || typeof rhythm.id !== 'string' || !rhythm.id) specError('every rhythm needs a string `id`');
   const sig = rhythm.timeSignature;
-  if (!Number.isInteger(sig) || sig < 2 || sig > 19) {
-    specError(`rhythm "${rhythm.id}" has timeSignature ${sig}; must be an integer 2–19`);
+  if (!Number.isInteger(sig) || sig < 1 || sig > 19) {
+    specError(`rhythm "${rhythm.id}" has timeSignature ${sig}; must be an integer 1–19`);
   }
   return {
     volume: 0.8,

@@ -10,6 +10,8 @@ import { ANIM, bounceScale, type BounceMode, type SampledLane } from '../video/s
 
 interface RhythmTrackProps {
   lane: SampledLane;
+  /** Bar index */
+  bar?: number;
   /** Seconds elapsed within the current bar. */
   timeInBar: number;
   barDuration: number;
@@ -51,6 +53,7 @@ function Ripple({ phase, color }: { phase: number; color: string }) {
 
 export default function RhythmTrack({
   lane,
+  bar = 0,
   timeInBar,
   barDuration,
   isPlaying,
@@ -86,6 +89,9 @@ export default function RhythmTrack({
   const ripplePhase = isPlaying ? sinceStrike / ANIM.ripple : -1;
   const previousRipplePhase = isPlaying ? (sinceStrike + beatPeriod) / ANIM.ripple : -1;
 
+  // Global beat index so signature 1 (and all signatures) advance monotonically across bars
+  const absoluteBeat = bar * timeSignature + Math.floor(continuousBeats);
+
   // Live audio still fires on beat crossings; renders take the offline path instead.
   const prevBeatRef = useRef<number>(-1);
   useEffect(() => {
@@ -93,14 +99,13 @@ export default function RhythmTrack({
       prevBeatRef.current = -1;
       return;
     }
-    const absoluteBeat = Math.floor(continuousBeats);
     if (absoluteBeat !== prevBeatRef.current) {
       if (!isMuted) {
         onPlayNoteTrigger?.(frequency, absoluteBeat % timeSignature === 0, volume);
       }
       prevBeatRef.current = absoluteBeat;
     }
-  }, [audible, continuousBeats, isPlaying, isMuted, frequency, timeSignature, volume, onPlayNoteTrigger]);
+  }, [audible, absoluteBeat, isPlaying, isMuted, frequency, timeSignature, volume, onPlayNoteTrigger]);
 
   return (
     <div

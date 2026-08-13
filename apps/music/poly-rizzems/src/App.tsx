@@ -32,6 +32,7 @@ import {
   Square
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { computeLiveBpm, computeLiveChord, computeLivePolyrhythm } from './video/harmony';
 import Header from '../../../shared/Header';
 
 export default function App() {
@@ -416,7 +417,39 @@ function LiveApp() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[340px] bg-gradient-to-b from-zinc-800/10 to-transparent blur-3xl rounded-full pointer-events-none" />
 
       {/* Main Dashboard Board */}
-      <main className="main-dashboard flex-grow relative z-10 flex flex-col p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-2 sm:gap-4 min-h-0 overflow-hidden pb-0">
+      <main className="main-dashboard flex-grow relative z-10 flex flex-col p-2 sm:p-4 md:p-6 max-w-7xl mx-auto w-full gap-2 sm:gap-3 min-h-0 overflow-hidden pb-0">
+
+        {/* Live Metadata Bar: Chord, Ratio, Tempo */}
+        {lanes.length > 0 && (
+          <div className="flex items-center justify-center gap-2 sm:gap-3 shrink-0 font-mono select-none">
+            <div className="bg-white/5 rounded-full border border-white/10 inline-flex items-center justify-center gap-1.5 backdrop-blur-sm px-3 py-1 text-xs">
+              <span className="text-[#FF007A] font-black uppercase tracking-wider leading-none text-[10px]">
+                Chord
+              </span>
+              <span className="font-bold text-white tracking-tight leading-none">
+                {computeLiveChord(lanes)}
+              </span>
+            </div>
+
+            <div className="bg-white/5 rounded-full border border-white/10 inline-flex items-center justify-center gap-1.5 backdrop-blur-sm px-3 py-1 text-xs">
+              <span className="text-[#00f0ff] font-black uppercase tracking-wider leading-none text-[10px]">
+                Ratio
+              </span>
+              <span className="font-bold text-white tracking-tight leading-none">
+                {computeLivePolyrhythm(lanes)}
+              </span>
+            </div>
+
+            <div className="bg-white/5 rounded-full border border-white/10 inline-flex items-center justify-center gap-1.5 backdrop-blur-sm px-3 py-1 text-xs">
+              <span className="text-[#39ff14] font-black uppercase tracking-wider leading-none text-[10px]">
+                Tempo
+              </span>
+              <span className="font-bold text-white tracking-tight leading-none">
+                {computeLiveBpm(barDuration)} BPM
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Active Bouncing Track Lanes Grid Workspace */}
         <div id="tracks-outer" className="w-full flex-1 min-h-0 flex flex-col relative z-10">
@@ -437,6 +470,7 @@ function LiveApp() {
           ) : (
             <Board
               lanes={lanes}
+              bar={grid.bar}
               timeInBar={timeInBar}
               barDuration={barDuration}
               isPlaying={isPlaying}
