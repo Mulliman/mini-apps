@@ -47,8 +47,9 @@ export type VideoEvent =
  *
  * - `uniform`    — one height for every lane. The classic look, but only safe
  *                  when the fastest and slowest signatures are close.
- * - `equalSpeed` — `h ∝ T`, which makes peak speed identical across lanes. Fast
- *                  lanes bounce low and stay legible.
+ * - `equalSpeed` — scaled to preserve visibility across the range: low signatures
+ *                  stay high and readable (2=100%, 8≈57%), while fast ones taper
+ *                  gradually to 15% so balls don't teleport.
  * - `gravity`    — `h ∝ T²`, what real gravity does. Correct, and usually too
  *                  aggressive: an 8× signature range leaves the fast lane
  *                  vibrating on the floor.
@@ -64,8 +65,16 @@ export function bounceScale(
   referenceSignature: number
 ): number {
   if (mode === 'uniform') return 1;
-  const ratio = referenceSignature / timeSignature;
-  const scaled = mode === 'gravity' ? ratio * ratio : ratio;
+  if (mode === 'gravity') {
+    const ratio = referenceSignature / timeSignature;
+    return Math.max(MIN_BOUNCE_SCALE, Math.min(1, ratio * ratio));
+  }
+
+  // Graceful roll-off: referenceSignature is 100%, 8 is ~57%, 16 is 15%
+  const maxSig = 16;
+  const denominator = Math.max(1, maxSig - referenceSignature);
+  const progress = Math.max(0, Math.min(1, (maxSig - timeSignature) / denominator));
+  const scaled = 0.15 + 0.85 * Math.pow(progress, 1.25);
   return Math.max(MIN_BOUNCE_SCALE, Math.min(1, scaled));
 }
 

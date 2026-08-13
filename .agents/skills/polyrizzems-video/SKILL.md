@@ -68,9 +68,9 @@ range and folds the audio tail over the start.
 
 ## Bounce height
 
-Leave `bounce` unset. It defaults to `equalSpeed`, which scales each lane's arc to
-its beat period so every ball has the same peak speed — slow lanes arc high and
-lazy, fast ones stay low and busy, and every face stays readable.
+Leave `bounce` unset. It defaults to `equalSpeed`, which scales each lane's arc with
+a smooth gradual roll-off (2 is 100%, 8 is ~57%, 16 is 15%) so slow lanes arc high and
+lazy, fast ones stay comfortably visible and readable without collapsing to the floor.
 
 This matters most for exactly the briefs this skill invites. A "4s" family spanning
 2 to 16 is an 8× spread; with a single shared height the 16-lane crosses **four
