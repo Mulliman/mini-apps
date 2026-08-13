@@ -102,6 +102,21 @@ function LiveApp() {
   const clock = useClock(isPlaying);
   const clockRef = useRef(0);
   clockRef.current = clock.time;
+  // Read through a ref: the add/remove handlers run inside deferred recorder
+  // callbacks, which can fire on a later downbeat than the render that made them.
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+
+  /**
+   * When to say a lane transition began.
+   *
+   * Enter and exit progress are derived from the music clock, and that clock is
+   * stopped while paused — so a transition started then could never progress.
+   * Backdating it by its own duration starts it already finished, which also
+   * stops it replaying the moment playback resumes.
+   */
+  const transitionStart = (now: number, duration: number) =>
+    isPlayingRef.current ? now : now - duration;
 
   const grid = useBarGrid(clock.time, barDuration);
   const recorder = useRecorder(grid, clock.time);
@@ -123,10 +138,12 @@ function LiveApp() {
     }
   }, []);
 
-  // Seed metadata for whatever was restored from storage, entering at t=0.
+  // Whatever was restored from storage is already *there* — backdate it so it
+  // renders at full size on the first frame. Seeded at 0 it would sit at zero
+  // width and zero opacity until the clock started, i.e. a blank board.
   const seededRef = useRef(false);
   if (!seededRef.current) {
-    ensureMeta(rhythms, 0);
+    ensureMeta(rhythms, -ANIM.enter);
     seededRef.current = true;
   }
 
@@ -192,7 +209,10 @@ function LiveApp() {
     })) as Rhythm[];
 
     metaRef.current.clear();
-    ensureMeta(presetRhythms, clockRef.current);
+    // Relative to the reset below, not the clock we're leaving behind: seeding
+    // from the old value would leave every lane invisible until the clock climbed
+    // back past it.
+    ensureMeta(presetRhythms, transitionStart(0, ANIM.enter));
     setLeaving([]);
     setRhythms(presetRhythms);
     clock.setTime(0);
@@ -245,7 +265,7 @@ function LiveApp() {
       `add:${newRhythm.id}`,
       `Add ${newRhythm.timeSignature}♩`,
       () => {
-        ensureMeta([newRhythm], clockRef.current);
+        ensureMeta([newRhythm], transitionStart(clockRef.current, ANIM.enter));
         setRhythms((prev) => (prev.length >= 10 ? prev : [...prev, newRhythm]));
         setSelectedRhythmId(newRhythm.id); // auto highlight newly created track parameters
       },
@@ -257,7 +277,7 @@ function LiveApp() {
     const departing = rhythmsRef.current.find((r) => r.id === rhythmId);
     const meta = metaRef.current.get(rhythmId);
     if (departing && meta) {
-      const exitTime = clockRef.current;
+      const exitTime = transitionStart(clockRef.current, ANIM.exit);
       setLeaving((prev) => [
         // Drop anything whose exit animation has already finished.
         ...prev.filter((l) => exitTime - l.exitTime < ANIM.exit),
@@ -369,12 +389,14 @@ function LiveApp() {
       key: `${rhythm.id}#${meta.order}`,
       order: meta.order,
       rhythm,
-      enterProgress: clamp01((clock.time - meta.enterTime) / ANIM.enter),
+      // Nothing can be mid-transition while the clock is stopped, so a paused
+      // board shows everything settled rather than frozen part-way.
+      enterProgress: isPlaying ? clamp01((clock.time - meta.enterTime) / ANIM.enter) : 1,
       exitProgress: 0,
     });
   }
   for (const lane of leaving) {
-    const exitProgress = clamp01((clock.time - lane.exitTime) / ANIM.exit);
+    const exitProgress = isPlaying ? clamp01((clock.time - lane.exitTime) / ANIM.exit) : 1;
     if (exitProgress >= 1) continue;
     lanes.push({
       key: `${lane.rhythm.id}#${lane.order}`,

@@ -29,6 +29,32 @@ The first character of the filename MUST be the 1-indexed order integer (1 to 7)
 
 Optionally, include a `0-overview.md` for the week summarizing the long-form compiled video structure and schedule.
 
+### Ideas Bank & Lifecycle Structure
+
+Campaign ideas are developed and stored in:
+`apps/music/poly-pals/videos/plan/ideas/`
+
+- `ideas/<NN>-<theme-slug>.md`: Candidate ideas awaiting review.
+- `ideas/approved/`: Reviewed ideas approved for week plan expansion.
+- `ideas/rejected/`: Ideas discarded or set aside.
+
+---
+
+## Duplicate Checking & Idea Generation Rules
+
+Whenever a new idea or campaign plan is created:
+
+1. **Inventory Scan**:
+   - Scan all files in `apps/music/poly-pals/videos/plan/ideas/` (including `approved/` and `rejected/`) and existing `week-*` plan directories.
+2. **Deduplication Audit**:
+   - **Rhythmic Ratios**: Check that the proposed polyrhythmic collisions (e.g., 3:5, 5:7, 7:11) are not redundant with an existing week's core focus.
+   - **Harmonic Theme**: Ensure the chord progressions and stylistic theme (e.g., Fibonacci, Neo-Soul, Math Rock) do not duplicate existing plans.
+   - **Threshold**: If a candidate overlaps by >70% in concept or ratio combination with a previously generated idea/plan, modify or pivot the proposal before saving.
+3. **Filing & Transition**:
+   - Save new ideas to `ideas/<NN>-<theme-slug>.md`.
+   - Upon user approval, move the idea to `ideas/approved/`.
+   - If discarded by user review, move to `ideas/rejected/`.
+
 ---
 
 ## Plan Markdown Format
@@ -65,15 +91,18 @@ Each `N-<title-slug>.md` file must be a complete blueprint containing:
 
 When the user asks to plan a week of videos:
 
-1. **Identify Week Number & Theme**:
+1. **Check Ideas Bank & Perform Duplicate Audit**:
+   - Select an idea from `ideas/approved/` or input prompt, verifying it passes duplicate checks against existing weeks.
+2. **Identify Week Number & Theme**:
    - Parse or ask for the week number and theme keyword (e.g., `week-1-basics`, `week-3-jazz-chords`).
-2. **Design 7 Concept Arc**:
+3. **Design 7 Concept Arc**:
    - Ensure a cohesive progression over the 7 days:
      - Day 1: Simple entry / foundational polyrhythm of the theme.
      - Days 2–5: Exploring variations, richer voicings, contrasting families.
      - Day 6: High complexity or unexpected harmonic rub.
      - Day 7: Climax / Master polyrhythm combining multiple concepts.
-3. **Generate the 7 `.md` files**:
+4. **Generate the 7 `.md` files**:
    - Write each file into `apps/music/poly-pals/videos/plan/week-<N>-<theme>/`.
-4. **Cross-Reference `polypals-video`**:
+5. **Cross-Reference `polypals-video`**:
    - Ensure all voicings follow PolyPals house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), arc build-and-unwind, under 60s runtime.
+
