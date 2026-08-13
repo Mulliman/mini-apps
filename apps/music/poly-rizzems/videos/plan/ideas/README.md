@@ -1,11 +1,11 @@
-# PolyPals Video Campaign Ideas Bank
+# POLYRIZZEMS Video Campaign Ideas Bank
 
-This directory contains weekly campaign theme ideas for PolyPals video releases. Each `.md` file represents a unique thematic concept that can be passed into the `polypals-plan` skill to expand into a complete 7-day YouTube Shorts campaign (plus long-form compilation).
+This directory contains weekly campaign theme ideas for POLYRIZZEMS video releases. Each `.md` file represents a unique thematic concept that can be passed into the `polyrizzems-plan` skill to expand into a complete 7-day YouTube Shorts campaign (plus long-form compilation).
 
 ## Directory Structure
 
 ```text
-apps/music/poly-pals/videos/plan/ideas/
+apps/music/poly-rizzems/videos/plan/ideas/
 ├── 01-fibonacci-grooves.md       # Candidate ideas in root directory
 ├── 02-prime-time.md
 ├── ...
@@ -21,7 +21,7 @@ apps/music/poly-pals/videos/plan/ideas/
    - **Approved**: Move the idea `.md` file into `approved/` when ready to be turned into a 7-day video campaign.
    - **Rejected**: Move the idea `.md` file into `rejected/` if it fails constraints or is discarded.
 3. **Execution**:
-   - Use the `polypals-plan` skill with an approved idea file to generate the 7 ordered daily plan files in `apps/music/poly-pals/videos/plan/week-<N>-<theme>/`.
+   - Use the `polyrizzems-plan` skill with an approved idea file to generate the 7 ordered daily plan files in `apps/music/poly-rizzems/videos/plan/week-<N>-<theme>/`.
 
 ## Idea File Format Guidelines
 

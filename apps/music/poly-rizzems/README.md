@@ -23,7 +23,7 @@ View your app in AI Studio: https://ai.studio/apps/8799290b-0f7e-4272-93cc-bc284
 
 # Making videos
 
-PolyPals videos are **computed, not screen-recorded**. A video is a JSON *spec*; a
+POLYRIZZEMS videos are **computed, not screen-recorded**. A video is a JSON *spec*; a
 headless pass steps a fake clock frame by frame and pipes the result into ffmpeg.
 Nothing runs in real time, so there are no cursors, no popups, no dropped frames,
 and the same spec produces the same video on any machine.
@@ -31,7 +31,7 @@ and the same spec produces the same video on any machine.
 ## Render a spec
 
 ```bash
-pnpm --filter @miniapps/poly-pals render golden-triad
+pnpm --filter @miniapps/poly-rizzems render golden-triad
 ```
 
 Writes `out/golden-triad-9x16.mp4` and `out/golden-triad-16x9.mp4` — both 1080p60,
@@ -56,7 +56,7 @@ Render mode is switched on by URL, so the exact page the renderer drives can be
 watched live in a browser, full-screen and chrome-free:
 
 ```
-/apps/music/poly-pals/index.html?render=1&spec=golden-triad&play=1
+/apps/music/poly-rizzems/index.html?render=1&spec=golden-triad&play=1
 ```
 
 Drop `&play=1` and the page waits to be stepped by the renderer instead.
@@ -94,8 +94,8 @@ Leave `volume`, `expression` and `frequency` out of a spec and let the normalise
 derive them:
 
 ```bash
-pnpm --filter @miniapps/poly-pals normalise cmaj7-arc          # rewrite in place
-pnpm --filter @miniapps/poly-pals normalise cmaj7-arc --check  # report only
+pnpm --filter @miniapps/poly-rizzems normalise cmaj7-arc          # rewrite in place
+pnpm --filter @miniapps/poly-rizzems normalise cmaj7-arc --check  # report only
 ```
 
 - **Mix level from pitch** — `0.85 × (C4 / freq)^0.5`, so C3 sits at 0.95 and C6 at
@@ -111,7 +111,7 @@ It also validates the spec: signatures in range, notes in the palette (naturals
 C3–C6 only), ids unique among sounding lanes, events on real bars targeting live
 lanes.
 
-Composition itself stays a human decision. `.claude/skills/polypals-video/` carries
+Composition itself stays a human decision. `.claude/skills/polyrizzems-video/` carries
 the style — how to read a brief like *"a Cmaj7 in 4s with a complementing chord in
 threes"*, how to voice chords across rhythmic families, and the build-and-unwind
 arc. `public/specs/cmaj7-arc.json` is a worked example.
@@ -144,7 +144,7 @@ the start, so it can't loop.
 
 ## Frame layout
 
-The frame is split vertically into a title band, the arrangement, and the PolyPals
+The frame is split vertically into a title band, the arrangement, and the POLYRIZZEMS
 wordmark — **1.5 / 8 / 1.5** in portrait, **1.1 / 9 / 1.1** in landscape:
 
 ```
@@ -155,7 +155,7 @@ wordmark — **1.5 / 8 / 1.5** in portrait, **1.1 / 9 / 1.1** in landscape:
 │  the bouncing   │   8
 │                 │
 ├─────────────────┤
-│   PolyPals.     │  1.5   ← clear of captions and the scrubber
+│  POLYRIZZEMS.   │  1.5   ← clear of captions and the scrubber
 └─────────────────┘
 ```
 

@@ -1,16 +1,16 @@
 ---
-name: polypals-plan
-description: Plan a 7-day YouTube Shorts campaign and compiled long-form video for PolyPals under apps/music/poly-pals/videos/plan/week-N-<theme>/ from a prompt. Generates 7 ordered markdown files (1-title.md to 7-title.md) with complete spec parameters, musical voicings, and YouTube automation metadata.
+name: polyrizzems-plan
+description: Plan a 7-day YouTube Shorts campaign and compiled long-form video for POLYRIZZEMS under apps/music/poly-rizzems/videos/plan/week-N-<theme>/ from a prompt. Generates 7 ordered markdown files (1-title.md to 7-title.md) with complete spec parameters, musical voicings, and YouTube automation metadata.
 ---
 
-# PolyPals Video Planning (`polypals-plan`)
+# POLYRIZZEMS Video Planning (`polyrizzems-plan`)
 
-Use this skill to generate a structured 7-day video release plan (plus long-form video compilation details) for PolyPals in response to a topic or prompt.
+Use this skill to generate a structured 7-day video release plan (plus long-form video compilation details) for POLYRIZZEMS in response to a topic or prompt.
 
 ## Content & Directory Structure
 
 All video plans live in:
-`apps/music/poly-pals/videos/plan/week-<N>-<theme>/`
+`apps/music/poly-rizzems/videos/plan/week-<N>-<theme>/`
 
 Where:
 - `<N>` is the week number (e.g., `1`, `2`, `11`, `22`).
@@ -32,7 +32,7 @@ Optionally, include a `0-overview.md` for the week summarizing the long-form com
 ### Ideas Bank & Lifecycle Structure
 
 Campaign ideas are developed and stored in:
-`apps/music/poly-pals/videos/plan/ideas/`
+`apps/music/poly-rizzems/videos/plan/ideas/`
 
 - `ideas/<NN>-<theme-slug>.md`: Candidate ideas awaiting review.
 - `ideas/approved/`: Reviewed ideas approved for week plan expansion.
@@ -45,7 +45,7 @@ Campaign ideas are developed and stored in:
 Whenever a new idea or campaign plan is created:
 
 1. **Inventory Scan**:
-   - Scan all files in `apps/music/poly-pals/videos/plan/ideas/` (including `approved/` and `rejected/`) and existing `week-*` plan directories.
+   - Scan all files in `apps/music/poly-rizzems/videos/plan/ideas/` (including `approved/` and `rejected/`) and existing `week-*` plan directories.
 2. **Deduplication Audit**:
    - **Rhythmic Ratios**: Check that the proposed polyrhythmic collisions (e.g., 3:5, 5:7, 7:11) are not redundant with an existing week's core focus.
    - **Harmonic Theme**: Ensure the chord progressions and stylistic theme (e.g., Fibonacci, Neo-Soul, Math Rock) do not duplicate existing plans.
@@ -78,7 +78,7 @@ Each `N-<title-slug>.md` file must be a complete blueprint containing:
 
 4. **YouTube Shorts Metadata** (For Automated Uploaders):
    - **Shorts Title** (Punchy, hook-driven, under 60 chars)
-   - **Shorts Description & Hashtags** (`#polyrhythm #music #poly-pals #shorts`)
+   - **Shorts Description & Hashtags** (`#polyrhythm #music #polyrizzems #shorts`)
    - **Pinned Comment** (Engagement prompt)
 
 5. **Long-Form Video Compilation Notes**:
@@ -102,7 +102,6 @@ When the user asks to plan a week of videos:
      - Day 6: High complexity or unexpected harmonic rub.
      - Day 7: Climax / Master polyrhythm combining multiple concepts.
 4. **Generate the 7 `.md` files**:
-   - Write each file into `apps/music/poly-pals/videos/plan/week-<N>-<theme>/`.
-5. **Cross-Reference `polypals-video`**:
-   - Ensure all voicings follow PolyPals house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), arc build-and-unwind, under 60s runtime.
-
+   - Write each file into `apps/music/poly-rizzems/videos/plan/week-<N>-<theme>/`.
+5. **Cross-Reference `polyrizzems-video`**:
+   - Ensure all voicings follow POLYRIZZEMS house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), arc build-and-unwind, under 60s runtime.

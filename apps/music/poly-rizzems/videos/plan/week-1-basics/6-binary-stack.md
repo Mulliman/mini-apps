@@ -46,4 +46,4 @@
 ## 3. YouTube Shorts Metadata (Automation)
 
 - **Title**: Doubling speeds: 2 ➔ 4 ➔ 8 ➔ 16! ⚡ #shorts
-- **Description**: Watch sub-divisions double in real time from 2 to 16! #polyrhythm #poly-pals #music
+- **Description**: Watch sub-divisions double in real time from 2 to 16! #polyrhythm #polyrizzems #music

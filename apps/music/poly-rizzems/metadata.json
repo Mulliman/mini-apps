@@ -1,5 +1,5 @@
 {
-  "name": "PolyPals",
+  "name": "POLYRIZZEMS",
   "description": "An interactive, beautiful polyrhythm visualizer featuring custom color circles bouncing to distinct time signatures with real-time Web Audio API sound synthesis.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

@@ -13,7 +13,7 @@ export interface RenderMode {
   active: boolean;
   /** Spec name to load from `public/specs/<name>.json`. */
   specName: string | null;
-  /** Start paused and wait for `__polypals.seek()` rather than free-running. */
+  /** Start paused and wait for `__polyrizzems.seek()` rather than free-running. */
   stepped: boolean;
 }
 

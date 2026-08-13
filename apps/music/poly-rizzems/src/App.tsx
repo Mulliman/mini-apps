@@ -410,7 +410,7 @@ function LiveApp() {
 
   return (
     <div className="relative h-[100dvh] bg-black text-white font-sans flex flex-col overflow-hidden antialiased selection:bg-zinc-800">
-      <Header title="PolyPals" />
+      <Header title="POLYRIZZEMS" />
 
       {/* Decorator background */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[340px] bg-gradient-to-b from-zinc-800/10 to-transparent blur-3xl rounded-full pointer-events-none" />
@@ -483,18 +483,18 @@ function LiveApp() {
         {/* Left: Logo */}
         <div className="flex items-center justify-start flex-1 hidden sm:flex">
           <h1 className="text-xl md:text-3xl font-black italic tracking-tighter whitespace-nowrap">
-            PolyPals<span className="text-[#FF007A]">.</span>
+            <span className="text-[#FF007A]">POLY</span>RIZZEMS<span className="text-[#FF007A]">.</span>
           </h1>
         </div>
 
         {/* Mobile short logo */}
         <div className="flex items-center justify-start sm:hidden shrink-0 pr-2 flex-1">
           <h1 className="text-2xl font-black italic tracking-tighter select-none">
-            P<span className="text-[#FF007A]">P.</span>
+            <span className="text-[#FF007A]">P</span>R<span className="text-[#FF007A]">.</span>
           </h1>
         </div>
 
-        {/* Center: Play/Pause and Add Pal */}
+        {/* Center: Play/Pause and Add RIZZEM */}
         <div className="flex flex-row items-center justify-center gap-2 sm:gap-4 shrink-0">
           <button
             id="action-play-pause-btn"
@@ -515,7 +515,7 @@ function LiveApp() {
             className="h-10 md:h-14 px-3 md:px-6 bg-white text-black rounded-full font-bold text-[10px] md:text-sm tracking-wide shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:scale-105 active:scale-95 transition-transform flex items-center gap-1 md:gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
           >
             <Plus className="w-3 h-3 md:w-5 md:h-5 stroke-[3px]" />
-            ADD PAL
+            Add a RIZZEM
           </button>
         </div>
 
@@ -755,7 +755,7 @@ function LiveApp() {
                       disabled={rhythms.length >= 10}
                       className="w-full py-3.5 bg-white hover:opacity-90 disabled:opacity-40 text-black font-semibold rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:cursor-not-allowed cursor-pointer shadow-lg"
                     >
-                      <Plus className="w-4 h-4" /> Add Rhythm ({rhythms.length}/10)
+                      <Plus className="w-4 h-4" /> Add a RIZZEM ({rhythms.length}/10)
                     </button>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 /**
- * Multi-device responsiveness and regression test suite for PolyPals
+ * Multi-device responsiveness and regression test suite for POLYRIZZEMS
  * This script runs automated browser actions across 8 viewport profiles and captures screenshots.
  * Written using ES Module syntax to comply with monorepo packaging.
  */
@@ -51,7 +51,7 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function runTests() {
   console.log('====================================================');
-  console.log('STARTING POLY-PALS BROWSER AUTOMATION MULTI-DEVICE SUITE');
+  console.log('STARTING POLYRIZZEMS BROWSER AUTOMATION MULTI-DEVICE SUITE');
   console.log('====================================================');
   
   if (!fs.existsSync(screenshotsDir)) {
@@ -60,7 +60,7 @@ async function runTests() {
   }
 
   const port = getDevServerPort();
-  const url = `http://localhost:${port}/apps/music/poly-pals/index.html`;
+  const url = `http://localhost:${port}/apps/music/poly-rizzems/index.html`;
   console.log(`[INF] Targeting URL: ${url}\n`);
 
   const results = [];
@@ -83,7 +83,7 @@ async function runTests() {
       const page = await browser.newPage();
       await page.setViewport({ width: dev.width, height: dev.height });
 
-      // 1. Navigate to PolyPals
+      // 1. Navigate to POLYRIZZEMS
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 15000 });
       await delay(1000); // stable animation settles
 

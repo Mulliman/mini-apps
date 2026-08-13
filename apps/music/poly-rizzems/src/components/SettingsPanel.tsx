@@ -237,7 +237,7 @@ export default function SettingsPanel({
         {/* Theme colors */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-6">
           <div className="flex items-center gap-2 text-[10px] md:text-xs font-mono text-zinc-400 uppercase tracking-widest opacity-80 sm:min-w-[70px] sm:mt-2.5">
-            Pal
+            RIZZEM
           </div>
           <div className="flex-1 flex flex-wrap gap-2">
             {COLOR_PALETTE.map((item) => {

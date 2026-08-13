@@ -5,7 +5,7 @@
 - **Status**: Candidate
 
 ## Core Concept
-Translating iconic traditional world percussion polyrhythms—West African 12/8 Bembé bell patterns, Afro-Cuban 3:2 and 2:3 Clave pulses, and Balkan hemiolas—into pitch-mapped PolyPals arrangements.
+Translating iconic traditional world percussion polyrhythms—West African 12/8 Bembé bell patterns, Afro-Cuban 3:2 and 2:3 Clave pulses, and Balkan hemiolas—into pitch-mapped POLYRIZZEMS arrangements.
 
 ## Musical Blueprint
 - **Chords**: C Pentatonic / Dorian Modal (`C3, D4, E4, G4, A4`), A Minor 7 (`A3, C4, E4, G4`), D Minor 7 (`D3, F4, A4, C5`).

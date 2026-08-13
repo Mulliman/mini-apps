@@ -6,7 +6,7 @@ import christmasCountdownImg from './assets/christmas-countdown-preview.png';
 import patternPlaytimeImg from './assets/pattern-playtime.png';
 import solarSystemExplorerImg from './assets/solar-system-explorer.png';
 import simpleSumsImg from './assets/simple-sums.png';
-import polyPalsImg from './assets/poly-pals.png';
+import polyRizzemsImg from './assets/poly-rizzems.png';
 
 export interface AppInfo {
   id: string;
@@ -90,12 +90,12 @@ export const appsData: AppInfo[] = [
     image: simpleSumsImg
   },
   {
-    id: "poly-pals",
-    title: "PolyPals",
+    id: "poly-rizzems",
+    title: "POLYRIZZEMS",
     category: "Music",
     description: "An interactive polyrhythm visualizer with glowing bouncing faces and customizable sounds.",
-    url: "/apps/music/poly-pals/index.html",
-    image: polyPalsImg
+    url: "/apps/music/poly-rizzems/index.html",
+    image: polyRizzemsImg
   },
   {
     id: "shuffle-bus",

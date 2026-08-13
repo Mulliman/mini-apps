@@ -52,4 +52,4 @@
 ## 3. YouTube Shorts Metadata (Automation)
 
 - **Title**: The Ultimate Polyrhythmic Cascade! 💥 (2,3,4,5,6,8) #shorts
-- **Description**: All 6 rhythmic families colliding on a C Major 9 chord! Week 1 finale! #polyrhythm #poly-pals #music #theory
+- **Description**: All 6 rhythmic families colliding on a C Major 9 chord! Week 1 finale! #polyrhythm #polyrizzems #music #theory

@@ -1,13 +1,13 @@
 ---
-name: polypals-video
-description: Compose PolyPals polyrhythm video specs in the house style — turning briefs like "a Cmaj7 in 4s with a complementing chord in threes and sixes" into spec JSON, voicing chords across rhythmic families, shaping the build-and-unwind arc, then normalising and rendering. Use when creating, editing, reviewing or rendering a PolyPals video, spec, or anything in apps/music/poly-pals/public/specs.
+name: polyrizzems-video
+description: Compose POLYRIZZEMS polyrhythm video specs in the house style — turning briefs like "a Cmaj7 in 4s with a complementing chord in threes and sixes" into spec JSON, voicing chords across rhythmic families, shaping the build-and-unwind arc, then normalising and rendering. Use when creating, editing, reviewing or rendering a POLYRIZZEMS video, spec, or anything in apps/music/poly-rizzems/public/specs.
 ---
 
-# Composing PolyPals videos
+# Composing POLYRIZZEMS videos
 
-A video is a spec: `apps/music/poly-pals/public/specs/<name>.json`. You write the
+A video is a spec: `apps/music/poly-rizzems/public/specs/<name>.json`. You write the
 musical decisions; `normalise.mjs` fills in everything that is arithmetic. Read
-`apps/music/poly-pals/README.md` for the spec format and the render pipeline.
+`apps/music/poly-rizzems/README.md` for the spec format and the render pipeline.
 
 **Never hand-write `volume`, `expression`, or `frequency`.** Leave those keys out
 entirely and run the normaliser. Deriving them by hand is how the house style
@@ -90,8 +90,8 @@ Palette (from `src/types.ts`): `#ff007f #00f0ff #39ff14 #fffb00 #ff5f00 #b026ff
 ## What the normaliser does
 
 ```bash
-pnpm --filter @miniapps/poly-pals normalise <spec>          # rewrite in place
-pnpm --filter @miniapps/poly-pals normalise <spec> --check  # report, exit 1 if it would change
+pnpm --filter @miniapps/poly-rizzems normalise <spec>          # rewrite in place
+pnpm --filter @miniapps/poly-rizzems normalise <spec> --check  # report, exit 1 if it would change
 ```
 
 - **Mix level from pitch** — `0.85 × (C4 / freq)^0.5`, so C3 sits at 0.95 and C6 at
@@ -126,9 +126,9 @@ sounding lanes, events landing on real bars and targeting live lanes.
 
 ```bash
 # watch it before committing minutes to a render
-# /apps/music/poly-pals/index.html?render=1&spec=<name>&play=1
+# /apps/music/poly-rizzems/index.html?render=1&spec=<name>&play=1
 
-pnpm --filter @miniapps/poly-pals render <name>
+pnpm --filter @miniapps/poly-rizzems render <name>
 ```
 
 Renders take roughly 9 minutes for both cuts of a 30s video, so preview first. Use

@@ -38,13 +38,13 @@ function useBands() {
 
 interface RenderAppProps {
   specName: string | null;
-  /** Wait for `__polypals.seek()` instead of free-running on rAF. */
+  /** Wait for `__polyrizzems.seek()` instead of free-running on rAF. */
   stepped: boolean;
 }
 
 declare global {
   interface Window {
-    __polypals?: {
+    __polyrizzems?: {
       ready: boolean;
       error?: string;
       info?: { name: string; bars: number; totalDuration: number; isLoopable: boolean };
@@ -140,7 +140,7 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
   // fonts included, or the first frames would render in a fallback face.
   useEffect(() => {
     if (error) {
-      window.__polypals = {
+      window.__polyrizzems = {
         ready: false,
         error,
         seek: async () => {},
@@ -155,7 +155,7 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
     let cancelled = false;
     const publish = () => {
       if (cancelled) return;
-      window.__polypals = {
+      window.__polyrizzems = {
         ready: true,
         info: {
           name: compiled.spec.name,
@@ -244,10 +244,10 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
         style={{ flex: `${bands.footer} 1 0` }}
       >
         <span
-          className="font-black italic tracking-tighter text-white/30"
+          className="font-black italic tracking-tighter"
           style={{ fontSize: '4.2vh' }}
         >
-          PolyPals<span className="text-[#FF007A]/80">.</span>
+          <span className="text-[#FF007A]">POLY</span><span className="text-white/30">RIZZEMS</span><span className="text-[#FF007A]/80">.</span>
         </span>
       </footer>
     </div>

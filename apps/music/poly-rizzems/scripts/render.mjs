@@ -2,9 +2,9 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Render a PolyPals spec to video.
+ * Render a POLYRIZZEMS spec to video.
  *
- *   pnpm --filter @miniapps/poly-pals render golden-triad
+ *   pnpm --filter @miniapps/poly-rizzems render golden-triad
  *
  * Starts Vite itself on an ephemeral port, drives the app's render mode through
  * puppeteer one frame at a time, and pipes those frames straight into ffmpeg
@@ -81,7 +81,7 @@ Usage: render <spec-name> [options]
                                   the neon edges — use 1 for fast drafts)
   --bars    render only the first N bars (quick smoke test)
   --no-audio
-  --out     output directory     (default apps/music/poly-pals/out)
+  --out     output directory     (default apps/music/poly-rizzems/out)
 `);
 }
 
@@ -117,11 +117,11 @@ async function openRenderPage(browser, port, spec, viewport, scale) {
   const url = `http://127.0.0.1:${port}/?render=1&spec=${encodeURIComponent(spec)}`;
   await page.goto(url, { waitUntil: 'networkidle0' });
 
-  await page.waitForFunction(() => window.__polypals?.ready || window.__polypals?.error, { timeout: 30000 });
+  await page.waitForFunction(() => window.__polyrizzems?.ready || window.__polyrizzems?.error, { timeout: 30000 });
   const state = await page.evaluate(() => ({
-    ready: window.__polypals.ready,
-    error: window.__polypals.error ?? null,
-    info: window.__polypals.info ?? null,
+    ready: window.__polyrizzems.ready,
+    error: window.__polyrizzems.error ?? null,
+    info: window.__polyrizzems.info ?? null,
   }));
   if (!state.ready) throw new Error(state.error || 'render mode failed to become ready');
   return { page, info: state.info };
@@ -205,7 +205,7 @@ async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount
       const t = frame / fps;
       let shot;
       try {
-        await page.evaluate((time) => window.__polypals.seek(time), t);
+        await page.evaluate((time) => window.__polyrizzems.seek(time), t);
         shot = await page.screenshot({ type: 'png', captureBeyondViewport: false, optimizeForSpeed: true });
       } catch (error) {
         if (/execution context was destroyed|Target closed/i.test(String(error?.message))) {
@@ -277,7 +277,7 @@ async function main() {
       const first = ASPECTS[aspectNames[0]];
       const { page, info } = await openRenderPage(browser, port, options.spec, first, 1);
       process.stdout.write('  rendering audio... ');
-      const audio = await page.evaluate(() => window.__polypals.renderAudio());
+      const audio = await page.evaluate(() => window.__polyrizzems.renderAudio());
       audioPath = join(options.out, `${options.spec}.wav`);
       writeFileSync(audioPath, Buffer.from(audio.base64, 'base64'));
       console.log(

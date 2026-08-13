@@ -344,7 +344,7 @@ importers:
         specifier: ~5.8.2
         version: 5.8.3
 
-  apps/music/poly-pals:
+  apps/music/poly-rizzems:
     dependencies:
       '@google/genai':
         specifier: ^2.4.0

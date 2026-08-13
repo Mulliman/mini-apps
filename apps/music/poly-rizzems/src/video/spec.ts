@@ -4,7 +4,7 @@
  */
 
 /**
- * A PolyPals video is *computed*, never captured.
+ * A POLYRIZZEMS video is *computed*, never captured.
  *
  * A spec is an initial arrangement plus a list of delta events timed in **bars**.
  * Compiling it produces a structure that can be sampled at any absolute time `t`
@@ -155,7 +155,7 @@ export interface Sample {
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 function specError(message: string): never {
-  throw new Error(`Invalid PolyPals spec: ${message}`);
+  throw new Error(`Invalid POLYRIZZEMS spec: ${message}`);
 }
 
 /**

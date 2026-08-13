@@ -4,8 +4,8 @@
  *
  * Apply the house rules to a spec.
  *
- *   pnpm --filter @miniapps/poly-pals normalise cmaj7-arc
- *   pnpm --filter @miniapps/poly-pals normalise cmaj7-arc --check
+ *   pnpm --filter @miniapps/poly-rizzems normalise cmaj7-arc
+ *   pnpm --filter @miniapps/poly-rizzems normalise cmaj7-arc --check
  *
  * Composition stays a human (or LLM) decision — which signatures, which notes,
  * how the arc is shaped. What lands here is only the part that is arithmetic and

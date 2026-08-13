@@ -1,9 +1,9 @@
-# Grilling: Polyrhythmic video automation (PolyPals)
+# Grilling: Polyrhythmic video automation (POLYRIZZEMS)
 
 Started: 2026-08-11
 Status: complete
 
-Subject: automating video production from `apps/music/poly-pals` — planning and/or
+Subject: automating video production from `apps/music/poly-rizzems` — planning and/or
 rendering polyrhythm videos without UI chrome, popups, cursors or click artifacts.
 
 ## Context gathered from the codebase (not up for debate, just facts)
@@ -19,7 +19,7 @@ rendering polyrhythm videos without UI chrome, popups, cursors or click artifact
 - Chrome to hide: shared `Header`, bottom action bar, settings drawer, help modal,
   per-lane hover buttons.
 
-**Implemented 2026-08-11.** See `apps/music/poly-pals/README.md` for the resulting
+**Implemented 2026-08-11.** See `apps/music/poly-rizzems/README.md` for the resulting
 workflow. Three things were learned during implementation that this plan got wrong:
 
 1. **`seek()` must not wait on `requestAnimationFrame.`** rAF stops firing whenever the
@@ -34,9 +34,9 @@ workflow. Three things were learned during implementation that this plan got wro
 
 ## Summary — the shared understanding
 
-PolyPals videos are **computed, not captured**. A video is a JSON *spec* — an initial
+POLYRIZZEMS videos are **computed, not captured**. A video is a JSON *spec* — an initial
 arrangement plus a list of delta events timed in bars — living in
-`apps/music/poly-pals/public/specs/`. Opening `?render=1&spec=<name>` in any browser plays
+`apps/music/poly-rizzems/public/specs/`. Opening `?render=1&spec=<name>` in any browser plays
 that spec full-screen and chrome-free; that same URL is what a headless puppeteer session
 drives, stepping an injected clock frame by frame and piping PNGs into ffmpeg. Because
 every visual is made a pure function of `t` and every audio strike is analytic
@@ -99,10 +99,10 @@ the live app too, so what you performed is exactly what renders.
 - **Render-mode contract**: a URL flag `?render=1&spec=<name>` puts the app in render mode,
   which (1) hides all chrome, (2) disables localStorage read/write so a live session can't
   leak into a video, (3) swaps the RAF clock for manual stepping, (4) exposes
-  `window.__polypals.seek(t)` / `.renderAudio()` for puppeteer.
+  `window.__polyrizzems.seek(t)` / `.renderAudio()` for puppeteer.
   — *The spec arriving via URL means the same link can be opened in a real browser to
   preview the video live and chrome-free — the dev loop comes free.*
-- **Spec storage**: spec JSON files live in `apps/music/poly-pals/public/specs/*.json`,
+- **Spec storage**: spec JSON files live in `apps/music/poly-rizzems/public/specs/*.json`,
   fetched **document-relative** (`./specs/<name>.json`) because the app sets `base: './'`
   and is served from a subpath in the combined deploy. — *Only option where dev preview,
   headless render, and a shareable link on the deployed site use one identical code path;
@@ -116,7 +116,7 @@ the live app too, so what you performed is exactly what renders.
 - **On-screen content in a render**: keep the per-lane `5♩ / G4` labels
   (`RhythmTrack.tsx:112`) and the beat-number boxes (`RhythmTrack.tsx:163`); drop the
   bordered/rounded/padded board frame (`App.tsx:297`) and go edge-to-edge black; add a
-  small low-opacity PolyPals wordmark in a corner. Title cards are **not** in v1.
+  small low-opacity POLYRIZZEMS wordmark in a corner. Title cards are **not** in v1.
   — *The numbers are the engagement hook — they let a viewer watch 5-against-7 resolve.
   The board frame reads as "screenshot of an app" and wastes frame area at 9:16.
   Baked-in title cards would mean re-rendering 3,600 frames to fix a typo; do them in a
@@ -151,8 +151,8 @@ the live app too, so what you performed is exactly what renders.
   — *What you saw while recording is exactly what renders, and it turns clicking into
   conducting (cf. Ableton clip launch).* Accepted cost: the app feels laggy while armed —
   mitigate with a ghosted pending lane counting down to the downbeat.
-- **Tooling location**: `apps/music/poly-pals/scripts/render.mjs`, run as
-  `pnpm --filter @miniapps/poly-pals render <spec>`. Deliberately **not** root `scripts/`
+- **Tooling location**: `apps/music/poly-rizzems/scripts/render.mjs`, run as
+  `pnpm --filter @miniapps/poly-rizzems render <spec>`. Deliberately **not** root `scripts/`
   despite `test-devices.js` living there. — *Keeps specs, renderer and the app they drive
   in one self-contained folder; root `scripts/` stays for genuinely cross-app tooling.*
 - **Server management**: the script starts Vite programmatically on an ephemeral port and
@@ -163,7 +163,7 @@ the live app too, so what you performed is exactly what renders.
   **Known caveat:** rendering against the dev server means un-minified, HMR-instrumented
   code — first suspect if a video ever diverges from the deployed site. Stub a `--dist`
   flag (build + serve `dist/`) as the escape hatch, but don't implement it in v1.
-- **Outputs**: MP4s land in `apps/music/poly-pals/out/`, **git-ignored**, named
+- **Outputs**: MP4s land in `apps/music/poly-rizzems/out/`, **git-ignored**, named
   `<spec>-<aspect>.mp4`, overwritten on re-render (no timestamps or version suffixes).
   — *The spec is the source, the video is a build artifact; determinism means re-rendering
   a spec reproduces the video, so archiving old cuts is clutter.* Accepted: no durable
@@ -232,7 +232,7 @@ Recommended: (A) `OfflineAudioContext` reusing the app's synth, requiring a
 Answer: (A).
 
 ### Q7: What is the renderer↔app contract, and does the spec arrive via URL?
-Recommended: `?render=1&spec=…` flag + `window.__polypals.seek()`; spec via URL so the
+Recommended: `?render=1&spec=…` flag + `window.__polyrizzems.seek()`; spec via URL so the
 same link previews live in a browser; `expression` made explicit instead of seeded.
 Answer: accepted, with a follow-up on the mechanics of serving the file.
 
@@ -262,7 +262,7 @@ quantised to the next downbeat in the live app while armed** so live == spec.
 Answer: agreed, including the quantised-launch behaviour.
 
 ### Q12: Where does the render tool live, and does it manage its own dev server?
-Recommended: `apps/music/poly-pals/scripts/render.mjs` (not root `scripts/`), starting
+Recommended: `apps/music/poly-rizzems/scripts/render.mjs` (not root `scripts/`), starting
 Vite itself on an ephemeral port; frames piped to ffmpeg stdin.
 Answer: agreed.
 

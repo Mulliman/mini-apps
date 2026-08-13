@@ -5,7 +5,7 @@
 - **Status**: Candidate
 
 ## Core Concept
-Reinterpreting famous polyrhythmic passages from classical music history (Chopin's *Fantaisie-Impromptu* 3:4, Debussy's *Arabesque No. 1* 3:2, Stravinsky's *Rite of Spring* 5:4, Beethoven's Moonlight Sonata 3:2) using PolyPals visualization and natural note harmonies.
+Reinterpreting famous polyrhythmic passages from classical music history (Chopin's *Fantaisie-Impromptu* 3:4, Debussy's *Arabesque No. 1* 3:2, Stravinsky's *Rite of Spring* 5:4, Beethoven's Moonlight Sonata 3:2) using POLYRIZZEMS visualization and natural note harmonies.
 
 ## Musical Blueprint
 - **Chords**: C Major 7 (`C3, E4, G4, B4`), A Minor (`A3, C4, E4`), E Minor 7 (`E3, G4, B4, D5`), G Major 7 (`G3, B4, D5, F5`).

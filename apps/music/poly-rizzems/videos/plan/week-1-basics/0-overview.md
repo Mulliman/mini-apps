@@ -13,5 +13,5 @@ Week 1 introduces the fundamental polyrhythmic collisions (3 vs 4, 2 vs 3, 4 vs 
 - **Day 7**: `7-grand-polyrhythm.md` — Grand Polyrhythmic Cascade: 2, 3, 4, 5, 6, 8 (C Major 9)
 
 ## Long-Form Compilation (YouTube)
-- **Title**: PolyPals Week 1: Master the 7 Essential Polyrhythms
+- **Title**: POLYRIZZEMS Week 1: Master the 7 Essential Polyrhythms
 - **Structure**: Plays all 7 Shorts sequentially with 2-second audio tail crossfades and title card overlays. Total runtime approx. 3.5 minutes.
