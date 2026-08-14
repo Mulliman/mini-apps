@@ -62,8 +62,8 @@ export const initialQuestions: Question[] = [
   },
   {
     id: 'play-3',
-    scenario: 'Xander and Jasper both want to ride the yellow balance bike in the garden. What is the good choice?',
-    speechText: 'Both boys want the yellow balance bike in the garden. What is the good choice?',
+    scenario: 'Xander and Jasper both want to ride the balance bike in the garden. What is the good choice?',
+    speechText: 'Both boys want the balance bike in the garden. What is the good choice?',
     category: 'Playtime & Sharing',
     options: [
       {
@@ -300,7 +300,7 @@ export const initialQuestions: Question[] = [
     options: [
       {
         id: 'bed-1-a',
-        text: 'Put on cosy pyjamas and brush teeth',
+        text: 'Put on pyjamas, brush teeth, lie in bed, and yawn',
         isCorrect: true,
         actionType: 'sleep',
         feedbackSpeech: 'Super bedtime routine! Xander gets cozy in his warm pyjamas for story time.',
@@ -350,7 +350,7 @@ export const initialQuestions: Question[] = [
   },
   {
     id: 'bed-3',
-    scenario: 'It is time to brush teeth before bed. What should Xander do at the bathroom basin?',
+    scenario: 'It is time to brush teeth before bed. What should Xander do?',
     speechText: 'Time to brush teeth before bed. What should Xander do at the basin?',
     category: 'Bedtime & Evening',
     options: [
@@ -366,10 +366,10 @@ export const initialQuestions: Question[] = [
       },
       {
         id: 'bed-3-b',
-        text: 'Squirt toothpaste all over the bathroom mirror',
+        text: 'Shut mouth and spit out toothpaste',
         isCorrect: false,
         actionType: 'throw_food',
-        feedbackSpeech: 'Uh oh, toothpaste is for brushing teeth, not decorating the mirror!',
+        feedbackSpeech: 'Uh oh, toothpaste is for brushing teeth, not spraying around!',
         explanation: 'Squirting toothpaste makes a big mess to clean up.',
         imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Toothpaste splattered on mirror, blonde 4yo boy Xander holding a tube.',
         image: './illustrations/q13_opt2.jpg',
@@ -438,8 +438,8 @@ export const initialQuestions: Question[] = [
   // =========================================================================
   {
     id: 'manner-1',
-    scenario: 'Mummy pours Xander a cup of cold apple juice. What magic words should Xander say?',
-    speechText: 'Mummy pours cold apple juice for Xander. What magic words should Xander say?',
+    scenario: 'Mummy pours Xander a cup of cold juice. What magic words should Xander say?',
+    speechText: 'Mummy pours cold juice for Xander. What magic words should Xander say?',
     category: 'Manners & Kindness',
     options: [
       {
@@ -472,12 +472,12 @@ export const initialQuestions: Question[] = [
     options: [
       {
         id: 'manner-2-a',
-        text: 'Give Jasper a gentle hug and ask: "Are you okay, Jasper?"',
+        text: 'Tell mummy or daddy that Jasper has hurt himself',
         isCorrect: true,
         actionType: 'say_sorry',
-        feedbackSpeech: 'Such a caring friend! Xander checks on Jasper with a gentle hug.',
-        explanation: 'Showing empathy and helping friends when they get hurt is true kindness.',
-        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander giving a gentle hug to brown curly-haired Jasper.',
+        feedbackSpeech: 'Caring Xander! You got a grown-up to help Jasper feel better.',
+        explanation: 'Telling a grown-up when someone is hurt shows you care.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander running to find Mummy, Jasper sitting on floor looking sad.',
         image: './illustrations/q17_opt1.jpg',
       },
       {
@@ -485,7 +485,7 @@ export const initialQuestions: Question[] = [
         text: 'Point and laugh at Jasper crying',
         isCorrect: false,
         actionType: 'laugh_run',
-        feedbackSpeech: 'Oh dear, laughing hurts feelings. Giving a hug helps friends feel better!',
+        feedbackSpeech: 'Oh dear, laughing hurts feelings. Telling a grown-up helps Jasper feel better!',
         explanation: 'Laughing at someone who is hurt makes them feel sad.',
         imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander laughing while Jasper sits holding his knee.',
         image: './illustrations/q17_opt2.jpg',
@@ -522,7 +522,7 @@ export const initialQuestions: Question[] = [
   },
   {
     id: 'manner-4',
-    scenario: 'Mummy is on the phone talking to Grandma. Xander wants to ask something. What should he do?',
+    scenario: 'Mummy is on the phone talking to Nanny. Xander wants to ask something. What should he do?',
     speechText: 'Mummy is talking on the phone. What should Xander do to ask a question?',
     category: 'Manners & Kindness',
     options: [
@@ -550,16 +550,16 @@ export const initialQuestions: Question[] = [
   },
   {
     id: 'manner-5',
-    scenario: 'Grandma gives Xander a birthday present in wrapping paper. What should Xander do?',
-    speechText: 'Grandma gives Xander a wrapped present. What should Xander do?',
+    scenario: 'Nanny gives Xander a birthday present in wrapping paper. What should Xander do?',
+    speechText: 'Nanny gives Xander a wrapped present. What should Xander do?',
     category: 'Manners & Kindness',
     options: [
       {
         id: 'manner-5-a',
-        text: 'Unwrap nicely and say "Thank you so much Grandma!"',
+        text: 'Unwrap nicely and say "Thank you Nanny!"',
         isCorrect: true,
         actionType: 'share_apple',
-        feedbackSpeech: 'Heartwarming manners! Xander thanks Grandma with a joyful cuddle.',
+        feedbackSpeech: 'Heartwarming manners! Xander thanks Nanny with a joyful cuddle.',
         explanation: 'Saying thank you for gifts makes grandparents very happy.',
         imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander opening a gift box with a happy smile.',
         image: './illustrations/q20_opt1.jpg',
@@ -805,34 +805,6 @@ export const initialQuestions: Question[] = [
         explanation: 'Pushing on playground ladders can cause dangerous falls.',
         imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander pushing Jasper on a slide ladder.',
         image: './illustrations/q28_opt2.jpg',
-      },
-    ],
-  },
-  {
-    id: 'safe-4',
-    scenario: 'Mummy is strapping Xander into his car seat before driving to the park. What should Xander do?',
-    speechText: 'Mummy is buckling Xander into his car seat. What should Xander do?',
-    category: 'Safety & Out and About',
-    options: [
-      {
-        id: 'safe-4-a',
-        text: 'Sit back comfortably and let Mummy click the buckle',
-        isCorrect: true,
-        actionType: 'listen_adult',
-        feedbackSpeech: 'Safe car passenger! Xander sits snug and clicked into his car seat.',
-        explanation: 'Car seatbelts keep you safe and secure while driving.',
-        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander sitting happily strapped into a car safety seat.',
-        image: './illustrations/q29_opt1.jpg',
-      },
-      {
-        id: 'safe-4-b',
-        text: 'Unclip the buckle while the car is moving',
-        isCorrect: false,
-        actionType: 'scream_kick',
-        feedbackSpeech: 'Stop! Seatbelts stay clicked until Mummy safely parks the car!',
-        explanation: 'Unbuckling while driving is extremely dangerous.',
-        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander standing up in back car seat.',
-        image: './illustrations/q29_opt2.jpg',
       },
     ],
   },
