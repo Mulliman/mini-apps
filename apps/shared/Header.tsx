@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Header.css';
+import { registerServiceWorker } from './registerServiceWorker';
 
 interface HeaderProps {
   title: string;
 }
 
 const Header: React.FC<HeaderProps> = ({ title }) => {
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
   return (
     <header className="shared-header">
       <div className="header-content">
@@ -27,3 +32,4 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
 };
 
 export default Header;
+
