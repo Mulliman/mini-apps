@@ -29,6 +29,7 @@ export interface Option {
   feedbackSpeech: string;
   explanation: string;
   imagePrompt?: string;
+  image?: string;
 }
 
 export interface Question {

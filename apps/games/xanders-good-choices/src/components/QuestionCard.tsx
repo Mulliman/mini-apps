@@ -145,18 +145,37 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   : 'border-[#E8E1D5] hover:border-[#D4CBB8]'
               }`}
             >
-              {/* Illustration Renderer */}
+              {/* Illustration / Image Renderer */}
               <div className="relative">
-                <IllustrationRenderer
-                  actionType={option.actionType}
-                  isCorrect={showGreen ? true : showRed ? false : undefined}
-                />
+                {option.image ? (
+                  <div
+                    className={`relative w-full aspect-16/10 rounded-2xl overflow-hidden shadow-2xs border transition-all duration-300 ${
+                      showGreen
+                        ? 'border-[#10B981] bg-[#ECFDF5]'
+                        : showRed
+                        ? 'border-[#F43F5E] bg-[#FFF1F2]'
+                        : 'border-[#E8E1D5] bg-[#FEFAF2]'
+                    }`}
+                  >
+                    <img
+                      src={option.image}
+                      alt={option.text}
+                      className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : (
+                  <IllustrationRenderer
+                    actionType={option.actionType}
+                    isCorrect={showGreen ? true : showRed ? false : undefined}
+                  />
+                )}
 
                 {/* Speaker icon inside illustration top left */}
                 <button
                   onClick={(e) => handleSpeakOption(e, option)}
                   title="Read Option Out Loud"
-                  className="absolute top-2 left-2 p-2 bg-white/90 hover:bg-white text-[#433D3A] rounded-xl shadow-xs border border-[#E8E1D5] transition-transform active:scale-90 cursor-pointer"
+                  className="absolute top-2 left-2 p-2 bg-white/90 hover:bg-white text-[#433D3A] rounded-xl shadow-xs border border-[#E8E1D5] transition-transform active:scale-90 cursor-pointer z-10"
                 >
                   <Volume2 className="w-4 h-4" />
                 </button>

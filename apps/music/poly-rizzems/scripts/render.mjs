@@ -102,7 +102,7 @@ async function startServer() {
     root: appDir,
     configFile: join(appDir, 'vite.config.ts'),
     logLevel: 'warn',
-    server: { port: 0, strictPort: false, host: '127.0.0.1', hmr: false, watch: null },
+    server: { port: 3099, strictPort: false, host: '127.0.0.1', hmr: false, watch: null },
   });
   await server.listen();
   const address = server.httpServer.address();
