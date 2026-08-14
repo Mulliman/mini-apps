@@ -9,6 +9,7 @@ import solarSystemExplorerImg from './assets/solar-system-explorer.png';
 import simpleSumsImg from './assets/simple-sums.png';
 import polyRizzemsImg from './assets/poly-rizzems.png';
 import shuffleBusImg from './assets/shuffle-bus.png';
+import xandersGoodChoicesImg from './assets/xanders-good-choices.png';
 
 export interface AppInfo {
   id: string;
@@ -107,6 +108,14 @@ export const appsData: AppInfo[] = [
     description: "A colourful bus puzzle where kids drive matching-colour buses off the grid to board waiting passengers.",
     url: "/apps/games/shuffle-bus/index.html",
     image: shuffleBusImg
+  },
+  {
+    id: "xanders-good-choices",
+    title: "Xander's Good Choices",
+    category: "Games",
+    description: "An interactive decision-making quiz game for toddlers to learn good vs bad choices with fun illustrated scenarios.",
+    url: "/apps/games/xanders-good-choices/index.html",
+    image: xandersGoodChoicesImg
   }
 ];
 

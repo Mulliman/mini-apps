@@ -1,0 +1,6 @@
+{
+  "name": "Xander's Good Choices",
+  "description": "An interactive decision-making quiz app for toddlers to learn good vs bad choices through fun illustrated scenarios featuring Xander and Jasper.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
