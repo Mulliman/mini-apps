@@ -1,17 +1,17 @@
 {
-  "name": "5 against 6 Shimmer",
-  "title": "5 against 6 Polyrhythm",
-  "description": "Pure 5 against 6 polyrhythm over E Minor, opening with 4 bars of 1 to set the tempo.",
+  "name": "5 against 7 (C Major)",
+  "title": "5 against 7",
+  "description": "Pure 5 against 7 polyrhythm over C Major, opening with 2 bars of 1 to set the tempo.",
   "bars": 22,
   "barDuration": 2.6,
   "rhythms": [
     {
       "id": "one",
       "timeSignature": 1,
-      "noteName": "E3",
+      "noteName": "C3",
       "color": "#00f0ff",
-      "name": "Anchor E3",
-      "frequency": 164.81,
+      "name": "Anchor C3",
+      "frequency": 130.81,
       "volume": 0.95,
       "expression": "cool",
       "isMuted": false
@@ -19,31 +19,31 @@
   ],
   "events": [
     {
-      "at": 4,
+      "at": 2,
       "type": "add",
       "rhythm": {
         "id": "five",
         "timeSignature": 5,
-        "noteName": "G4",
-        "color": "#ff007f",
-        "name": "Third G4",
-        "frequency": 392,
-        "volume": 0.69,
-        "expression": "sad",
+        "noteName": "E4",
+        "color": "#b026ff",
+        "name": "Third E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
         "isMuted": false
       }
     },
     {
-      "at": 8,
+      "at": 4,
       "type": "add",
       "rhythm": {
-        "id": "six",
-        "timeSignature": 6,
-        "noteName": "B4",
-        "color": "#39ff14",
-        "name": "Fifth B4",
-        "frequency": 493.88,
-        "volume": 0.62,
+        "id": "seven",
+        "timeSignature": 7,
+        "noteName": "G4",
+        "color": "#ff007f",
+        "name": "Fifth G4",
+        "frequency": 392,
+        "volume": 0.69,
         "expression": "cool",
         "isMuted": false
       }
@@ -51,7 +51,7 @@
     {
       "at": 16,
       "type": "remove",
-      "id": "six"
+      "id": "seven"
     },
     {
       "at": 18,

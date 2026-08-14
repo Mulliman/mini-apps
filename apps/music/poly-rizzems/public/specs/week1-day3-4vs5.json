@@ -1,7 +1,7 @@
 {
   "name": "4 against 5 Pulse",
-  "title": "4 against 5 Polyrhythm",
-  "description": "Pure 4 against 5 polyrhythm over A Minor, opening with 4 bars of 1 to set the tempo.",
+  "title": "4 against 5",
+  "description": "Pure 4 against 5 polyrhythm over A Minor, opening with 2 bars of 1 to set the tempo.",
   "bars": 22,
   "barDuration": 2.6,
   "rhythms": [
@@ -19,13 +19,13 @@
   ],
   "events": [
     {
-      "at": 4,
+      "at": 2,
       "type": "add",
       "rhythm": {
         "id": "four",
         "timeSignature": 4,
         "noteName": "C4",
-        "color": "#39ff14",
+        "color": "#ff5f00",
         "name": "Third C4",
         "frequency": 261.63,
         "volume": 0.85,
@@ -34,13 +34,13 @@
       }
     },
     {
-      "at": 8,
+      "at": 4,
       "type": "add",
       "rhythm": {
         "id": "five",
         "timeSignature": 5,
         "noteName": "E4",
-        "color": "#ff007f",
+        "color": "#b026ff",
         "name": "Fifth E4",
         "frequency": 329.63,
         "volume": 0.76,

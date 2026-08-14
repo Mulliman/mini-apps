@@ -27,7 +27,7 @@ Inside each week folder, generate exactly 7 markdown files corresponding to the 
 
 The first character of the filename MUST be the 1-indexed order integer (1 to 7), followed by a dash and the title slug.
 
-Optionally, include a `0-overview.md` for the week summarizing the long-form compiled video structure and schedule.
+Always include a `0-overview.md` for the week summarizing the schedule, the long-form compiled video structure, and a **`## Testing`** section listing the direct browser preview URLs for each day's spec (`http://localhost:5173/apps/music/poly-rizzems/index.html?render=1&spec=<spec-name>&play=1`).
 
 ### Ideas Bank & Lifecycle Structure
 
@@ -104,4 +104,4 @@ When the user asks to plan a week of videos:
 4. **Generate the 7 `.md` files**:
    - Write each file into `apps/music/poly-rizzems/videos/plan/week-<N>-<theme>/`.
 5. **Cross-Reference `polyrizzems-video`**:
-   - Ensure all voicings follow POLYRIZZEMS house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), 4 bars of signature 1 tempo setup, arc build-and-unwind, targeting ~1-minute runtime (55s–60s) for Shorts.
+   - Ensure all voicings follow POLYRIZZEMS house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), 2 bars of signature 1 tempo setup, arc build-and-unwind, targeting ~1-minute runtime (55s–60s) for Shorts.

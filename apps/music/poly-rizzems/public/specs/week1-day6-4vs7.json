@@ -1,17 +1,17 @@
 {
-  "name": "3 against 4 (C Major)",
-  "title": "3 against 4",
-  "description": "Pure 3 against 4 polyrhythm over C Major, opening with 2 bars of 1 to set the tempo.",
+  "name": "4 against 7 (D Minor)",
+  "title": "4 against 7",
+  "description": "Pure 4 against 7 polyrhythm over D Minor, opening with 2 bars of 1 to set the tempo.",
   "bars": 22,
   "barDuration": 2.6,
   "rhythms": [
     {
       "id": "one",
       "timeSignature": 1,
-      "noteName": "C3",
+      "noteName": "D3",
       "color": "#00f0ff",
-      "name": "Anchor C3",
-      "frequency": 130.81,
+      "name": "Anchor D3",
+      "frequency": 146.83,
       "volume": 0.95,
       "expression": "cool",
       "isMuted": false
@@ -24,12 +24,12 @@
       "rhythm": {
         "id": "four",
         "timeSignature": 4,
-        "noteName": "E4",
-        "color": "#39ff14",
-        "name": "Third E4",
-        "frequency": 329.63,
-        "volume": 0.76,
-        "expression": "happy",
+        "noteName": "F4",
+        "color": "#ff5f00",
+        "name": "Third F4",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "expression": "sad",
         "isMuted": false
       }
     },
@@ -37,13 +37,13 @@
       "at": 4,
       "type": "add",
       "rhythm": {
-        "id": "three",
-        "timeSignature": 3,
-        "noteName": "G4",
-        "color": "#ff007f",
-        "name": "Fifth G4",
-        "frequency": 392,
-        "volume": 0.69,
+        "id": "seven",
+        "timeSignature": 7,
+        "noteName": "A4",
+        "color": "#39ff14",
+        "name": "Fifth A4",
+        "frequency": 440,
+        "volume": 0.66,
         "expression": "cool",
         "isMuted": false
       }
@@ -51,7 +51,7 @@
     {
       "at": 16,
       "type": "remove",
-      "id": "three"
+      "id": "seven"
     },
     {
       "at": 18,

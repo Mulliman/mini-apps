@@ -1,7 +1,7 @@
 {
   "name": "2 against 3 Hemiola",
-  "title": "The Gentle 2 against 3",
-  "description": "Pure 2 against 3 hemiola over G Major, opening with 4 bars of 1 to set the tempo.",
+  "title": "2 against 3",
+  "description": "Pure 2 against 3 polyrhythm over G Major, opening with 2 bars of 1 to set the tempo.",
   "bars": 22,
   "barDuration": 2.6,
   "rhythms": [
@@ -19,7 +19,7 @@
   ],
   "events": [
     {
-      "at": 4,
+      "at": 2,
       "type": "add",
       "rhythm": {
         "id": "two",
@@ -34,7 +34,7 @@
       }
     },
     {
-      "at": 8,
+      "at": 4,
       "type": "add",
       "rhythm": {
         "id": "three",
