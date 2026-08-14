@@ -45,7 +45,9 @@ const CHORD_PATTERNS: Array<{ intervals: number[]; name: string }> = [
  * Deterministically compute the harmonic chord name of currently sounding lanes.
  */
 export function computeLiveChord(lanes: SampledLane[]): string {
-  const activeLanes = lanes.filter((l) => l.enterProgress > 0.4 && l.exitProgress < 0.6);
+  const activeLanes = lanes.filter(
+    (l) => !l.rhythm.isMuted && l.enterProgress > 0.4 && l.exitProgress < 0.6
+  );
   if (!activeLanes.length) return '—';
 
   // Find lowest frequency sounding lane as bass
@@ -92,7 +94,9 @@ export function computeLiveChord(lanes: SampledLane[]): string {
  * Omits the 1 tempo anchor so ratios display cleanly (e.g. "2 : 3" or "3 : 4").
  */
 export function computeLivePolyrhythm(lanes: SampledLane[]): string {
-  const activeLanes = lanes.filter((l) => l.enterProgress > 0.4 && l.exitProgress < 0.6);
+  const activeLanes = lanes.filter(
+    (l) => !l.rhythm.isMuted && l.enterProgress > 0.4 && l.exitProgress < 0.6
+  );
   if (!activeLanes.length) return '—';
 
   const sigs = Array.from(new Set(activeLanes.map((l) => l.rhythm.timeSignature))).sort(

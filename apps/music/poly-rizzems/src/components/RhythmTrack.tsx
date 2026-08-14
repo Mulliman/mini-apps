@@ -110,10 +110,13 @@ export default function RhythmTrack({
   return (
     <div
       id={`lane-${id}`}
-      className={`relative flex flex-col justify-end items-center text-white group select-none shrink-0 ${
+      className={`relative flex flex-col justify-end items-center text-white group select-none shrink-0 transition-opacity duration-200 ${
         interactive ? 'cursor-pointer' : ''
       }`}
-      style={{ width: 'var(--pp-lane-pitch)' }}
+      style={{
+        width: 'var(--pp-lane-pitch)',
+        opacity: isMuted ? 0.5 : 1,
+      }}
       onClick={interactive ? (e) => { e.stopPropagation(); onEdit?.(id); } : undefined}
     >
       {interactive && (
@@ -177,7 +180,6 @@ export default function RhythmTrack({
             backgroundColor: color,
             boxShadow: isSelected ? `0 0 30px ${color}` : `0 0 20px ${color}`,
             border: isSelected ? '2px solid white' : 'none',
-            opacity: isMuted ? 0.45 : 1,
           }}
           className="absolute rounded-full pointer-events-auto flex items-center justify-center will-change-transform"
         >
