@@ -12,7 +12,7 @@
  * output is identical on every machine and every run.
  */
 
-import { spawn } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,6 +21,35 @@ import { createServer } from 'vite';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const appDir = resolve(__dirname, '..');
+
+function findBinary(name) {
+  if (process.env[`${name.toUpperCase()}_PATH`] && existsSync(process.env[`${name.toUpperCase()}_PATH`])) {
+    return process.env[`${name.toUpperCase()}_PATH`];
+  }
+  const isWindows = process.platform === 'win32';
+  const candidates = [
+    name,
+    isWindows ? `${name}.exe` : name,
+    ...(isWindows ? [
+      join(process.env.LOCALAPPDATA || '', 'Microsoft', 'WinGet', 'Links', `${name}.exe`),
+      join(process.env.USERPROFILE || '', 'AppData', 'Local', 'Microsoft', 'WinGet', 'Links', `${name}.exe`),
+      join('C:', 'Program Files', 'Shotcut', `${name}.exe`),
+      join('C:', 'ProgramData', 'chocolatey', 'bin', `${name}.exe`),
+    ] : ['/usr/bin/' + name, '/usr/local/bin/' + name, '/opt/homebrew/bin/' + name])
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      execSync(`"${candidate}" -version`, { stdio: 'ignore' });
+      return candidate;
+    } catch {
+      // try next
+    }
+  }
+  return name;
+}
+
+const FFMPEG = findBinary('ffmpeg');
 
 const ASPECTS = {
   '9x16': { width: 1080, height: 1920 },
@@ -36,6 +65,11 @@ function parseArgs(argv) {
     out: join(appDir, 'out'),
     bars: null,
     audio: true,
+    format: 'jpeg',
+    quality: 95,
+    preset: 'fast',
+    crf: 16,
+    parallel: true,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -55,7 +89,13 @@ function parseArgs(argv) {
       case '--scale': options.scale = Number(next()); break;
       case '--out': options.out = resolve(next()); break;
       case '--bars': options.bars = Number(next()); break;
+      case '--format': options.format = next(); break;
+      case '--quality': options.quality = Number(next()); break;
+      case '--preset': options.preset = next(); break;
+      case '--crf': options.crf = Number(next()); break;
       case '--no-audio': options.audio = false; break;
+      case '--no-parallel': options.parallel = false; break;
+      case '--parallel': options.parallel = true; break;
       case '--help': usage(); process.exit(0); break;
       default: fail(`unknown flag ${arg}`);
     }
@@ -64,6 +104,9 @@ function parseArgs(argv) {
   if (!options.spec) usage(), fail('no spec given');
   if (options.aspect !== 'both' && !ASPECTS[options.aspect]) {
     fail(`--aspect must be one of both, ${Object.keys(ASPECTS).join(', ')}`);
+  }
+  if (!['jpeg', 'jpg', 'png'].includes(options.format)) {
+    fail(`--format must be jpeg or png`);
   }
   if (!Number.isFinite(options.fps) || options.fps <= 0) fail('--fps must be positive');
   if (!Number.isFinite(options.scale) || options.scale <= 0) fail('--scale must be positive');
@@ -74,14 +117,17 @@ function usage() {
   console.log(`
 Usage: render <spec-name> [options]
 
-  --aspect  both | 9x16 | 16x9   (default both)
-  --fps     frames per second    (default 60)
-  --scale   supersample factor   (default 2; frames are captured at this
-                                  multiple then downscaled, which cleans up
-                                  the neon edges — use 1 for fast drafts)
-  --bars    render only the first N bars (quick smoke test)
+  --aspect      both | 9x16 | 16x9   (default both)
+  --fps         frames per second    (default 60)
+  --scale       supersample factor   (default 2; use 1 for ultra-fast drafts)
+  --format      jpeg | png           (default jpeg for 3-5x faster capture)
+  --quality     1-100                (default 95 for jpeg format)
+  --preset      ultrafast..veryslow  (default fast)
+  --crf         0-51                 (default 16 for high fidelity glow)
+  --bars        render first N bars  (quick smoke test)
+  --no-parallel render aspects sequentially instead of in parallel
   --no-audio
-  --out     output directory     (default apps/music/poly-rizzems/out)
+  --out         output directory     (default apps/music/poly-rizzems/out)
 `);
 }
 
@@ -115,9 +161,9 @@ async function openRenderPage(browser, port, spec, viewport, scale) {
   page.on('pageerror', (error) => console.error(`  page error: ${error.message}`));
 
   const url = `http://127.0.0.1:${port}/?render=1&spec=${encodeURIComponent(spec)}`;
-  await page.goto(url, { waitUntil: 'networkidle0' });
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
 
-  await page.waitForFunction(() => window.__polyrizzems?.ready || window.__polyrizzems?.error, { timeout: 30000 });
+  await page.waitForFunction(() => window.__polyrizzems?.ready || window.__polyrizzems?.error, { timeout: 60000 });
   const state = await page.evaluate(() => ({
     ready: window.__polyrizzems.ready,
     error: window.__polyrizzems.error ?? null,
@@ -128,7 +174,7 @@ async function openRenderPage(browser, port, spec, viewport, scale) {
 }
 
 function runFfmpeg(args, onExit, onError) {
-  const ffmpeg = spawn('ffmpeg', args, { stdio: ['pipe', 'ignore', 'pipe'] });
+  const ffmpeg = spawn(FFMPEG, args, { stdio: ['pipe', 'ignore', 'pipe'] });
   let stderr = '';
   ffmpeg.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
   ffmpeg.on('error', (error) => {
@@ -148,8 +194,21 @@ function write(stream, buffer) {
   });
 }
 
-async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount, audioPath, outPath }) {
-  const args = ['-y', '-f', 'image2pipe', '-framerate', String(fps), '-i', '-'];
+// Global progress state for multi-aspect clean terminal status line
+const activeProgress = {};
+
+function updateProgress(aspectName, current, total, rate) {
+  activeProgress[aspectName] = { current, total, rate, pct: ((current / total) * 100).toFixed(1) };
+  const parts = Object.entries(activeProgress).map(([name, stat]) => 
+    `${name}: ${String(stat.current).padStart(4)}/${stat.total} (${stat.pct}%, ${stat.rate.toFixed(1)} fps)`
+  );
+  process.stdout.write(`\r  Rendering: ${parts.join(' | ')}   `);
+}
+
+async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount, audioPath, outPath, format, quality, preset, crf }) {
+  const isJpeg = format === 'jpeg' || format === 'jpg';
+  const inputCodec = isJpeg ? 'mjpeg' : 'png';
+  const args = ['-y', '-f', 'image2pipe', '-c:v', inputCodec, '-framerate', String(fps), '-i', '-'];
   if (audioPath) args.push('-i', audioPath);
 
   const filters = [];
@@ -164,10 +223,8 @@ async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount
     '-map', '0:v',
     ...(audioPath ? ['-map', '1:a'] : []),
     '-c:v', 'libx264',
-    '-preset', 'slow',
-    // Near-black backgrounds with soft neon glow are H.264's banding worst case;
-    // a lower CRF than usual is cheap insurance against rings around each ball.
-    '-crf', '16',
+    '-preset', preset || 'fast',
+    '-crf', String(crf ?? 16),
     '-pix_fmt', 'yuv420p',
     '-r', String(fps),
     '-g', String(fps * 2),
@@ -188,14 +245,15 @@ async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount
       },
       rejectDone
     );
-    // Rejecting rather than rethrowing: a throw inside this executor's catch is an
-    // unhandled rejection, which tears the process down before the cleanup in
-    // main()'s finally block can run.
     encodeFrames(ffmpeg).catch((error) => {
       try { ffmpeg.kill(); } catch { /* already gone */ }
       rejectDone(error);
     });
   });
+
+  const screenshotOptions = isJpeg
+    ? { type: 'jpeg', quality: quality ?? 95, captureBeyondViewport: false, optimizeForSpeed: true }
+    : { type: 'png', captureBeyondViewport: false, optimizeForSpeed: true };
 
   async function encodeFrames(ffmpeg) {
     const started = Date.now();
@@ -206,7 +264,7 @@ async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount
       let shot;
       try {
         await page.evaluate((time) => window.__polyrizzems.seek(time), t);
-        shot = await page.screenshot({ type: 'png', captureBeyondViewport: false, optimizeForSpeed: true });
+        shot = await page.screenshot(screenshotOptions);
       } catch (error) {
         if (/execution context was destroyed|Target closed/i.test(String(error?.message))) {
           throw new Error(
@@ -218,16 +276,12 @@ async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount
       }
       await write(ffmpeg.stdin, shot);
 
-      if (frame % 60 === 0 || frame === frameCount - 1) {
-        const pct = ((frame + 1) / frameCount) * 100;
+      if (frame % 30 === 0 || frame === frameCount - 1) {
         const rate = (frame + 1) / ((Date.now() - started) / 1000);
-        process.stdout.write(
-          `\r  ${aspectName}: ${String(frame + 1).padStart(5)}/${frameCount} frames (${pct.toFixed(1)}%, ${rate.toFixed(1)} fps)   `
-        );
+        updateProgress(aspectName, frame + 1, frameCount, rate);
       }
     }
     ffmpeg.stdin.end();
-    process.stdout.write('\n');
   }
 
   await done;
@@ -246,7 +300,9 @@ async function main() {
 
   mkdirSync(options.out, { recursive: true });
 
-  console.log(`Rendering "${options.spec}" → ${aspectNames.join(', ')} @ ${options.fps}fps (×${options.scale} supersample)`);
+  console.log(
+    `Rendering "${options.spec}" → ${aspectNames.join(', ')} @ ${options.fps}fps (×${options.scale} supersample, format: ${options.format}, preset: ${options.preset})`
+  );
 
   const { server, port } = await startServer();
   let browser;
@@ -255,15 +311,16 @@ async function main() {
   try {
     browser = await puppeteer.launch({
       headless: true,
+      protocolTimeout: 180000,
       args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
         // rAF and timers are throttled in backgrounded renderers, which would stall
         // a headless render that nobody is looking at.
         '--disable-background-timer-throttling',
         '--disable-backgrounding-occluded-windows',
         '--disable-renderer-backgrounding',
-        // Worth 5x here. Headless routes compositing through SwiftShader by default,
-        // and every screenshot then waits ~300ms on a GPU frame it doesn't need;
-        // the software raster path captures the same pixels in ~55ms.
+        // Software raster path avoids SwiftShader sync stalls on headless screenshot
         '--disable-gpu',
         '--hide-scrollbars',
         '--force-color-profile=srgb',
@@ -291,7 +348,7 @@ async function main() {
       await page.close();
     }
 
-    for (const aspectName of aspectNames) {
+    const renderTask = async (aspectName) => {
       const viewport = ASPECTS[aspectName];
       const { page, info } = await openRenderPage(browser, port, options.spec, viewport, options.scale);
 
@@ -300,8 +357,8 @@ async function main() {
         duration = Math.min(duration, (info.totalDuration / info.bars) * options.bars);
       }
       const frameCount = Math.round(duration * options.fps);
-
       const outPath = join(options.out, `${options.spec}-${aspectName}.mp4`);
+
       await renderAspect({
         page,
         aspectName,
@@ -311,9 +368,27 @@ async function main() {
         frameCount,
         audioPath,
         outPath,
+        format: options.format,
+        quality: options.quality,
+        preset: options.preset,
+        crf: options.crf,
       });
       await page.close();
-      console.log(`  → ${outPath}`);
+      return outPath;
+    };
+
+    if (options.parallel && aspectNames.length > 1) {
+      const results = await Promise.all(aspectNames.map(renderTask));
+      process.stdout.write('\n');
+      for (const outPath of results) {
+        console.log(`  → ${outPath}`);
+      }
+    } else {
+      for (const aspectName of aspectNames) {
+        const outPath = await renderTask(aspectName);
+        process.stdout.write('\n');
+        console.log(`  → ${outPath}`);
+      }
     }
   } finally {
     if (browser) await browser.close();

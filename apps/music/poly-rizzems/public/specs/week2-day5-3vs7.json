@@ -1,0 +1,67 @@
+{
+  "name": "Fast 3 against 7 (E Minor)",
+  "title": "Fast 3 against 7",
+  "description": "Fast 3 against 7 polyrhythm over E Minor, opening with 2 bars of 1 to set the tempo.",
+  "bars": 31,
+  "barDuration": 1.8,
+  "rhythms": [
+    {
+      "id": "one",
+      "timeSignature": 1,
+      "noteName": "E3",
+      "color": "#00f0ff",
+      "name": "Anchor E3",
+      "frequency": 164.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "three",
+        "timeSignature": 3,
+        "noteName": "G4",
+        "color": "#ff007f",
+        "name": "Third G4",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "sad",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "seven",
+        "timeSignature": 7,
+        "noteName": "B4",
+        "color": "#ff073a",
+        "name": "Fifth B4",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 24,
+      "type": "remove",
+      "id": "seven"
+    },
+    {
+      "at": 26,
+      "type": "remove",
+      "id": "three"
+    },
+    {
+      "at": 28,
+      "type": "remove",
+      "id": "one"
+    }
+  ]
+}

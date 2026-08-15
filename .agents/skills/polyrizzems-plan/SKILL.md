@@ -76,10 +76,13 @@ Each `N-<title-slug>.md` file must be a complete blueprint containing:
 3. **Spec Outline**:
    - Target JSON spec draft or key configuration parameters (`bars`, `barDuration`, `rhythms`, `events`).
 
-4. **YouTube Shorts Metadata** (For Automated Uploaders):
-   - **Shorts Title** (Punchy, hook-driven, under 60 chars)
-   - **Shorts Description & Hashtags** (`#polyrhythm #music #polyrizzems #shorts`)
-   - **Pinned Comment** (Engagement prompt)
+4. **YouTube Shorts Metadata** (For YouTube Studio / Automated Uploaders):
+   - **Shorts Title**: Clean, declarative, professional title (e.g. `<Ratio / Concept> Polyrhythm - POLYRIZZEMS #shorts`). Avoid clickbait or question titles unless specifically requested.
+   - **Shorts Description**:
+     - Concise 1–2 sentence description of the harmonic & polyrhythmic interaction.
+     - 🕹️ Direct interactive playback link: `https://miniapps.sammullins.co.uk/apps/music/poly-rizzems/index.html?render=1&spec=<spec-name>&play=1`
+     - 🎹 Builder link: `https://miniapps.sammullins.co.uk/apps/music/poly-rizzems/index.html`
+     - Core hashtags: `#polyrhythm #musictheory #polyrizzems #music #shorts` (plus any specific tag like `#hemiola` or `#oddmeter`).
 
 5. **Long-Form Video Compilation Notes**:
    - Timestamp title for the 7-in-1 long-form YouTube video.

@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "render": "node scripts/render.mjs",
+    "compile-week": "node scripts/compile-week.mjs",
     "normalise": "node scripts/normalise.mjs",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"

@@ -42,12 +42,17 @@ build artifact.**
 |---|---|---|
 | `--aspect` | `both` | `both`, `9x16`, `16x9` |
 | `--fps` | `60` | |
-| `--scale` | `2` | Supersample factor. Frames are captured at this multiple and downscaled, which cleans up the neon edges. `--scale 1` is roughly 2× faster for drafts. |
+| `--scale` | `2` | Supersample factor. `--scale 1` captures native 1080p for fast drafts. |
+| `--format` | `jpeg` | `jpeg` or `png`. `jpeg` is 3–5× faster with no visual degradation. |
+| `--quality` | `95` | JPEG quality (1-100). |
+| `--preset` | `fast` | FFmpeg x264 preset (`ultrafast`, `fast`, `medium`, `slow`). |
+| `--crf` | `16` | FFmpeg CRF quality (lower = higher quality). |
+| `--no-parallel` | | Render aspect cuts sequentially instead of concurrently in parallel. |
 | `--bars` | all | Render only the first N bars — a quick smoke test |
 | `--no-audio` | | |
 | `--out` | `out/` | |
 
-A full 32-second video takes about 9 minutes for both cuts at default quality.
+With JPEG capture, fast FFmpeg preset, and parallel aspect rendering enabled by default, rendering time is cut by ~4–5×.
 No dev server needed — the renderer starts Vite itself on an ephemeral port.
 
 ## Preview a spec without rendering
