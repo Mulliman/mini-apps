@@ -8,3 +8,9 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# YouTube OAuth & API credentials
+client_secret*.json
+oauth-credentials.json
+.youtube-token.json
+tokens.json

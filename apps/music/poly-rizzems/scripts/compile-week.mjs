@@ -382,6 +382,54 @@ function getIntroHtml(titleText, barDuration = 2.5) {
 </html>`;
 }
 
+/** Generate Intermediate Day Title Card HTML (Title only, no day subheading) */
+function getDayCardHtml(dayTitle) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1920px;
+      height: 1080px;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 100px;
+      max-width: 1600px;
+    }
+
+    .day-title {
+      font-size: 64px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="day-title">${dayTitle}</div>
+  </div>
+</body>
+</html>`;
+}
+
 /** Generate Outro / End Screen HTML */
 function getOutroHtml() {
   return `<!DOCTYPE html>
@@ -578,21 +626,36 @@ async function main() {
     dayVideoPaths.push({ ...d, videoFile });
   }
 
-  // 2. Generate Intro and Outro Cards via Puppeteer
-  console.log(`\n[2/4] Generating Intro and End Screen cards...`);
+  // 2. Generate Intro, Day Title Cards, and Outro Cards via Puppeteer
+  console.log(`\n[2/4] Generating Intro, Day Title Cards, and End Screen...`);
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
   });
 
+  const tempClipsToClean = [];
   const introClipPath = join(options.out, `temp-${weekSlug}-intro.mp4`);
   const outroClipPath = join(options.out, `temp-${weekSlug}-outro.mp4`);
+  tempClipsToClean.push(introClipPath, outroClipPath);
+
+  const dayCardClips = [];
+  const dayCardSec = 2.0;
 
   try {
     process.stdout.write(`  Rendering Intro card (${options.introSec}s, animated dots)... `);
     const introHtml = getIntroHtml(compilationTitle);
     await renderHtmlToClip(browser, introHtml, options.introSec, introClipPath, options.fps, true);
     console.log('done.');
+
+    for (const d of dayVideoPaths) {
+      const cardPath = join(options.out, `temp-${weekSlug}-card-day${d.day}.mp4`);
+      tempClipsToClean.push(cardPath);
+      process.stdout.write(`  Rendering Day ${d.day} title card (${dayCardSec}s)... `);
+      const cardHtml = getDayCardHtml(d.title);
+      await renderHtmlToClip(browser, cardHtml, dayCardSec, cardPath, options.fps, false);
+      console.log('done.');
+      dayCardClips.push({ day: d.day, title: d.title, path: cardPath });
+    }
 
     process.stdout.write(`  Rendering End Screen card (${options.outroSec}s)... `);
     const outroHtml = getOutroHtml();
@@ -602,26 +665,63 @@ async function main() {
     await browser.close();
   }
 
-  // 3. Compute Chapter Timestamps
-  console.log(`\n[3/4] Calculating exact chapter timestamps...`);
-  const segments = [
-    { title: 'Intro', path: introClipPath, isIntro: true },
-    ...dayVideoPaths.map(d => ({ title: `Day ${d.day}: ${d.title}`, path: d.videoFile, day: d.day })),
-    { title: 'Next Videos & Interactive Play', path: outroClipPath, isOutro: true }
-  ];
+  // 3. Compute Chapter Timestamps & Build Sequence
+  console.log(`\n[3/4] Calculating exact chapter timestamps with smooth transitions...`);
+  
+  // Segment sequence: Intro -> [Day Card 1 -> Day Video 1] -> ... -> [Day Card 7 -> Day Video 7] -> Outro
+  const segments = [];
+  segments.push({ type: 'intro', path: introClipPath, durationSec: options.introSec, title: 'Intro' });
+
+  for (let i = 0; i < dayVideoPaths.length; i++) {
+    const d = dayVideoPaths[i];
+    const card = dayCardClips[i];
+    const videoDur = getVideoDuration(d.videoFile);
+
+    segments.push({
+      type: 'card',
+      path: card.path,
+      durationSec: dayCardSec,
+      day: d.day,
+      title: `Day ${d.day}: ${d.title}`,
+      isChapterStart: true,
+    });
+
+    segments.push({
+      type: 'dayVideo',
+      path: d.videoFile,
+      durationSec: videoDur,
+      day: d.day,
+      title: d.title,
+    });
+  }
+
+  segments.push({
+    type: 'outro',
+    path: outroClipPath,
+    durationSec: options.outroSec,
+    title: 'Next Videos & Interactive Play',
+    isChapterStart: true,
+  });
 
   let currentTimelineSec = 0;
   const chapters = [];
 
+  // Chapters list
+  chapters.push({
+    title: 'Intro',
+    timestamp: formatTimestamp(0),
+    startSec: 0,
+  });
+
   for (const seg of segments) {
-    const dur = getVideoDuration(seg.path);
-    chapters.push({
-      title: seg.title,
-      timestamp: formatTimestamp(currentTimelineSec),
-      startSec: currentTimelineSec,
-      durationSec: dur,
-    });
-    currentTimelineSec += dur;
+    if (seg.isChapterStart) {
+      chapters.push({
+        title: seg.title,
+        timestamp: formatTimestamp(currentTimelineSec),
+        startSec: currentTimelineSec,
+      });
+    }
+    currentTimelineSec += seg.durationSec;
   }
 
   console.log(`Total Compilation Runtime: ${formatTimestamp(currentTimelineSec)} (${currentTimelineSec.toFixed(1)}s)`);
@@ -630,8 +730,8 @@ async function main() {
     console.log(`  ${ch.timestamp} - ${ch.title}`);
   }
 
-  // 4. Concatenate All Segments with ffmpeg filter_complex
-  console.log(`\n[4/4] Concatenating ${segments.length} video segments...`);
+  // 4. Concatenate with Smooth Fade Transitions in FFmpeg filter_complex
+  console.log(`\n[4/4] Concatenating ${segments.length} video segments with fade transitions...`);
   const finalVideoPath = join(options.out, `${weekSlug}-compilation.mp4`);
   const finalMetaPath = join(options.out, `${weekSlug}-compilation.txt`);
 
@@ -640,8 +740,40 @@ async function main() {
     concatArgs.push('-i', s.path);
   }
 
-  const filterInputs = segments.map((_, idx) => `[${idx}:v][${idx}:a]`).join('');
-  const filterExpr = `${filterInputs}concat=n=${segments.length}:v=1:a=1[v][a]`;
+  // Build filter_complex with fades:
+  // - Intro: fade out last 0.2s
+  // - Cards: fade in 0.2s, fade out last 0.2s
+  // - Day Videos: fade in 0.2s, fade out last 2.0s
+  // - Outro: fade in 0.2s
+  const filterParts = [];
+  const concatInputs = [];
+
+  for (let idx = 0; idx < segments.length; idx++) {
+    const seg = segments[idx];
+    const dur = seg.durationSec;
+
+    if (seg.type === 'intro') {
+      const fadeOutStart = Math.max(0, dur - 0.2);
+      filterParts.push(`[${idx}:v]fade=t=out:st=${fadeOutStart.toFixed(3)}:d=0.2[v${idx}]`);
+      filterParts.push(`[${idx}:a]anull[a${idx}]`);
+    } else if (seg.type === 'card') {
+      const fadeOutStart = Math.max(0, dur - 0.2);
+      filterParts.push(`[${idx}:v]fade=t=in:st=0:d=0.2,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=0.2[v${idx}]`);
+      filterParts.push(`[${idx}:a]anull[a${idx}]`);
+    } else if (seg.type === 'dayVideo') {
+      const fadeOutStart = Math.max(0, dur - 2.0);
+      filterParts.push(`[${idx}:v]fade=t=in:st=0:d=0.2,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=2.0[v${idx}]`);
+      filterParts.push(`[${idx}:a]afade=t=in:st=0:d=0.2,afade=t=out:st=${fadeOutStart.toFixed(3)}:d=2.0[a${idx}]`);
+    } else if (seg.type === 'outro') {
+      filterParts.push(`[${idx}:v]fade=t=in:st=0:d=0.2[v${idx}]`);
+      filterParts.push(`[${idx}:a]anull[a${idx}]`);
+    }
+
+    concatInputs.push(`[v${idx}][a${idx}]`);
+  }
+
+  filterParts.push(`${concatInputs.join('')}concat=n=${segments.length}:v=1:a=1[v][a]`);
+  const filterExpr = filterParts.join('; ');
 
   concatArgs.push(
     '-filter_complex', filterExpr,
@@ -664,8 +796,9 @@ async function main() {
     const res = spawnSync(FFMPEG, concatArgs, { stdio: 'inherit' });
     if (res.status !== 0) throw new Error(`ffmpeg concat failed with exit code ${res.status}`);
   } finally {
-    if (existsSync(introClipPath)) rmSync(introClipPath);
-    if (existsSync(outroClipPath)) rmSync(outroClipPath);
+    for (const p of tempClipsToClean) {
+      if (existsSync(p)) rmSync(p, { force: true });
+    }
   }
 
   // 5. Generate YouTube Metadata & Description File
@@ -706,3 +839,4 @@ main().catch(err => {
   console.error('\nCompilation Error:', err);
   process.exit(1);
 });
+

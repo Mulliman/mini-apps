@@ -24,3 +24,13 @@ dist-ssr
 *.sw?
 apps/games/xanders-good-choices/assets/images.zip
 apps/games/xanders-good-choices/assets/download.zip
+
+# YouTube & OAuth Secrets
+client_secret*.json
+**/client_secret*.json
+oauth-credentials.json
+**/oauth-credentials.json
+.youtube-token.json
+**/.youtube-token.json
+tokens.json
+**/tokens.json
