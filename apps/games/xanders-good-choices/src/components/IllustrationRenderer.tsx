@@ -406,8 +406,54 @@ export const IllustrationRenderer: React.FC<IllustrationProps> = ({ actionType, 
           </g>
         )}
 
+        {/* 21. POTTY WEE */}
+        {actionType === 'potty_wee' && (
+          <g>
+            {/* Toilet/Potty */}
+            <rect x="160" y="130" width="80" height="70" rx="16" fill="#ECEFF1" stroke="#CFD8DC" strokeWidth="3" />
+            <ellipse cx="200" cy="130" rx="35" ry="12" fill="#81D4FA" />
+            {/* Xander sitting */}
+            <g transform="translate(200, 75)">
+              <rect x="-18" y="30" width="36" height="40" rx="10" fill={XANDER_SHIRT} />
+              <circle cx="0" cy="0" r="26" fill={XANDER_SKIN} />
+              <path d="M -26 0 A 26 26 0 0 1 26 0 L 26 -8 Q 0 -18 -26 -8 Z" fill={XANDER_HAIR} />
+              <circle cx="-6" cy="2" r="3.5" fill={XANDER_EYE} />
+              <circle cx="6" cy="2" r="3.5" fill={XANDER_EYE} />
+              <circle cx="-12" cy="10" r="4.5" fill={XANDER_CHEEK} opacity="0.8" />
+              <circle cx="12" cy="10" r="4.5" fill={XANDER_CHEEK} opacity="0.8" />
+              <path d="M -4 14 Q 0 20 4 14" stroke="#D84315" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+              <path d="M -15 35 L -28 55 M 15 35 L 28 55" stroke={XANDER_SKIN} strokeWidth="8" strokeLinecap="round" />
+            </g>
+          </g>
+        )}
+
+        {/* 22. TELL ADULT */}
+        {actionType === 'tell_adult' && (
+          <g>
+            {/* Adult */}
+            <g transform="translate(260, 60)">
+              <rect x="-20" y="35" width="40" height="90" rx="10" fill="#7E57C2" />
+              <circle cx="0" cy="5" r="28" fill="#FFCC80" />
+              <path d="M -28 5 A 28 28 0 0 1 28 5 L 28 -8 Q 0 -18 -28 -8 Z" fill="#5D4037" />
+              <circle cx="-8" cy="8" r="3.5" fill="#3E2723" />
+              <path d="M -6 18 Q 0 24 6 18" stroke="#D84315" strokeWidth="2" fill="none" strokeLinecap="round" />
+            </g>
+            {/* Speech bubble */}
+            <rect x="145" y="30" width="80" height="34" rx="10" fill="#FFF" stroke="#42A5F5" strokeWidth="2" />
+            <text x="185" y="52" fill="#1976D2" fontSize="12" fontWeight="bold" textAnchor="middle">I need potty!</text>
+            {/* Xander */}
+            <g transform="translate(110, 90)">
+              <rect x="-18" y="30" width="36" height="50" rx="10" fill={XANDER_SHIRT} />
+              <circle cx="0" cy="5" r="26" fill={XANDER_SKIN} />
+              <path d="M -26 5 A 26 26 0 0 1 26 5 L 26 -5 Q 0 -16 -26 -5 Z" fill={XANDER_HAIR} />
+              <circle cx="6" cy="5" r="3.5" fill={XANDER_EYE} />
+              <path d="M 12 38 Q 30 35 45 25" stroke={XANDER_SKIN} strokeWidth="8" strokeLinecap="round" />
+            </g>
+          </g>
+        )}
+
         {/* Fallback */}
-        {(actionType === 'custom' || !['give_toy','push','sleep','climb_bed','share_apple','throw_food','tidy_toys','leave_mess','ask_nicely','pull_hair','hold_hand','run_street','wash_hands','eat_dirty_hands','listen_adult','scream_kick','wait_slide','push_slide','say_sorry','laugh_run'].includes(actionType)) && (
+        {(actionType === 'custom' || !['give_toy','push','sleep','climb_bed','share_apple','throw_food','tidy_toys','leave_mess','ask_nicely','pull_hair','hold_hand','run_street','wash_hands','eat_dirty_hands','listen_adult','scream_kick','wait_slide','push_slide','say_sorry','laugh_run','potty_wee','tell_adult'].includes(actionType)) && (
           <g>
             <g transform="translate(200, 90)">
               <rect x="-22" y="40" width="44" height="50" rx="12" fill={XANDER_SHIRT} />

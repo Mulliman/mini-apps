@@ -15,12 +15,14 @@ export default function App() {
     localStorage.removeItem('xander_questions_v1');
     localStorage.removeItem('xander_questions_v2');
     localStorage.removeItem('xander_questions_v3');
+    localStorage.removeItem('xander_questions_v4');
+    localStorage.removeItem('xander_questions_v5');
 
-    const saved = localStorage.getItem('xander_questions_v4');
+    const saved = localStorage.getItem('xander_questions_v6');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 30) {
+        if (Array.isArray(parsed) && parsed.length >= 35) {
           return parsed;
         }
       } catch (e) {
@@ -42,7 +44,7 @@ export default function App() {
   const [isPromptModalOpen, setIsPromptModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    localStorage.setItem('xander_questions_v4', JSON.stringify(questions));
+    localStorage.setItem('xander_questions_v6', JSON.stringify(questions));
   }, [questions]);
 
   // Filter questions by selected category
@@ -115,7 +117,7 @@ export default function App() {
   const handleResetProgress = () => {
     handleRestart();
     setQuestions(initialQuestions);
-    localStorage.removeItem('xander_questions_v4');
+    localStorage.removeItem('xander_questions_v6');
     setIsParentModalOpen(false);
   };
 

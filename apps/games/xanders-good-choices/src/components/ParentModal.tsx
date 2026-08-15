@@ -203,6 +203,7 @@ export const ParentModal: React.FC<ParentModalProps> = ({
                       <option value="Manners & Kindness">✨ Manners & Kindness</option>
                       <option value="Emotions & Self-Control">❤️ Emotions & Self-Control</option>
                       <option value="Safety & Out and About">🛑 Safety & Out and About</option>
+                      <option value="Potty Training">🚽 Potty Training</option>
                     </select>
                   </div>
 

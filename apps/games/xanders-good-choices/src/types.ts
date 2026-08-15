@@ -19,6 +19,8 @@ export type ActionType =
   | 'push_slide'
   | 'say_sorry'
   | 'laugh_run'
+  | 'potty_wee'
+  | 'tell_adult'
   | 'custom';
 
 export interface Option {

@@ -234,8 +234,8 @@ export const initialQuestions: Question[] = [
   },
   {
     id: 'food-4',
-    scenario: 'Xander is sitting at the dining table for supper. How should he sit?',
-    speechText: 'Xander is at the dining table for supper. How should he sit?',
+    scenario: 'Xander is sitting at the dining table for dinner. How should he sit?',
+    speechText: 'Xander is at the dining table for dinner. How should he sit?',
     category: 'Food & Mealtimes',
     options: [
       {
@@ -243,7 +243,7 @@ export const initialQuestions: Question[] = [
         text: 'Sit nicely on the chair until finished eating',
         isCorrect: true,
         actionType: 'listen_adult',
-        feedbackSpeech: 'Great sitting! Xander eats his supper safely with bottom on the seat.',
+        feedbackSpeech: 'Great sitting! Xander eats his dinner safely with bottom on the seat.',
         explanation: 'Sitting properly on your chair keeps you safe from wobbles and spills.',
         imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander sitting upright and cheerfully in a chair eating with a spoon.',
         image: './illustrations/q9_opt1.jpg',
@@ -638,8 +638,8 @@ export const initialQuestions: Question[] = [
   },
   {
     id: 'emo-3',
-    scenario: 'Mummy says: "Playtime is finished, time to tidy for supper". Xander feels disappointed. What should he do?',
-    speechText: 'Playtime is finished, time to tidy for supper. What should Xander do?',
+    scenario: 'Mummy says: "Playtime is finished, time to tidy for dinner". Xander feels disappointed. What should he do?',
+    speechText: 'Playtime is finished, time to tidy for dinner. What should Xander do?',
     category: 'Emotions & Self-Control',
     options: [
       {
@@ -647,7 +647,7 @@ export const initialQuestions: Question[] = [
         text: 'Say "Okay Mummy" and help put toys in the toy box',
         isCorrect: true,
         actionType: 'tidy_toys',
-        feedbackSpeech: 'Star helper! Tidying up quickly means you get to have yummy supper!',
+        feedbackSpeech: 'Star helper! Tidying up quickly means you get to have yummy dinner!',
         explanation: 'Following instructions cooperatively shows big boy maturity.',
         imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander tidying toys happily into a basket.',
         image: './illustrations/q23_opt1.jpg',
@@ -726,8 +726,8 @@ export const initialQuestions: Question[] = [
   // =========================================================================
   {
     id: 'safe-1',
-    scenario: 'Mummy and Xander are walking along the high street near busy cars. What should Xander do?',
-    speechText: 'Walking along the high street near busy traffic. What should Xander do?',
+    scenario: 'Mummy and Xander are walking along the main road near busy cars. What should Xander do?',
+    speechText: 'Walking along the main road near busy traffic. What should Xander do?',
     category: 'Safety & Out and About',
     options: [
       {
@@ -833,6 +833,150 @@ export const initialQuestions: Question[] = [
         explanation: 'Putting batteries in your mouth is extremely dangerous.',
         imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Red warning stop sign, blonde 4yo boy Xander looking at small objects.',
         image: './illustrations/q30_opt2.jpg',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // 7. POTTY TRAINING (5 Questions)
+  // =========================================================================
+  {
+    id: 'potty-1',
+    scenario: 'Xander needs a wee. What should he do?',
+    speechText: 'Xander needs a wee. What should he do?',
+    category: 'Potty Training',
+    options: [
+      {
+        id: 'potty-1-a',
+        text: 'Go straight to the potty or toilet to do a wee',
+        isCorrect: true,
+        actionType: 'potty_wee',
+        feedbackSpeech: 'Super listening to your body! Xander goes straight to the potty to do a wee!',
+        explanation: 'When you feel a wee coming, go straight to the potty or toilet right away.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander sitting happily on a small green potty.',
+        image: './illustrations/q31_opt1.jpg',
+      },
+      {
+        id: 'potty-1-b',
+        text: 'Hold it in and keep playing with toys',
+        isCorrect: false,
+        actionType: 'leave_mess',
+        feedbackSpeech: 'Uh oh! Don\'t hold it in. Stop playing and run to the potty so you stay nice and dry!',
+        explanation: 'Holding in a wee can lead to an accident. Always pause your game and go!',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander crossing legs uncomfortably while playing with toys.',
+        image: './illustrations/q31_opt2.jpg',
+      },
+    ],
+  },
+  {
+    id: 'potty-2',
+    scenario: 'Xander needs a poo. What should he do?',
+    speechText: 'Xander needs a poo. What should he do?',
+    category: 'Potty Training',
+    options: [
+      {
+        id: 'potty-2-a',
+        text: 'Tell a grown-up and sit on the potty or toilet',
+        isCorrect: true,
+        actionType: 'tell_adult',
+        feedbackSpeech: 'Brilliant big boy choice! Xander tells Mummy or Daddy and sits on the potty to do a poo!',
+        explanation: 'Telling a grown-up straight away helps you get to the potty or toilet in time.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander telling Mummy and sitting on the toilet with a footstool.',
+        image: './illustrations/q32_opt1.jpg',
+      },
+      {
+        id: 'potty-2-b',
+        text: 'Hide behind the sofa and poo in his pants',
+        isCorrect: false,
+        actionType: 'scream_kick',
+        feedbackSpeech: 'Oops! We never hide behind the sofa. Poos always belong in the potty or toilet!',
+        explanation: 'Hiding can cause messy pants. Poos always go in the potty or toilet.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander crouching behind a sofa looking guilty.',
+        image: './illustrations/q32_opt2.jpg',
+      },
+    ],
+  },
+  {
+    id: 'potty-3',
+    scenario: 'Xander is outside playing and needs a wee. What should he do?',
+    speechText: 'Xander is outside playing and needs a wee. What should he do?',
+    category: 'Potty Training',
+    options: [
+      {
+        id: 'potty-3-a',
+        text: 'Ask to go inside and use the potty',
+        isCorrect: true,
+        actionType: 'ask_nicely',
+        feedbackSpeech: 'Well done asking! Xander asks to use the potty instead of weeing in the garden!',
+        explanation: 'Always ask a grown-up to use the potty, even when having fun playing outside.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander outside in a garden asking Daddy politely to use the potty.',
+        image: './illustrations/q33_opt1.jpg',
+      },
+      {
+        id: 'potty-3-b',
+        text: 'Wee on the grass or in a hedge',
+        isCorrect: false,
+        actionType: 'run_street',
+        feedbackSpeech: 'No no! We don\'t wee on the grass or in hedges. Always ask to use the potty!',
+        explanation: 'Grass and bushes are for plants and flowers. Wees go in the potty or toilet!',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander standing by a garden bush with a red X cross.',
+        image: './illustrations/q33_opt2.jpg',
+      },
+    ],
+  },
+  {
+    id: 'potty-4',
+    scenario: 'Xander is sat on the toilet. What should he do with his hands?',
+    speechText: 'Xander is sat on the toilet. What should he do with his hands?',
+    category: 'Potty Training',
+    options: [
+      {
+        id: 'potty-4-a',
+        text: 'Keep hands on his knees and not touch the wee',
+        isCorrect: true,
+        actionType: 'listen_adult',
+        feedbackSpeech: 'Super clean hygiene! Xander rests his hands on his knees and never touches the wee!',
+        explanation: 'Keeping your hands on your knees keeps your hands clean and germ-free.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander sitting nicely on the toilet with hands resting calmly on his knees.',
+        image: './illustrations/q34_opt1.jpg',
+      },
+      {
+        id: 'potty-4-b',
+        text: 'Put his hands in the toilet and touch the wee',
+        isCorrect: false,
+        actionType: 'eat_dirty_hands',
+        feedbackSpeech: 'Yucky! Hands stay out of the toilet! Toilet water and wee have yucky germs!',
+        explanation: 'Never touch toilet water or wee with your hands because of germs.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander reaching down towards toilet water with a red stop sign.',
+        image: './illustrations/q34_opt2.jpg',
+      },
+    ],
+  },
+  {
+    id: 'potty-5',
+    scenario: 'Xander has done a little drip in his pants. What should he do?',
+    speechText: 'Xander has done a little drip in his pants. What should he do?',
+    category: 'Potty Training',
+    options: [
+      {
+        id: 'potty-5-a',
+        text: 'Tell Mummy or Daddy straight away to get clean dry pants',
+        isCorrect: true,
+        actionType: 'tell_adult',
+        feedbackSpeech: 'Fantastic telling! Accidents happen, and telling Mummy or Daddy helps you get fresh dry pants!',
+        explanation: 'Little drips are okay! Always tell a grown-up right away so you can change into fresh dry clothes.',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander holding hands with smiling Mummy and holding fresh folded clean pants.',
+        image: './illustrations/q35_opt1.jpg',
+      },
+      {
+        id: 'potty-5-b',
+        text: 'Stay quiet and hide the wet pants',
+        isCorrect: false,
+        actionType: 'leave_mess',
+        feedbackSpeech: 'Don\'t hide accidents! Grown-ups will always help you change with a big smile!',
+        explanation: 'Never hide damp clothes. Grown-ups are happy to help you get clean and dry!',
+        imagePrompt: 'Flat minimalist toddler illustration on solid teal background (#3A96A0). Blonde 4yo boy Xander looking worried and hiding behind a curtain.',
+        image: './illustrations/q35_opt2.jpg',
       },
     ],
   },

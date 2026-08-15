@@ -29,13 +29,14 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPromptModal,
 }) => {
   const categories = [
-    { label: '🌟 All Questions (30)', value: 'All' },
+    { label: '🌟 All Questions', value: 'All' },
     { label: '🧸 Playtime & Sharing', value: 'Playtime & Sharing' },
     { label: '🍎 Food & Mealtimes', value: 'Food & Mealtimes' },
     { label: '🌙 Bedtime & Evening', value: 'Bedtime & Evening' },
     { label: '✨ Manners & Kindness', value: 'Manners & Kindness' },
     { label: '❤️ Emotions & Self-Control', value: 'Emotions & Self-Control' },
     { label: '🛑 Safety & Out and About', value: 'Safety & Out and About' },
+    { label: '🚽 Potty Training', value: 'Potty Training' },
   ];
 
   return (
