@@ -29,7 +29,7 @@ export default function SettingsPanel({
   const { id, timeSignature, noteName, frequency, color, name, volume } = rhythm;
 
   const handleTimeSigChange = (value: number) => {
-    const clamped = Math.max(1, Math.min(19, value));
+    const clamped = Math.max(0, Math.min(19, value));
     onUpdate(id, { timeSignature: clamped });
   };
 
@@ -74,7 +74,7 @@ export default function SettingsPanel({
           <div className="flex items-center bg-zinc-900 border border-white/10 rounded-xl overflow-hidden p-0.5">
             <button 
               onClick={() => handleTimeSigChange(timeSignature - 1)}
-              disabled={timeSignature <= 1}
+              disabled={timeSignature <= 0}
               className="w-8 h-9 md:w-10 md:h-10 flex items-center justify-center bg-white/[0.02] hover:bg-white/[0.1] text-zinc-300 hover:text-white transition-all disabled:opacity-30"
             >
               <Minus className="w-3 h-3 md:w-4 md:h-4" />

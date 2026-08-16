@@ -2,18 +2,20 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Automated YouTube Video Uploader & Scheduler for POLYRIZZEMS.
+ * Automated YouTube Video Uploader, Scheduler & Batch Queue for POLYRIZZEMS.
  *
- * Uploads all 7 Shorts and the weekly long-form compilation video directly to YouTube
+ * Uploads daily YouTube Shorts and weekly long-form compilation videos directly to YouTube
  * with metadata (title, description, tags, category: Music) extracted from week plan files,
- * and sets exact scheduled publish dates.
+ * records upload history to `videos/upload-history.json`, and provides a seamless
+ * "upload next batch" automated queue.
  *
  * Usage:
- *   node scripts/upload-week.mjs 2 --start-date 2026-09-01 --dry-run
- *   node scripts/upload-week.mjs week-2-fast-basics --start-date 2026-09-01 --time 17:00
- *   node scripts/upload-week.mjs 2 --start-date 2026-09-01 --days 1-5
- *   node scripts/upload-week.mjs 2 --start-date 2026-09-01 --days 6,7 --compilation
- *   node scripts/upload-week.mjs 2 --compilation-only --compilation-date 2026-09-07
+ *   node scripts/upload-week.mjs next                          # Automatically resolve and upload the next pending batch!
+ *   node scripts/upload-week.mjs next --dry-run                # Preview next batch without uploading
+ *   node scripts/upload-week.mjs status                        # Show visual dashboard of all weeks (uploaded vs pending)
+ *   node scripts/upload-week.mjs sync                          # Sync/reconcile upload history with YouTube channel
+ *   node scripts/upload-week.mjs 2 --start-date 2026-09-08     # Upload specific week with explicit date
+ *   node scripts/upload-week.mjs 2 --days 5-7 --no-compilation # Upload specific days
  */
 
 import { exec } from 'node:child_process';
@@ -29,6 +31,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const appDir = resolve(__dirname, '..');
 const planBaseDir = join(appDir, 'videos', 'plan');
 const outDir = join(appDir, 'out');
+const historyPath = join(appDir, 'videos', 'upload-history.json');
 const tokenPath = join(appDir, '.youtube-token.json');
 
 // Load environment variables if present
@@ -44,46 +47,53 @@ function printHelp() {
 POLYRIZZEMS YouTube Video Uploader & Scheduler
 ==============================================
 
-Uploads 7 daily YouTube Shorts and 1 long-form compilation video with automated
-metadata extraction and scheduled release dates.
+Uploads daily YouTube Shorts and long-form compilation videos with automated
+metadata extraction, scheduled release dates, and persistent queue tracking.
 
 Usage:
-  node scripts/upload-week.mjs <week> [options]
+  node scripts/upload-week.mjs [command/week] [options]
 
-Arguments:
+Commands:
+  next                        Automatically find, schedule, and upload the NEXT pending batch
+  status                      Display upload and schedule status across all planned weeks
+  sync                        Fetch channel uploads from YouTube to update upload-history.json
   <week>                      Week number (e.g. 1, 2) or directory slug (e.g. week-2-fast-basics)
 
 Options:
-  --start-date <YYYY-MM-DD>   Date for Day 1 Short release (e.g. 2026-09-01)
+  --start-date <YYYY-MM-DD>   Date for Day 1 Short release (or calculated automatically for 'next')
   --time <HH:MM>              Daily release time (default: 12:00 noon)
   --timezone <offset/name>    Timezone offset (e.g. +01:00, Z, -05:00) (default: local system TZ)
   --compilation-date <DATE>   Publish date for compilation (default: Day 1 date)
   --compilation-time <HH:MM>  Publish time for compilation (default: same as --time, 12:00 noon)
-  --days <range>              Filter days to upload (e.g. '1-7', '1-5', '6,7', '3', 'all') (default: 'all')
+  --days <range>              Filter days to upload (e.g. '1-7', '1-4', '5-7', 'all') (default: 'all')
   --compilation               Include compilation upload
   --no-compilation            Skip compilation upload
   --compilation-only          Upload ONLY the compilation video
   --privacy <status>          Privacy status: 'private' (required for scheduled publishAt), 'unlisted', 'public'
+  -y, --yes                   Skip interactive confirmation prompt
   --client-secrets <path>     Path to Google OAuth client secret JSON (default: auto-detected in app root)
   --token <path>              Path to cached OAuth tokens (default: .youtube-token.json)
   --dry-run                   Preview files, metadata, and scheduled dates without uploading
   -h, --help                  Show this help message
 
 Examples:
-  # Test and preview schedule without uploading (defaults to 12:00 noon, Main video + Day 1 on Day 1):
-  node scripts/upload-week.mjs 2 --start-date 2026-09-01 --dry-run
+  # Check overall status of all planned weeks:
+  node scripts/upload-week.mjs status
 
-  # Upload all 7 shorts + main compilation video at 12:00 noon:
-  node scripts/upload-week.mjs week-2-fast-basics --start-date 2026-09-01
+  # Automatically preview what batch is queued next:
+  node scripts/upload-week.mjs next --dry-run
 
-  # Batch upload (to respect 10k daily API unit quota):
-  node scripts/upload-week.mjs 2 --start-date 2026-09-01 --days 1-4 --compilation
-  node scripts/upload-week.mjs 2 --start-date 2026-09-01 --days 5-7 --no-compilation
+  # Automatically upload the next batch:
+  node scripts/upload-week.mjs next -y
+
+  # Upload week 2 batch 2 manually:
+  node scripts/upload-week.mjs 2 --start-date 2026-08-17 --days 5-7 --no-compilation -y
 `);
 }
 
 function parseArgs(argv) {
   const options = {
+    command: null,
     weekArg: null,
     startDate: null,
     time: '12:00',
@@ -97,6 +107,10 @@ function parseArgs(argv) {
     clientSecretsPath: null,
     tokenPath: tokenPath,
     dryRun: false,
+    autoYes: false,
+    isNext: false,
+    isStatus: false,
+    isSync: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -104,8 +118,16 @@ function parseArgs(argv) {
     if (arg === '-h' || arg === '--help') {
       printHelp();
       process.exit(0);
+    } else if (arg === '-y' || arg === '--yes') {
+      options.autoYes = true;
     } else if (arg === '--dry-run') {
       options.dryRun = true;
+    } else if (arg === '--next' || arg === '--next-batch' || arg === 'next') {
+      options.isNext = true;
+    } else if (arg === '--status' || arg === 'status') {
+      options.isStatus = true;
+    } else if (arg === '--sync' || arg === 'sync') {
+      options.isSync = true;
     } else if (arg === '--compilation-only') {
       options.compilationOnly = true;
       options.compilation = true;
@@ -132,7 +154,10 @@ function parseArgs(argv) {
     } else if (arg === '--token') {
       options.tokenPath = argv[++i];
     } else if (!arg.startsWith('--')) {
-      if (options.weekArg === null) options.weekArg = arg;
+      if (arg === 'next') options.isNext = true;
+      else if (arg === 'status') options.isStatus = true;
+      else if (arg === 'sync') options.isSync = true;
+      else if (options.weekArg === null) options.weekArg = arg;
     }
   }
 
@@ -146,6 +171,64 @@ function getLocalTzOffset() {
   const hours = String(Math.floor(absMin / 60)).padStart(2, '0');
   const mins = String(absMin % 60).padStart(2, '0');
   return `${sign}${hours}:${mins}`;
+}
+
+// -------------------------------------------------------------------------------------------------
+// History Management
+// -------------------------------------------------------------------------------------------------
+
+function loadHistory() {
+  if (existsSync(historyPath)) {
+    try {
+      const data = JSON.parse(readFileSync(historyPath, 'utf-8'));
+      if (!data.uploads) data.uploads = {};
+      return data;
+    } catch (e) {
+      console.warn(`Could not parse ${historyPath}: ${e.message}`);
+    }
+  }
+  return { version: 1, lastUpdated: new Date().toISOString(), uploads: {} };
+}
+
+function saveHistory(history) {
+  history.lastUpdated = new Date().toISOString();
+  writeFileSync(historyPath, JSON.stringify(history, null, 2), 'utf-8');
+}
+
+function recordUpload(history, { id, weekSlug, weekNum, type, dayNum, title, videoId, publishAt }) {
+  history.uploads[id] = {
+    id,
+    weekSlug,
+    weekNum,
+    type,
+    dayNum: dayNum ?? null,
+    title,
+    videoId,
+    watchUrl: `https://youtu.be/${videoId}`,
+    publishAt: publishAt || null,
+    uploadedAt: new Date().toISOString(),
+  };
+  saveHistory(history);
+}
+
+// -------------------------------------------------------------------------------------------------
+// Week Discovery & Metadata Parsing
+// -------------------------------------------------------------------------------------------------
+
+function listAllWeeks() {
+  if (!existsSync(planBaseDir)) return [];
+  return readdirSync(planBaseDir, { withFileTypes: true })
+    .filter(d => d.isDirectory() && d.name.startsWith('week-'))
+    .map(d => {
+      const match = d.name.match(/^week-(\d+)(?:-(.*))?$/);
+      return {
+        slug: d.name,
+        num: match ? parseInt(match[1], 10) : 999,
+        theme: match && match[2] ? match[2] : d.name,
+        dir: join(planBaseDir, d.name),
+      };
+    })
+    .sort((a, b) => a.num - b.num);
 }
 
 function resolveWeekDir(weekArg) {
@@ -273,7 +356,7 @@ function findShortVideoPath(specName, dayNum, weekSlug) {
   for (const c of candidates) {
     if (existsSync(c)) return c;
   }
-  return candidates[0]; // fallback expected path
+  return candidates[0];
 }
 
 function parseDaysSelection(daysOption) {
@@ -300,7 +383,6 @@ function parseDaysSelection(daysOption) {
 function normalizeDateInput(dateInput) {
   if (!dateInput) return null;
   const str = String(dateInput).trim();
-  // DD-MM-YYYY or DD/MM/YYYY -> YYYY-MM-DD
   const dmyMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
   if (dmyMatch) {
     const day = dmyMatch[1].padStart(2, '0');
@@ -313,7 +395,6 @@ function normalizeDateInput(dateInput) {
 
 function computeIsoPublishDate(dateStr, timeStr, tzOffset) {
   const normDate = normalizeDateInput(dateStr);
-  // Format: YYYY-MM-DDTHH:MM:00+HH:MM
   const seconds = '00';
   const cleanTime = timeStr.length === 5 ? `${timeStr}:${seconds}` : timeStr;
   const isoWithOffset = `${normDate}T${cleanTime}${tzOffset}`;
@@ -418,7 +499,6 @@ async function getAuthenticatedClient(clientSecretsPath, tokenStorePath) {
     }
   }
 
-  // Interactive OAuth authorization flow via local HTTP server
   console.log(`\nStarting Google OAuth 2.0 authorization flow...`);
 
   return new Promise((resolveAuth, rejectAuth) => {
@@ -491,6 +571,288 @@ async function getAuthenticatedClient(clientSecretsPath, tokenStorePath) {
   });
 }
 
+// -------------------------------------------------------------------------------------------------
+// Status & Dashboard View
+// -------------------------------------------------------------------------------------------------
+
+function showStatus() {
+  const history = loadHistory();
+  const weeks = listAllWeeks();
+
+  console.log(`\n===================================================================================================`);
+  console.log(`  POLYRIZZEMS YouTube Publishing Status Dashboard`);
+  console.log(`===================================================================================================\n`);
+
+  for (const week of weeks) {
+    console.log(`▶ WEEK ${week.num}: ${week.slug.toUpperCase()}`);
+    console.log(`-`.repeat(99));
+    console.log(
+      `ITEM`.padEnd(14) +
+      `STATUS`.padEnd(12) +
+      `SCHEDULED / RELEASE`.padEnd(24) +
+      `YOUTUBE ID`.padEnd(16) +
+      `TITLE`
+    );
+    console.log(`-`.repeat(99));
+
+    // Compilation
+    const compId = `${week.slug}-compilation`;
+    const compRecord = history.uploads[compId];
+    const compStatus = compRecord ? '[UPLOADED]' : '[PENDING]';
+    const compDate = compRecord ? (compRecord.publishAt ? compRecord.publishAt.slice(0, 16).replace('T', ' ') : 'Published') : '-';
+    const compVideoId = compRecord ? compRecord.videoId : '-';
+    const compMeta = parseCompilationMetadata(week.dir, week.slug);
+    console.log(
+      `Compilation`.padEnd(14) +
+      compStatus.padEnd(12) +
+      compDate.padEnd(24) +
+      compVideoId.padEnd(16) +
+      compMeta.title
+    );
+
+    // Days 1-7
+    const planFiles = readdirSync(week.dir).filter(f => /^[1-7]-.+\.md$/.test(f)).sort();
+    for (const file of planFiles) {
+      const dayData = parseDayMarkdown(join(week.dir, file));
+      const record = history.uploads[dayData.specName];
+      const status = record ? '[UPLOADED]' : '[PENDING]';
+      const date = record ? (record.publishAt ? record.publishAt.slice(0, 16).replace('T', ' ') : 'Published') : '-';
+      const videoId = record ? record.videoId : '-';
+
+      console.log(
+        `Day ${dayData.dayNum}`.padEnd(14) +
+        status.padEnd(12) +
+        date.padEnd(24) +
+        videoId.padEnd(16) +
+        dayData.title
+      );
+    }
+    console.log(`\n`);
+  }
+
+  const nextBatch = resolveNextBatch(history, weeks);
+  if (nextBatch) {
+    console.log(`---------------------------------------------------------------------------------------------------`);
+    console.log(`👉 NEXT QUEUED BATCH: Week ${nextBatch.weekNum} (${nextBatch.batchName})`);
+    console.log(`   Scope:        ${nextBatch.description}`);
+    console.log(`   Calculated:   Start Date ${nextBatch.startDate} (at 12:00)`);
+    console.log(`   Command:      node scripts/upload-week.mjs next -y`);
+    console.log(`---------------------------------------------------------------------------------------------------\n`);
+  } else {
+    console.log(`🎉 All planned weeks and videos are currently uploaded!\n`);
+  }
+}
+
+// -------------------------------------------------------------------------------------------------
+// Next Batch Resolver
+// -------------------------------------------------------------------------------------------------
+
+function getLatestScheduledDate(history) {
+  let latestDate = null;
+  for (const item of Object.values(history.uploads || {})) {
+    if (item.publishAt) {
+      const d = item.publishAt.slice(0, 10);
+      if (!latestDate || d > latestDate) {
+        latestDate = d;
+      }
+    }
+  }
+  return latestDate;
+}
+
+function resolveNextBatch(history, weeks) {
+  for (const week of weeks) {
+    const planFiles = readdirSync(week.dir).filter(f => /^[1-7]-.+\.md$/.test(f)).sort();
+    const daysData = planFiles.map(f => parseDayMarkdown(join(week.dir, f)));
+
+    const compId = `${week.slug}-compilation`;
+    const compUploaded = Boolean(history.uploads[compId]);
+
+    const batch1Days = daysData.filter(d => d.dayNum >= 1 && d.dayNum <= 4);
+    const batch2Days = daysData.filter(d => d.dayNum >= 5 && d.dayNum <= 7);
+
+    const batch1Uploaded = compUploaded && batch1Days.every(d => Boolean(history.uploads[d.specName]));
+    const batch2Uploaded = batch2Days.every(d => Boolean(history.uploads[d.specName]));
+
+    if (!batch1Uploaded) {
+      // Week N Batch 1 is next
+      // Start date: if previous week exists, next day after previous week's Day 7, or today/tomorrow
+      const latestDate = getLatestScheduledDate(history);
+      const startDate = latestDate ? addDaysToDate(latestDate, 1) : addDaysToDate(new Date().toISOString().slice(0, 10), 1);
+
+      return {
+        weekArg: String(week.num),
+        weekNum: week.num,
+        weekSlug: week.slug,
+        batchNum: 1,
+        batchName: 'Batch 1 (Compilation + Days 1–4)',
+        days: '1-4',
+        compilation: true,
+        startDate,
+        description: `Compilation Masterclass + Days 1–4 Shorts (5 videos, 8,000 units)`,
+      };
+    }
+
+    if (!batch2Uploaded) {
+      // Week N Batch 2 is next
+      // Day 4 date is known from Batch 1!
+      const day4Record = history.uploads[daysData.find(d => d.dayNum === 4)?.specName];
+      let startDate = null;
+      if (day4Record && day4Record.publishAt) {
+        // Day 4 date is startDate + 3 days -> startDate = Day 4 date - 3 days
+        const day4Date = day4Record.publishAt.slice(0, 10);
+        startDate = addDaysToDate(day4Date, -3);
+      } else {
+        const latestDate = getLatestScheduledDate(history);
+        startDate = latestDate ? addDaysToDate(latestDate, -3) : addDaysToDate(new Date().toISOString().slice(0, 10), 1);
+      }
+
+      return {
+        weekArg: String(week.num),
+        weekNum: week.num,
+        weekSlug: week.slug,
+        batchNum: 2,
+        batchName: 'Batch 2 (Days 5–7)',
+        days: '5-7',
+        compilation: false,
+        startDate,
+        description: `Days 5–7 Shorts (3 videos, 4,800 units)`,
+      };
+    }
+  }
+  return null;
+}
+
+// -------------------------------------------------------------------------------------------------
+// Sync with YouTube Channel
+// -------------------------------------------------------------------------------------------------
+
+async function syncWithYouTube(options) {
+  console.log(`\n======================================================`);
+  console.log(`  Syncing Upload History with YouTube Channel`);
+  console.log(`======================================================\n`);
+
+  const auth = await getAuthenticatedClient(options.clientSecretsPath, options.tokenPath);
+  const youtube = google.youtube({ version: 'v3', auth });
+
+  console.log(`Fetching uploaded videos from YouTube channel...`);
+  const channelRes = await youtube.channels.list({
+    mine: true,
+    part: ['contentDetails', 'snippet'],
+  });
+
+  const uploadsPlaylistId = channelRes.data.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+  const channelTitle = channelRes.data.items?.[0]?.snippet?.title;
+  console.log(`Channel: ${channelTitle} (Uploads ID: ${uploadsPlaylistId})\n`);
+
+  if (!uploadsPlaylistId) {
+    throw new Error(`Could not find uploads playlist for authenticated YouTube channel.`);
+  }
+
+  let pageToken = undefined;
+  const videoIds = [];
+  do {
+    const playlistRes = await youtube.playlistItems.list({
+      playlistId: uploadsPlaylistId,
+      part: ['snippet', 'contentDetails'],
+      maxResults: 50,
+      pageToken,
+    });
+    for (const item of playlistRes.data.items || []) {
+      videoIds.push(item.contentDetails.videoId);
+    }
+    pageToken = playlistRes.data.nextPageToken;
+  } while (pageToken);
+
+  console.log(`Found ${videoIds.length} uploaded video(s) on channel.`);
+  if (videoIds.length === 0) return loadHistory();
+
+  const remoteVideos = [];
+  for (let i = 0; i < videoIds.length; i += 50) {
+    const chunk = videoIds.slice(i, i + 50);
+    const videoRes = await youtube.videos.list({
+      id: chunk,
+      part: ['snippet', 'status'],
+    });
+    for (const v of videoRes.data.items || []) {
+      remoteVideos.push(v);
+    }
+  }
+
+  const history = loadHistory();
+  const weeks = listAllWeeks();
+  let matchedCount = 0;
+
+  for (const week of weeks) {
+    // Match Compilation
+    const compMeta = parseCompilationMetadata(week.dir, week.slug);
+    const matchedComp = remoteVideos.find(v => {
+      const title = (v.snippet.title || '').toLowerCase();
+      if (!title.includes('compilation') && !title.includes('masterclass')) return false;
+      const slugClean = week.slug.replace(/^week-\d+-/, '').replace(/-/g, ' ').toLowerCase();
+      const themeClean = week.theme.replace(/-/g, ' ').toLowerCase();
+      const words = slugClean.split(' ').filter(w => w.length > 3);
+      return title.includes(slugClean) || title.includes(themeClean) || words.some(w => title.includes(w)) || title.includes(`week ${week.num}`);
+    });
+
+    if (matchedComp) {
+      const id = `${week.slug}-compilation`;
+      history.uploads[id] = {
+        id,
+        weekSlug: week.slug,
+        weekNum: week.num,
+        type: 'compilation',
+        dayNum: null,
+        title: matchedComp.snippet.title,
+        videoId: matchedComp.id,
+        watchUrl: `https://youtu.be/${matchedComp.id}`,
+        publishAt: matchedComp.status.publishAt || matchedComp.snippet.publishedAt,
+        uploadedAt: matchedComp.snippet.publishedAt,
+      };
+      matchedCount++;
+    }
+
+    // Match Days 1-7
+    const planFiles = readdirSync(week.dir).filter(f => /^[1-7]-.+\.md$/.test(f));
+    for (const file of planFiles) {
+      const dayData = parseDayMarkdown(join(week.dir, file));
+      const id = dayData.specName;
+      const matched = remoteVideos.find(v => {
+        const title = (v.snippet.title || '').toLowerCase();
+        const desc = (v.snippet.description || '').toLowerCase();
+        if (title === dayData.title.toLowerCase()) return true;
+        if (desc.includes(dayData.specName.toLowerCase())) return true;
+        const cleanDayTitle = dayData.title.split('-')[0].trim().toLowerCase();
+        return title.startsWith(cleanDayTitle);
+      });
+
+      if (matched) {
+        history.uploads[id] = {
+          id,
+          weekSlug: week.slug,
+          weekNum: week.num,
+          type: 'short',
+          dayNum: dayData.dayNum,
+          title: matched.snippet.title,
+          videoId: matched.id,
+          watchUrl: `https://youtu.be/${matched.id}`,
+          publishAt: matched.status.publishAt || matched.snippet.publishedAt,
+          uploadedAt: matched.snippet.publishedAt,
+        };
+        matchedCount++;
+      }
+    }
+  }
+
+  saveHistory(history);
+  console.log(`Successfully synced and updated ${matchedCount} matched video(s) in: ${historyPath}\n`);
+  showStatus();
+}
+
+// -------------------------------------------------------------------------------------------------
+// Upload Execution Core
+// -------------------------------------------------------------------------------------------------
+
 async function uploadVideoWithProgress({ youtube, filePath, title, description, tags, publishAt, privacyStatus }) {
   const fileSize = statSync(filePath).size;
   const sizeMB = (fileSize / (1024 * 1024)).toFixed(1);
@@ -557,8 +919,51 @@ async function uploadVideoWithProgress({ youtube, filePath, title, description, 
   return res.data;
 }
 
+// -------------------------------------------------------------------------------------------------
+// Main Routine
+// -------------------------------------------------------------------------------------------------
+
 async function main() {
   const options = parseArgs(process.argv.slice(2));
+
+  // Handle status command
+  if (options.isStatus) {
+    showStatus();
+    return;
+  }
+
+  // Handle sync command
+  if (options.isSync) {
+    await syncWithYouTube(options);
+    return;
+  }
+
+  const history = loadHistory();
+  const allWeeks = listAllWeeks();
+
+  // Handle "next" batch automated resolution
+  if (options.isNext || (!options.weekArg && !options.startDate)) {
+    const nextBatch = resolveNextBatch(history, allWeeks);
+    if (!nextBatch) {
+      console.log(`\n🎉 All planned weeks have already been uploaded! Nothing pending.`);
+      showStatus();
+      return;
+    }
+
+    console.log(`\n======================================================`);
+    console.log(`  POLYRIZZEMS Automated Queue: NEXT BATCH DETECTED`);
+    console.log(`======================================================`);
+    console.log(`Week:        Week ${nextBatch.weekNum} (${nextBatch.weekSlug})`);
+    console.log(`Batch:       ${nextBatch.batchName}`);
+    console.log(`Scope:       ${nextBatch.description}`);
+    console.log(`Start Date:  ${options.startDate || nextBatch.startDate}`);
+    console.log(`======================================================\n`);
+
+    options.weekArg = nextBatch.weekArg;
+    if (!options.startDate) options.startDate = nextBatch.startDate;
+    options.days = nextBatch.days;
+    options.compilation = nextBatch.compilation;
+  }
 
   console.log(`\n======================================================`);
   console.log(`  POLYRIZZEMS YouTube Video Uploader & Scheduler`);
@@ -567,6 +972,9 @@ async function main() {
   // 1. Resolve Week Directory
   const weekDir = resolveWeekDir(options.weekArg);
   const weekSlug = basename(weekDir);
+  const weekMatch = weekSlug.match(/^week-(\d+)/);
+  const weekNum = weekMatch ? parseInt(weekMatch[1], 10) : 1;
+
   console.log(`Week:       ${weekSlug}`);
   console.log(`Plan Dir:   ${weekDir}`);
 
@@ -607,7 +1015,10 @@ async function main() {
       const publishAtIso = computeIsoPublishDate(dateForDay, options.time, tzOffset);
 
       uploadQueue.push({
+        id: dayData.specName,
         type: 'short',
+        weekNum,
+        weekSlug,
         dayNum: dayData.dayNum,
         specName: dayData.specName,
         title: dayData.title,
@@ -637,7 +1048,10 @@ async function main() {
     const compPublishAtIso = computeIsoPublishDate(compDate, compTime, tzOffset);
 
     const compItem = {
+      id: `${weekSlug}-compilation`,
       type: 'compilation',
+      weekNum,
+      weekSlug,
       dayNum: null,
       specName: `${weekSlug}-compilation`,
       title: compMeta.title,
@@ -650,7 +1064,6 @@ async function main() {
       publishAtIso: compPublishAtIso,
     };
 
-    // If Day 1 is included, place compilation right at the start alongside Day 1
     if (uploadQueue.length > 0 && uploadQueue[0].dayNum === 1) {
       uploadQueue.unshift(compItem);
     } else {
@@ -699,13 +1112,9 @@ async function main() {
     }
   }
 
-  // Quota calculation warning
+  // Quota calculation
   const estimatedUnits = uploadQueue.length * 1600;
   console.log(`[API Quota Estimate] ${uploadQueue.length} videos x 1,600 units = ${estimatedUnits.toLocaleString()} units`);
-  if (estimatedUnits > 10000) {
-    console.log(`NOTE: This batch requires > 10,000 units (default daily YouTube Data API quota).`);
-    console.log(`      If you have not yet requested a quota bump, upload in 2 batches (e.g. --days 1-5 and --days 6,7 --compilation).`);
-  }
 
   if (options.dryRun) {
     console.log(`\n======================================================`);
@@ -715,10 +1124,12 @@ async function main() {
   }
 
   // Confirm before starting uploads
-  const confirm = await promptUser(`\nProceed with uploading ${uploadQueue.length} video(s) to YouTube? (y/N): `);
-  if (confirm.toLowerCase() !== 'y' && confirm.toLowerCase() !== 'yes') {
-    console.log(`Upload cancelled by user.`);
-    return;
+  if (!options.autoYes) {
+    const confirm = await promptUser(`\nProceed with uploading ${uploadQueue.length} video(s) to YouTube? (y/N): `);
+    if (confirm.toLowerCase() !== 'y' && confirm.toLowerCase() !== 'yes') {
+      console.log(`Upload cancelled by user.`);
+      return;
+    }
   }
 
   // Authenticate
@@ -741,12 +1152,26 @@ async function main() {
         privacyStatus: options.privacy,
       });
 
+      // Record to persistent upload history
+      recordUpload(history, {
+        id: item.id,
+        weekSlug: item.weekSlug,
+        weekNum: item.weekNum,
+        type: item.type,
+        dayNum: item.dayNum,
+        title: item.title,
+        videoId: res.id,
+        publishAt: item.publishAtIso,
+      });
+
       results.push({ item, success: true, videoId: res.id });
     } catch (err) {
       console.error(`\nFAILED to upload "${item.title}":`, err.message);
       results.push({ item, success: false, error: err.message });
-      const proceed = await promptUser(`An error occurred. Continue with remaining videos? (y/N): `);
-      if (proceed.toLowerCase() !== 'y') break;
+      if (!options.autoYes) {
+        const proceed = await promptUser(`An error occurred. Continue with remaining videos? (y/N): `);
+        if (proceed.toLowerCase() !== 'y') break;
+      }
     }
   }
 
@@ -757,6 +1182,7 @@ async function main() {
     const status = r.success ? `SUCCESS (ID: ${r.videoId})` : `FAILED (${r.error})`;
     console.log(`- ${r.item.title}: ${status}`);
   }
+  console.log(`Upload history updated at: ${historyPath}`);
   console.log(`======================================================\n`);
 }
 

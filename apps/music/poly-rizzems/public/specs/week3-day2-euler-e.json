@@ -1,0 +1,106 @@
+{
+  "name": "Euler's Growth (e = 2.7182)",
+  "title": "Euler's Constant (e = 2.7182)",
+  "bars": 26,
+  "barDuration": 2.25,
+  "rhythms": [
+    {
+      "id": "e-2a",
+      "timeSignature": 2,
+      "noteName": "E3",
+      "frequency": 164.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false,
+      "color": "#00f0ff",
+      "name": "E3 (2♩)"
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "e-7",
+        "timeSignature": 7,
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "expression": "cool",
+        "isMuted": false,
+        "color": "#39ff14",
+        "name": "B3 (7♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "e-1",
+        "timeSignature": 1,
+        "noteName": "G4",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "sad",
+        "isMuted": false,
+        "color": "#ff007f",
+        "name": "G4 (1♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "e-8",
+        "timeSignature": 8,
+        "noteName": "D5",
+        "frequency": 587.33,
+        "volume": 0.57,
+        "expression": "surprised",
+        "isMuted": false,
+        "color": "#fffb00",
+        "name": "D5 (8♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "e-2b",
+        "timeSignature": 2,
+        "noteName": "A5",
+        "frequency": 880,
+        "volume": 0.46,
+        "expression": "excited",
+        "isMuted": false,
+        "color": "#ff5f00",
+        "name": "A5 (2♩)"
+      }
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "e-2b"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "e-8"
+    },
+    {
+      "at": 22,
+      "type": "remove",
+      "id": "e-1"
+    },
+    {
+      "at": 23,
+      "type": "remove",
+      "id": "e-7"
+    },
+    {
+      "at": 24,
+      "type": "remove",
+      "id": "e-2a"
+    }
+  ]
+}

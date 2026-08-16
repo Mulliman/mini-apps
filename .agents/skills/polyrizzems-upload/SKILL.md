@@ -12,18 +12,24 @@ Automates uploading and scheduling all 7 daily YouTube Shorts and the weekly lon
 ## 1. Quick Start Commands
 
 ```bash
-# 1. Preview and verify schedule without uploading (0 API units used):
-node apps/music/poly-rizzems/scripts/upload-week.mjs 1 --start-date 2026-09-01 --dry-run
+# 1. Show Visual Status Dashboard across all planned weeks:
+node apps/music/poly-rizzems/scripts/upload-week.mjs status
 
-# 2. Upload all 7 Shorts and long-form compilation (all scheduled for 12:00 noon):
-node apps/music/poly-rizzems/scripts/upload-week.mjs 1 --start-date 2026-09-01
+# 2. Automatically detect and preview the NEXT pending batch (0 API units):
+node apps/music/poly-rizzems/scripts/upload-week.mjs next --dry-run
 
-# 3. Batch uploads (respects the 10,000 daily free API quota limit without extension):
+# 3. Automatically upload and schedule the NEXT pending batch:
+node apps/music/poly-rizzems/scripts/upload-week.mjs next -y
+
+# 4. Sync/reconcile upload history with the YouTube channel:
+node apps/music/poly-rizzems/scripts/upload-week.mjs sync
+
+# 5. Manual Batch Upload (specific week, explicit date, custom days):
 # Batch 1 (Day 1): Upload Main Masterclass Video + Days 1–4 Shorts (8,000 units)
-node apps/music/poly-rizzems/scripts/upload-week.mjs 1 --start-date 2026-09-01 --days 1-4 --compilation
+node apps/music/poly-rizzems/scripts/upload-week.mjs 3 --start-date 2026-08-24 --days 1-4 --compilation -y
 
 # Batch 2 (Day 2): Upload Days 5–7 Shorts (4,800 units)
-node apps/music/poly-rizzems/scripts/upload-week.mjs 1 --start-date 2026-09-01 --days 5-7 --no-compilation
+node apps/music/poly-rizzems/scripts/upload-week.mjs 3 --start-date 2026-08-24 --days 5-7 --no-compilation -y
 ```
 
 ---

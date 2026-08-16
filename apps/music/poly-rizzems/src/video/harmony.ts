@@ -109,7 +109,7 @@ export function computeLivePolyrhythm(lanes: SampledLane[]): string {
     return '1 Beat Pulse';
   }
   if (polySigs.length === 1) {
-    return `${polySigs[0]} Beats`;
+    return polySigs[0] === 0 ? 'Rest Lane (0♩)' : `${polySigs[0]} Beats`;
   }
   return polySigs.join(' : ');
 }

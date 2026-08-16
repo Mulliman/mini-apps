@@ -1,0 +1,166 @@
+{
+  "name": "The Circle Constant (tau = 6.2831853)",
+  "title": "The Circle Constant (τ = 6.2831853)",
+  "bars": 26,
+  "barDuration": 2.25,
+  "rhythms": [
+    {
+      "id": "tau-6a",
+      "timeSignature": 6,
+      "noteName": "G3",
+      "frequency": 196,
+      "volume": 0.95,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "G3 (6♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "tau-2",
+        "timeSignature": 2,
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "expression": "cool",
+        "color": "#39ff14",
+        "name": "D4 (2♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "tau-8a",
+        "timeSignature": 8,
+        "noteName": "G4",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "sleepy",
+        "color": "#ff007f",
+        "name": "G4 (8♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "tau-3a",
+        "timeSignature": 3,
+        "noteName": "B4",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "happy",
+        "color": "#fffb00",
+        "name": "B4 (3♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "tau-1",
+        "timeSignature": 1,
+        "noteName": "D5",
+        "frequency": 587.33,
+        "volume": 0.57,
+        "expression": "cool",
+        "color": "#ff5f00",
+        "name": "D5 (1♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "tau-8b",
+        "timeSignature": 8,
+        "noteName": "E5",
+        "frequency": 659.25,
+        "volume": 0.54,
+        "expression": "angry",
+        "color": "#b026ff",
+        "name": "E5 (8♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 7,
+      "type": "add",
+      "rhythm": {
+        "id": "tau-5",
+        "timeSignature": 5,
+        "noteName": "G5",
+        "frequency": 783.99,
+        "volume": 0.49,
+        "expression": "sleepy",
+        "color": "#ff073a",
+        "name": "G5 (5♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "tau-3b",
+        "timeSignature": 3,
+        "noteName": "B5",
+        "frequency": 987.77,
+        "volume": 0.44,
+        "expression": "happy",
+        "color": "#ccff00",
+        "name": "B5 (3♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "tau-3b"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "tau-5"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "tau-8b"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "tau-1"
+    },
+    {
+      "at": 22,
+      "type": "remove",
+      "id": "tau-3a"
+    },
+    {
+      "at": 23,
+      "type": "remove",
+      "id": "tau-8a"
+    },
+    {
+      "at": 24,
+      "type": "remove",
+      "id": "tau-2"
+    },
+    {
+      "at": 25,
+      "type": "remove",
+      "id": "tau-6a"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "name": "C Sus4",
+  "title": "C Sus4",
+  "description": "Suspended 4th chord with the 4th replacing the 3rd, creating a 4 against 5 polyrhythm.",
+  "bars": 18,
+  "barDuration": 3.2,
+  "rhythms": [
+    {
+      "id": "c-sus4-1",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "C3 (1♩)",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "c-sus4-4",
+        "timeSignature": 4,
+        "noteName": "F4",
+        "color": "#39ff14",
+        "name": "F4 (4♩)",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "expression": "excited",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "c-sus4-5",
+        "timeSignature": 5,
+        "noteName": "G4",
+        "color": "#ff007f",
+        "name": "G4 (5♩)",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "angry",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "c-sus4-5"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "c-sus4-4"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "c-sus4-1"
+    }
+  ]
+}

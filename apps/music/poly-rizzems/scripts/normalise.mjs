@@ -42,7 +42,7 @@ const EXPRESSION_BY_INTERVAL = {
   2: 'silly',     // major 2nd
   3: 'sad',       // minor 3rd
   4: 'happy',     // major 3rd
-  5: 'none',      // perfect 4th — neither major nor minor, no opinion
+  5: 'excited',   // perfect 4th / 11th — open, suspended
   6: 'sick',      // tritone
   7: 'cool',      // perfect 5th
   8: 'sad',       // minor 6th
@@ -72,12 +72,15 @@ const RUB_DISTANCE = 2;
  * semitone above the ringing 7th came out "sleepy").
  */
 function expressionFor(rhythm, sounding) {
-  if (sounding.length === 0) return { expression: ROOT_EXPRESSION, reason: 'root — nothing below it' };
+  if (rhythm.timeSignature === 0) return { expression: 'sleepy', reason: 'rest lane — timeSignature 0' };
+
+  const activeSounding = sounding.filter((r) => r.timeSignature > 0);
+  if (activeSounding.length === 0) return { expression: ROOT_EXPRESSION, reason: 'root — nothing below it' };
 
   const self = semitonesOf(rhythm.noteName);
-  const bass = sounding.reduce((low, r) => (r.frequency < low.frequency ? r : low));
+  const bass = activeSounding.reduce((low, r) => (r.frequency < low.frequency ? r : low));
 
-  for (const other of sounding) {
+  for (const other of activeSounding) {
     const distance = Math.abs(self - semitonesOf(other.noteName));
     if (distance > 0 && distance <= RUB_DISTANCE) {
       return { expression: 'angry', reason: `rubs against ${other.noteName} ${distance} semitone(s) away` };
@@ -160,8 +163,8 @@ function main() {
       return;
     }
     if (alive.has(rhythm.id)) problems.push(`${where}: id "${rhythm.id}" is already sounding`);
-    if (!Number.isInteger(rhythm.timeSignature) || rhythm.timeSignature < 1 || rhythm.timeSignature > 19) {
-      problems.push(`${where}: timeSignature ${rhythm.timeSignature} must be an integer 1–19`);
+    if (!Number.isInteger(rhythm.timeSignature) || rhythm.timeSignature < 0 || rhythm.timeSignature > 19) {
+      problems.push(`${where}: timeSignature ${rhythm.timeSignature} must be an integer 0–19`);
     }
     if (!(rhythm.noteName in NOTES)) {
       problems.push(`${where}: note "${rhythm.noteName}" is not in the palette (naturals C3–C6 only)`);
@@ -186,6 +189,26 @@ function main() {
         changes.push(`${rhythm.id}: expression ${rhythm.expression ?? '—'} → ${expression} (${reason})`);
         rhythm.expression = expression;
       }
+    }
+
+    const COLOR_PALETTE = [
+      '#00f0ff', '#39ff14', '#ff007f', '#fffb00', '#ff5f00',
+      '#b026ff', '#ff073a', '#ccff00', '#00ffd0', '#ff00ea'
+    ];
+
+    if (rhythm.timeSignature === 0) {
+      if (rhythm.color !== '#808080') {
+        changes.push(`${rhythm.id}: color ${rhythm.color ?? '—'} → #808080 (rest lane 0)`);
+        rhythm.color = '#808080';
+      }
+    } else if (!rhythm.color || rhythm.color === '#808080') {
+      const color = COLOR_PALETTE[alive.size % COLOR_PALETTE.length];
+      changes.push(`${rhythm.id}: color ${rhythm.color ?? '—'} → ${color}`);
+      rhythm.color = color;
+    }
+
+    if (!rhythm.name) {
+      rhythm.name = `${rhythm.noteName} (${rhythm.timeSignature}♩)`;
     }
 
     if (rhythm.isMuted === undefined) rhythm.isMuted = false;
@@ -232,12 +255,13 @@ function main() {
   // bounce height a wide spread leaves the fastest ball crossing several
   // ball-widths per frame — it stops reading as a bounce and its face is
   // unreadable. `equalSpeed` (the default) removes the problem entirely.
-  if (spec.bounce === 'uniform' && signatures.length > 1) {
-    const spread = Math.max(...signatures) / Math.min(...signatures);
+  const positiveSigs = signatures.filter((s) => s > 0);
+  if (spec.bounce === 'uniform' && positiveSigs.length > 1) {
+    const spread = Math.max(...positiveSigs) / Math.min(...positiveSigs);
     if (spread > 4) {
       warnings.push(
         `bounce is "uniform" with a ${spread.toFixed(0)}x signature spread ` +
-          `(${Math.min(...signatures)}–${Math.max(...signatures)}); the fastest lane will ` +
+          `(${Math.min(...positiveSigs)}–${Math.max(...positiveSigs)}); the fastest lane will ` +
           `smear at 60fps. Drop the \`bounce\` key to use equalSpeed.`
       );
     }

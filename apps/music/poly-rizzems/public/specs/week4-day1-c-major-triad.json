@@ -1,0 +1,67 @@
+{
+  "name": "C Major Triad",
+  "title": "C Major Triad",
+  "description": "The fundamental harmonic scale degrees of a C Major Triad mapped to polyrhythmic signatures.",
+  "bars": 18,
+  "barDuration": 3.2,
+  "rhythms": [
+    {
+      "id": "c-maj-1",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "C3 (1♩)",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj-3",
+        "timeSignature": 3,
+        "noteName": "E4",
+        "color": "#39ff14",
+        "name": "E4 (3♩)",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj-5",
+        "timeSignature": 5,
+        "noteName": "G4",
+        "color": "#ff007f",
+        "name": "G4 (5♩)",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "c-maj-5"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "c-maj-3"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "c-maj-1"
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "name": "Golden Ratio (phi = 1.61803398)",
+  "title": "The Golden Ratio (ϕ = 1.61803398)",
+  "bars": 26,
+  "barDuration": 2.25,
+  "rhythms": [
+    {
+      "id": "phi-1a",
+      "timeSignature": 1,
+      "noteName": "A3",
+      "frequency": 220,
+      "volume": 0.93,
+      "expression": "cool",
+      "isMuted": false,
+      "color": "#00f0ff",
+      "name": "A3 (1♩)"
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-6",
+        "timeSignature": 6,
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "expression": "sad",
+        "isMuted": false,
+        "color": "#39ff14",
+        "name": "C4 (6♩)"
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-1b",
+        "timeSignature": 1,
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "cool",
+        "isMuted": false,
+        "color": "#ff007f",
+        "name": "E4 (1♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-8a",
+        "timeSignature": 8,
+        "noteName": "F4",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "expression": "angry",
+        "isMuted": false,
+        "color": "#fffb00",
+        "name": "F4 (8♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-0",
+        "timeSignature": 0,
+        "noteName": "A4",
+        "expression": "sleepy",
+        "frequency": 440,
+        "volume": 0.66,
+        "isMuted": false,
+        "color": "#808080",
+        "name": "A4 (0♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-3a",
+        "timeSignature": 3,
+        "noteName": "C5",
+        "frequency": 523.25,
+        "volume": 0.6,
+        "expression": "sad",
+        "isMuted": false,
+        "color": "#b026ff",
+        "name": "C5 (3♩)"
+      }
+    },
+    {
+      "at": 7,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-3b",
+        "timeSignature": 3,
+        "noteName": "E5",
+        "frequency": 659.25,
+        "volume": 0.54,
+        "expression": "cool",
+        "isMuted": false,
+        "color": "#ff073a",
+        "name": "E5 (3♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-9",
+        "timeSignature": 9,
+        "noteName": "B5",
+        "frequency": 987.77,
+        "volume": 0.44,
+        "expression": "sick",
+        "isMuted": false,
+        "color": "#ccff00",
+        "name": "B5 (9♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "add",
+      "rhythm": {
+        "id": "phi-8b",
+        "timeSignature": 8,
+        "noteName": "C6",
+        "frequency": 1046.5,
+        "volume": 0.43,
+        "expression": "angry",
+        "isMuted": false,
+        "color": "#00ffd0",
+        "name": "C6 (8♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "phi-8b"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "phi-9"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "phi-3b"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "phi-3a"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "phi-0"
+    },
+    {
+      "at": 22,
+      "type": "remove",
+      "id": "phi-8a"
+    },
+    {
+      "at": 23,
+      "type": "remove",
+      "id": "phi-1b"
+    },
+    {
+      "at": 24,
+      "type": "remove",
+      "id": "phi-6"
+    },
+    {
+      "at": 25,
+      "type": "remove",
+      "id": "phi-1a"
+    }
+  ]
+}

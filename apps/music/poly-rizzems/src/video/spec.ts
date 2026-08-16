@@ -64,6 +64,7 @@ export function bounceScale(
   timeSignature: number,
   referenceSignature: number
 ): number {
+  if (timeSignature <= 0) return 0;
   if (mode === 'uniform') return 1;
   if (mode === 'gravity') {
     const ratio = referenceSignature / timeSignature;
@@ -246,12 +247,15 @@ export function compileSpec(spec: VideoSpec): CompiledSpec {
     totalDuration,
     lanes: [],
     bounce: spec.bounce ?? 'equalSpeed',
-    referenceSignature: Math.min(
-      ...spec.rhythms.map((r) => r.timeSignature),
-      ...(spec.events ?? [])
-        .filter((e): e is Extract<VideoEvent, { type: 'add' }> => e.type === 'add')
-        .map((e) => e.rhythm.timeSignature)
-    ),
+    referenceSignature: (() => {
+      const sigs = [
+        ...spec.rhythms.map((r) => r.timeSignature),
+        ...(spec.events ?? [])
+          .filter((e): e is Extract<VideoEvent, { type: 'add' }> => e.type === 'add')
+          .map((e) => e.rhythm.timeSignature),
+      ].filter((s) => s > 0);
+      return sigs.length ? Math.min(...sigs) : 1;
+    })(),
     isLoopable: (spec.events ?? []).length === 0,
   };
 
@@ -334,13 +338,17 @@ export function compileSpec(spec: VideoSpec): CompiledSpec {
 function normaliseRhythm(rhythm: SpecRhythm): SpecRhythm {
   if (!rhythm || typeof rhythm.id !== 'string' || !rhythm.id) specError('every rhythm needs a string `id`');
   const sig = rhythm.timeSignature;
-  if (!Number.isInteger(sig) || sig < 1 || sig > 19) {
-    specError(`rhythm "${rhythm.id}" has timeSignature ${sig}; must be an integer 1–19`);
+  if (!Number.isInteger(sig) || sig < 0 || sig > 19) {
+    specError(`rhythm "${rhythm.id}" has timeSignature ${sig}; must be an integer 0–19`);
   }
+  const defaultColor = sig === 0 ? '#808080' : '#00f0ff';
+  const defaultExpression = sig === 0 ? 'sleepy' : 'happy';
   return {
     volume: 0.8,
     isMuted: false,
-    expression: 'happy',
+    expression: defaultExpression,
+    color: sig === 0 ? '#808080' : (rhythm.color || defaultColor),
+    name: rhythm.name || rhythm.noteName,
     ...rhythm,
   };
 }
@@ -436,7 +444,7 @@ export function scheduleStrikes(compiled: CompiledSpec): ScheduledStrike[] {
       if (lane.exitTime !== null && lane.exitTime <= barStart + epsilon) continue;
 
       const rhythm = rhythmAt(lane, barStart + epsilon);
-      if (rhythm.isMuted) continue;
+      if (rhythm.isMuted || rhythm.timeSignature <= 0) continue;
       const beatPeriod = barDuration / rhythm.timeSignature;
       for (let beat = 0; beat < rhythm.timeSignature; beat++) {
         strikes.push({

@@ -68,34 +68,36 @@ export default function RhythmTrack({
   onToggleMute,
   onPlayNoteTrigger,
 }: RhythmTrackProps) {
-  const { id, timeSignature, noteName, frequency, color, volume, isMuted, expression } = lane.rhythm;
+  const { id, timeSignature, noteName, frequency, color = '#00f0ff', volume, isMuted, expression } = lane.rhythm;
 
-  const beatPeriod = barDuration / timeSignature;
-  const continuousBeats = timeInBar / beatPeriod;
-  const currentBeat = Math.floor(continuousBeats) % timeSignature;
-  const beatProgress = continuousBeats % 1;
+  const isZeroSig = timeSignature <= 0;
+  const beatPeriod = isZeroSig ? barDuration : barDuration / timeSignature;
+  const continuousBeats = isZeroSig ? 0 : timeInBar / beatPeriod;
+  const currentBeat = isZeroSig ? 0 : Math.floor(continuousBeats) % timeSignature;
+  const beatProgress = isZeroSig ? 0 : continuousBeats % 1;
 
   // Parabola: 0 at the floor on each beat boundary, 1 at the apex mid-beat —
   // scaled so a fast lane doesn't have to cross the whole runway in a fraction of
   // the time a slow one gets, which is what makes its face unreadable.
-  const bounceHeight =
-    (1 - 4 * Math.pow(beatProgress - 0.5, 2)) *
-    bounceScale(bounce, timeSignature, referenceSignature);
+  const bounceHeight = isZeroSig
+    ? 0
+    : (1 - 4 * Math.pow(beatProgress - 0.5, 2)) *
+      bounceScale(bounce, timeSignature, referenceSignature);
 
   // Ripples, derived. The previous ring is drawn too so that fast lanes — where the
   // beat period is shorter than the ripple — keep the overlapping wash they had
   // when this was an AnimatePresence stack.
   const sinceStrike = beatProgress * beatPeriod;
-  const ripplePhase = isPlaying ? sinceStrike / ANIM.ripple : -1;
-  const previousRipplePhase = isPlaying ? (sinceStrike + beatPeriod) / ANIM.ripple : -1;
+  const ripplePhase = isPlaying && !isZeroSig ? sinceStrike / ANIM.ripple : -1;
+  const previousRipplePhase = isPlaying && !isZeroSig ? (sinceStrike + beatPeriod) / ANIM.ripple : -1;
 
   // Global beat index so signature 1 (and all signatures) advance monotonically across bars
-  const absoluteBeat = bar * timeSignature + Math.floor(continuousBeats);
+  const absoluteBeat = isZeroSig ? 0 : bar * timeSignature + Math.floor(continuousBeats);
 
   // Live audio still fires on beat crossings; renders take the offline path instead.
   const prevBeatRef = useRef<number>(-1);
   useEffect(() => {
-    if (!audible || !isPlaying) {
+    if (!audible || !isPlaying || isZeroSig) {
       prevBeatRef.current = -1;
       return;
     }
@@ -105,7 +107,7 @@ export default function RhythmTrack({
       }
       prevBeatRef.current = absoluteBeat;
     }
-  }, [audible, absoluteBeat, isPlaying, isMuted, frequency, timeSignature, volume, onPlayNoteTrigger]);
+  }, [audible, absoluteBeat, isPlaying, isMuted, isZeroSig, frequency, timeSignature, volume, onPlayNoteTrigger]);
 
   return (
     <div
@@ -198,13 +200,25 @@ export default function RhythmTrack({
         style={{
           width: 'var(--pp-beat-box)',
           height: 'var(--pp-beat-box)',
-          backgroundColor: isPlaying ? color : 'rgba(255,255,255,0.05)',
-          boxShadow: isPlaying ? `0 0 15px ${color}80` : 'none',
-          color: isPlaying ? '#000' : 'rgba(255,255,255,0.3)',
+          backgroundColor: isZeroSig
+            ? 'rgba(128, 128, 128, 0.2)'
+            : isPlaying
+            ? color
+            : 'rgba(255,255,255,0.05)',
+          boxShadow: isZeroSig
+            ? 'none'
+            : isPlaying
+            ? `0 0 15px ${color}80`
+            : 'none',
+          color: isZeroSig
+            ? '#808080'
+            : isPlaying
+            ? '#000'
+            : 'rgba(255,255,255,0.3)',
         }}
       >
         <span className="font-black font-mono tracking-tighter" style={{ fontSize: 'calc(var(--pp-beat-box) * 0.55)' }}>
-          {isPlaying ? currentBeat + 1 : '-'}
+          {isZeroSig ? '0' : isPlaying ? currentBeat + 1 : '-'}
         </span>
       </div>
       <div style={{ height: 'var(--pp-bottom-pad)' }} className="shrink-0" />

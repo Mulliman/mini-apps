@@ -108,3 +108,6 @@ When the user asks to plan a week of videos:
    - Write each file into `apps/music/poly-rizzems/videos/plan/week-<N>-<theme>/`.
 5. **Cross-Reference `polyrizzems-video`**:
    - Ensure all voicings follow POLYRIZZEMS house rules: natural notes C3–C6 only, no manual volume/expression (derive via normaliser), 2 bars of signature 1 tempo setup, arc build-and-unwind, targeting ~1-minute runtime (55s–60s) for Shorts.
+   - **Duplicate Signatures**: Duplicate time signatures (e.g. two 1s, two 5s) playing distinct pitches are fully valid and supported (especially for thematic digit sequences, chord inversions, and multi-octave layers).
+   - **Single-Lane Entry Pacing**: Introduce lanes one by one (avoid adding multiple lanes simultaneously at the same bar unless explicitly intended as a simultaneous chord drop). For longer lane arrangements (7–10 lanes), 1-bar entry steps keep the arc within the 55s–60s Shorts ceiling.
+   - **Mathematical / Series Continuity**: When sonifying constants or numerical series, include all sequential significant digits without deduplication, and truncate at an exact non-rounded terminal digit.

@@ -10,6 +10,9 @@
     "render": "node scripts/render.mjs",
     "compile-week": "node scripts/compile-week.mjs",
     "upload-week": "node scripts/upload-week.mjs",
+    "upload:next": "node scripts/upload-week.mjs next",
+    "upload:status": "node scripts/upload-week.mjs status",
+    "upload:sync": "node scripts/upload-week.mjs sync",
     "normalise": "node scripts/normalise.mjs",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"

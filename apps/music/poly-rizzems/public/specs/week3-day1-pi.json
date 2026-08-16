@@ -1,0 +1,186 @@
+{
+  "name": "Pi in Motion (3.14159265)",
+  "title": "The Sound of Pi (π = 3.14159265)",
+  "bars": 26,
+  "barDuration": 2.25,
+  "rhythms": [
+    {
+      "id": "pi-3",
+      "timeSignature": 3,
+      "noteName": "C3",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false,
+      "color": "#00f0ff",
+      "name": "C3 (3♩)"
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-1a",
+        "timeSignature": 1,
+        "noteName": "G3",
+        "frequency": 196,
+        "volume": 0.95,
+        "expression": "cool",
+        "isMuted": false,
+        "color": "#39ff14",
+        "name": "G3 (1♩)"
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-4",
+        "timeSignature": 4,
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "isMuted": false,
+        "color": "#ff007f",
+        "name": "E4 (4♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-1b",
+        "timeSignature": 1,
+        "noteName": "G4",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "cool",
+        "isMuted": false,
+        "color": "#fffb00",
+        "name": "G4 (1♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-5a",
+        "timeSignature": 5,
+        "noteName": "B4",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "dizzy",
+        "isMuted": false,
+        "color": "#ff5f00",
+        "name": "B4 (5♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-9",
+        "timeSignature": 9,
+        "noteName": "D5",
+        "frequency": 587.33,
+        "volume": 0.57,
+        "expression": "silly",
+        "isMuted": false,
+        "color": "#b026ff",
+        "name": "D5 (9♩)"
+      }
+    },
+    {
+      "at": 7,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-2",
+        "timeSignature": 2,
+        "noteName": "E5",
+        "frequency": 659.25,
+        "volume": 0.54,
+        "expression": "angry",
+        "isMuted": false,
+        "color": "#ff073a",
+        "name": "E5 (2♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-6",
+        "timeSignature": 6,
+        "noteName": "G5",
+        "frequency": 783.99,
+        "volume": 0.49,
+        "expression": "cool",
+        "isMuted": false,
+        "color": "#ccff00",
+        "name": "G5 (6♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "add",
+      "rhythm": {
+        "id": "pi-5b",
+        "timeSignature": 5,
+        "noteName": "C6",
+        "frequency": 1046.5,
+        "volume": 0.43,
+        "expression": "sleepy",
+        "isMuted": false,
+        "color": "#00ffd0",
+        "name": "C6 (5♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "pi-5b"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "pi-6"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "pi-2"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "pi-9"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "pi-5a"
+    },
+    {
+      "at": 22,
+      "type": "remove",
+      "id": "pi-1b"
+    },
+    {
+      "at": 23,
+      "type": "remove",
+      "id": "pi-4"
+    },
+    {
+      "at": 24,
+      "type": "remove",
+      "id": "pi-1a"
+    },
+    {
+      "at": 25,
+      "type": "remove",
+      "id": "pi-3"
+    }
+  ]
+}

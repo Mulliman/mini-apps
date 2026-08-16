@@ -1,0 +1,147 @@
+{
+  "name": "C Major 13",
+  "title": "C Major 13",
+  "description": "Full 7-note diatonic major spectrum with scale degrees 1, 3, 5, 7, 9, 11, 13 in a 7-lane grand finale polyrhythm.",
+  "bars": 18,
+  "barDuration": 3.2,
+  "rhythms": [
+    {
+      "id": "c-maj13-1",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "C3 (1♩)",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj13-3",
+        "timeSignature": 3,
+        "noteName": "E4",
+        "color": "#39ff14",
+        "name": "E4 (3♩)",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj13-5",
+        "timeSignature": 5,
+        "noteName": "G4",
+        "color": "#ff007f",
+        "name": "G4 (5♩)",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj13-7",
+        "timeSignature": 7,
+        "noteName": "B4",
+        "color": "#fffb00",
+        "name": "B4 (7♩)",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "dizzy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj13-9",
+        "timeSignature": 9,
+        "noteName": "D5",
+        "color": "#ff5f00",
+        "name": "D5 (9♩)",
+        "frequency": 587.33,
+        "volume": 0.57,
+        "expression": "silly",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj13-11",
+        "timeSignature": 11,
+        "noteName": "F5",
+        "color": "#b026ff",
+        "name": "F5 (11♩)",
+        "frequency": 698.46,
+        "volume": 0.52,
+        "expression": "sick",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 7,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj13-13",
+        "timeSignature": 13,
+        "noteName": "A5",
+        "color": "#ff073a",
+        "name": "A5 (13♩)",
+        "frequency": 880,
+        "volume": 0.46,
+        "expression": "excited",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 11,
+      "type": "remove",
+      "id": "c-maj13-13"
+    },
+    {
+      "at": 12,
+      "type": "remove",
+      "id": "c-maj13-11"
+    },
+    {
+      "at": 13,
+      "type": "remove",
+      "id": "c-maj13-9"
+    },
+    {
+      "at": 14,
+      "type": "remove",
+      "id": "c-maj13-7"
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "c-maj13-5"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "c-maj13-3"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "c-maj13-1"
+    }
+  ]
+}

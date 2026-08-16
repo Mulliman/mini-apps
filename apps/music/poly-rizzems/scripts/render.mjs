@@ -69,7 +69,7 @@ function parseArgs(argv) {
     quality: 95,
     preset: 'fast',
     crf: 16,
-    parallel: true,
+    parallel: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -311,7 +311,7 @@ async function main() {
   try {
     browser = await puppeteer.launch({
       headless: true,
-      protocolTimeout: 180000,
+      protocolTimeout: 300000,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

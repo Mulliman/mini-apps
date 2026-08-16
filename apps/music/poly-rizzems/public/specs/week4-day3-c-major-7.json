@@ -1,0 +1,87 @@
+{
+  "name": "C Major 7",
+  "title": "C Major 7",
+  "description": "C Major 7 chord with scale degrees 1, 3, 5, 7 in a 4-lane polyrhythm.",
+  "bars": 18,
+  "barDuration": 3.2,
+  "rhythms": [
+    {
+      "id": "c-maj7-1",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "C3 (1♩)",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj7-3",
+        "timeSignature": 3,
+        "noteName": "E4",
+        "color": "#39ff14",
+        "name": "E4 (3♩)",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj7-5",
+        "timeSignature": 5,
+        "noteName": "G4",
+        "color": "#ff007f",
+        "name": "G4 (5♩)",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "c-maj7-7",
+        "timeSignature": 7,
+        "noteName": "B4",
+        "color": "#fffb00",
+        "name": "B4 (7♩)",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "dizzy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 14,
+      "type": "remove",
+      "id": "c-maj7-7"
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "c-maj7-5"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "c-maj7-3"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "c-maj7-1"
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "name": "Pythagoras' Constant (sqrt2 = 1.41421356)",
+  "title": "Pythagoras' Constant (√2 = 1.41421356)",
+  "bars": 26,
+  "barDuration": 2.25,
+  "rhythms": [
+    {
+      "id": "sqrt-1a",
+      "timeSignature": 1,
+      "noteName": "D3",
+      "frequency": 146.83,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false,
+      "color": "#00f0ff",
+      "name": "D3 (1♩)"
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-4a",
+        "timeSignature": 4,
+        "noteName": "G3",
+        "frequency": 196,
+        "volume": 0.95,
+        "expression": "excited",
+        "isMuted": false,
+        "color": "#39ff14",
+        "name": "G3 (4♩)"
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-1b",
+        "timeSignature": 1,
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "expression": "surprised",
+        "isMuted": false,
+        "color": "#ff007f",
+        "name": "C4 (1♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-4b",
+        "timeSignature": 4,
+        "noteName": "F4",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "expression": "sad",
+        "isMuted": false,
+        "color": "#fffb00",
+        "name": "F4 (4♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-2",
+        "timeSignature": 2,
+        "noteName": "A4",
+        "frequency": 440,
+        "volume": 0.66,
+        "expression": "cool",
+        "isMuted": false,
+        "color": "#ff5f00",
+        "name": "A4 (2♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-1c",
+        "timeSignature": 1,
+        "noteName": "C5",
+        "frequency": 523.25,
+        "volume": 0.6,
+        "expression": "surprised",
+        "isMuted": false,
+        "color": "#b026ff",
+        "name": "C5 (1♩)"
+      }
+    },
+    {
+      "at": 7,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-3",
+        "timeSignature": 3,
+        "noteName": "D5",
+        "frequency": 587.33,
+        "volume": 0.57,
+        "expression": "angry",
+        "isMuted": false,
+        "color": "#ff073a",
+        "name": "D5 (3♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-5",
+        "timeSignature": 5,
+        "noteName": "F5",
+        "frequency": 698.46,
+        "volume": 0.52,
+        "expression": "sad",
+        "isMuted": false,
+        "color": "#ccff00",
+        "name": "F5 (5♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "add",
+      "rhythm": {
+        "id": "sqrt-6",
+        "timeSignature": 6,
+        "noteName": "B5",
+        "frequency": 987.77,
+        "volume": 0.44,
+        "expression": "sick",
+        "isMuted": false,
+        "color": "#00ffd0",
+        "name": "B5 (6♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "sqrt-6"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "sqrt-5"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "sqrt-3"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "sqrt-1c"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "sqrt-2"
+    },
+    {
+      "at": 22,
+      "type": "remove",
+      "id": "sqrt-4b"
+    },
+    {
+      "at": 23,
+      "type": "remove",
+      "id": "sqrt-1b"
+    },
+    {
+      "at": 24,
+      "type": "remove",
+      "id": "sqrt-4a"
+    },
+    {
+      "at": 25,
+      "type": "remove",
+      "id": "sqrt-1a"
+    }
+  ]
+}

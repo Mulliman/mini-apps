@@ -50,8 +50,8 @@ across C4–C5.
 The house shape is **tempo set, build up, then unwind**:
 
 1. **Set the tempo (Bars 0–1):** Open on **signature `1`** — the root note downbeat pulse solo for **2 bars**. This acts as the visual and auditory metronome, setting the bar tempo before subdivisions arrive.
-2. **Build up:** Add one lane every **2 bars** (starting at Bar 2), primary family first, then the second family. The moment the second family enters is when the polyrhythm appears; give it room.
-3. **Peak:** Hold the full arrangement for **2–4 bars**.
+2. **Build up:** Add one lane every **1–2 bars** (starting at Bar 2), primary family first, then the second family. (Use 1 bar per entry for 7–10 lane sequences to stay within runtime). The moment contrasting families enter is when the polyrhythm appears; give it room.
+3. **Peak:** Hold the full arrangement for **2–4 bars** (or more on 20+ bar tracks).
 4. **Unwind:** Remove one lane every **1 bar**, in **reverse order of arrival** — it unwinds back down to the root. The descent can move faster than the build.
 5. **Silence:** Remove the last lane **one bar before the end**, leaving exactly **one silent bar** to close on.
 
@@ -59,7 +59,7 @@ The house shape is **tempo set, build up, then unwind**:
 
 - **Aim for ~1 minute** (55s–60s) for Shorts to maximize retention while staying strictly under the 60s hard ceiling.
 - Compute: `bars × barDuration ≈ 56–59s`.
-  - For example: **24 bars at 2.4s** = 57.6s, or **22 bars at 2.6s** = 57.2s.
+  - For example: **26 bars at 2.25s** = 58.5s, **24 bars at 2.4s** = 57.6s, or **22 bars at 2.6s** = 57.2s.
 
 A spec with events cannot loop, which is fine for an arc. If you want a seamless
 looper instead, use no events at all — the renderer then emits a half-open frame

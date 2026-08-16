@@ -1,0 +1,107 @@
+{
+  "name": "C 6/9",
+  "title": "C 6/9",
+  "description": "C 6/9 pentatonic chord voicing all 5 notes of the Major Pentatonic scale in polyrhythm.",
+  "bars": 18,
+  "barDuration": 3.2,
+  "rhythms": [
+    {
+      "id": "c-69-1",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "name": "C3 (1♩)",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "c-69-3",
+        "timeSignature": 3,
+        "noteName": "E4",
+        "color": "#39ff14",
+        "name": "E4 (3♩)",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "c-69-5",
+        "timeSignature": 5,
+        "noteName": "G4",
+        "color": "#ff007f",
+        "name": "G4 (5♩)",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "c-69-6",
+        "timeSignature": 6,
+        "noteName": "A4",
+        "color": "#fffb00",
+        "name": "A4 (6♩)",
+        "frequency": 440,
+        "volume": 0.66,
+        "expression": "angry",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "c-69-9",
+        "timeSignature": 9,
+        "noteName": "D5",
+        "color": "#ff5f00",
+        "name": "D5 (9♩)",
+        "frequency": 587.33,
+        "volume": 0.57,
+        "expression": "silly",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 13,
+      "type": "remove",
+      "id": "c-69-9"
+    },
+    {
+      "at": 14,
+      "type": "remove",
+      "id": "c-69-6"
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "c-69-5"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "c-69-3"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "c-69-1"
+    }
+  ]
+}

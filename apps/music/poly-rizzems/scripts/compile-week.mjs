@@ -797,7 +797,11 @@ async function main() {
     if (res.status !== 0) throw new Error(`ffmpeg concat failed with exit code ${res.status}`);
   } finally {
     for (const p of tempClipsToClean) {
-      if (existsSync(p)) rmSync(p, { force: true });
+      try {
+        if (existsSync(p)) rmSync(p, { force: true, maxRetries: 3, retryDelay: 200 });
+      } catch {
+        // Windows file lock safety
+      }
     }
   }
 
