@@ -493,9 +493,10 @@ async function getAuthenticatedClient(clientSecretsPath, tokenStorePath) {
     try {
       const cached = JSON.parse(readFileSync(tokenStorePath, 'utf-8'));
       oauth2Client.setCredentials(cached);
+      await oauth2Client.getAccessToken();
       return oauth2Client;
     } catch (e) {
-      console.warn(`Could not load cached tokens: ${e.message}. Starting fresh login...`);
+      console.warn(`Cached token expired or invalid (${e.message}). Starting fresh login...`);
     }
   }
 

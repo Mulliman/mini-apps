@@ -20,9 +20,9 @@ export function initAudio(): AudioContext | null {
 
   audioCtx = new AudioContextClass();
 
-  // Set up master volume node
+  // Clean linear master gain node
   masterGain = audioCtx.createGain();
-  masterGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+  masterGain.gain.setValueAtTime(1.0, audioCtx.currentTime);
   masterGain.connect(audioCtx.destination);
 
   return audioCtx;

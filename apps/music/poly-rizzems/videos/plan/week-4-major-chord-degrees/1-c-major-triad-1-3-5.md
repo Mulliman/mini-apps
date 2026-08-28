@@ -53,7 +53,7 @@
 
 ## 3. YouTube Shorts Metadata (Automation)
 
-- **Title**: What happens when you turn a C Major chord into a polyrhythm? - POLYRIZZEMS #shorts
+- **Title**: The C Major Chord as a Polyrhythm - POLYRIZZEMS #shorts
 - **Description**:
   The scale degrees of a C Major Triad (1, 3, 5) mapped directly into polyrhythmic time signatures: Root (1), Major 3rd (3), and 5th (5).
 

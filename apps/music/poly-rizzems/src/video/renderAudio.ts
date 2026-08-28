@@ -41,7 +41,7 @@ export async function renderSpecAudio(
   options: AudioRenderOptions = {}
 ): Promise<AudioRenderResult> {
   const sampleRate = options.sampleRate ?? 48000;
-  const masterVolume = options.masterVolume ?? 0.8;
+  const masterVolume = options.masterVolume ?? 1.0;
 
   const duration = compiled.totalDuration;
   const renderDuration = duration + TAIL;
@@ -88,11 +88,11 @@ export async function renderSpecAudio(
     if (abs > peak) peak = abs;
   }
 
-  // Dense arrangements can stack enough oscillators to clip. Scale rather than
-  // clamp, so the result stays a faithful (if quieter) version of the mix.
+  // Clean linear normalization: scale so the loudest peak reaches 0.98 (-0.17 dBFS)
+  // This delivers maximum clean volume without any non-linear compressor buzzing or distortion.
   let normalised = 1;
-  if (peak > 0.99) {
-    normalised = 0.99 / peak;
+  if (peak > 0.001) {
+    normalised = 0.98 / peak;
     for (let i = 0; i < out.length; i++) out[i] *= normalised;
   }
 
