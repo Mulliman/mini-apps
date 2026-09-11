@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "render": "node scripts/render.mjs",
+    "render-week": "node scripts/render-week.mjs",
     "compile-week": "node scripts/compile-week.mjs",
     "upload-week": "node scripts/upload-week.mjs",
     "upload:next": "node scripts/upload-week.mjs next",

@@ -1,0 +1,127 @@
+{
+  "name": "Fibonacci Sequence (1, 2, 3, 5, 8, 13)",
+  "title": "Fibonacci Sequence",
+  "description": "The Fibonacci sequence (1, 2, 3, 5, 8, 13) turned into a Golden Spiral polyrhythm in A Minor.",
+  "bars": 22,
+  "barDuration": 2.65,
+  "rhythms": [
+    {
+      "id": "fib-1",
+      "timeSignature": 1,
+      "noteName": "A3",
+      "frequency": 220,
+      "volume": 0.93,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "A3 (1♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "fib-2",
+        "timeSignature": 2,
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "expression": "sad",
+        "color": "#39ff14",
+        "name": "C4 (2♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "fib-3",
+        "timeSignature": 3,
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "cool",
+        "color": "#ff007f",
+        "name": "E4 (3♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "fib-5",
+        "timeSignature": 5,
+        "noteName": "G4",
+        "frequency": 392,
+        "volume": 0.69,
+        "expression": "surprised",
+        "color": "#fffb00",
+        "name": "G4 (5♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "fib-8",
+        "timeSignature": 8,
+        "noteName": "A4",
+        "frequency": 440,
+        "volume": 0.66,
+        "expression": "angry",
+        "color": "#ff5f00",
+        "name": "A4 (8♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 10,
+      "type": "add",
+      "rhythm": {
+        "id": "fib-13",
+        "timeSignature": 13,
+        "noteName": "C5",
+        "volume": 0.38,
+        "frequency": 523.25,
+        "expression": "sad",
+        "color": "#b026ff",
+        "name": "C5 (13♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "fib-13"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "fib-8"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "fib-5"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "fib-3"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "fib-2"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "fib-1"
+    }
+  ]
+}

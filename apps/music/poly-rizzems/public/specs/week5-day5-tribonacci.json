@@ -1,0 +1,107 @@
+{
+  "name": "Tribonacci Sequence (1, 2, 4, 7, 13)",
+  "title": "Tribonacci Sequence",
+  "description": "The Tribonacci sequence (1, 2, 4, 7, 13) sonified into a 3-step recursive polyrhythm in G Dominant 9. When Fibonacci's cousin adds the previous THREE numbers.",
+  "bars": 21,
+  "barDuration": 2.75,
+  "rhythms": [
+    {
+      "id": "trib-1",
+      "timeSignature": 1,
+      "noteName": "G3",
+      "frequency": 196,
+      "volume": 0.95,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "G3 (1♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "trib-2",
+        "timeSignature": 2,
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "expression": "cool",
+        "color": "#39ff14",
+        "name": "D4 (2♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "trib-4",
+        "timeSignature": 4,
+        "noteName": "F4",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "expression": "surprised",
+        "color": "#ff007f",
+        "name": "F4 (4♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "trib-7",
+        "timeSignature": 7,
+        "noteName": "B4",
+        "frequency": 493.88,
+        "volume": 0.62,
+        "expression": "sick",
+        "color": "#fffb00",
+        "name": "B4 (7♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "trib-13",
+        "timeSignature": 13,
+        "noteName": "D5",
+        "volume": 0.36,
+        "frequency": 587.33,
+        "expression": "cool",
+        "color": "#ff5f00",
+        "name": "D5 (13♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "trib-13"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "trib-7"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "trib-4"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "trib-2"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "trib-1"
+    }
+  ]
+}

@@ -141,8 +141,9 @@ function main() {
   const args = process.argv.slice(2);
   const check = args.includes('--check');
   const keepExpressions = args.includes('--keep-expressions');
+  const keepVolumes = args.includes('--keep-volumes');
   const name = args.find((a) => !a.startsWith('--'));
-  if (!name) fail('usage: normalise <spec-name> [--check] [--keep-expressions]');
+  if (!name) fail('usage: normalise <spec-name> [--check] [--keep-expressions] [--keep-volumes]');
 
   const file = join(appDir, 'public', 'specs', `${name.replace(/\.json$/, '')}.json`);
   if (!existsSync(file)) fail(`no spec at ${file}`);
@@ -177,10 +178,12 @@ function main() {
       rhythm.frequency = frequency;
     }
 
-    const volume = volumeFor(frequency);
-    if (rhythm.volume !== volume) {
-      changes.push(`${rhythm.id}: volume ${rhythm.volume ?? '—'} → ${volume} (${rhythm.noteName})`);
-      rhythm.volume = volume;
+    if (!keepVolumes || rhythm.volume === undefined) {
+      const volume = volumeFor(frequency);
+      if (rhythm.volume !== volume) {
+        changes.push(`${rhythm.id}: volume ${rhythm.volume ?? '—'} → ${volume} (${rhythm.noteName})`);
+        rhythm.volume = volume;
+      }
     }
 
     if (!keepExpressions) {

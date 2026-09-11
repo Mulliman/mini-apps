@@ -1,0 +1,87 @@
+{
+  "name": "Square Numbers (1, 4, 9, 16)",
+  "title": "Square Numbers",
+  "description": "Square numbers (1, 4, 9, 16) sonified into a rhythm in D Minor.",
+  "bars": 20,
+  "barDuration": 2.85,
+  "rhythms": [
+    {
+      "id": "sq-1",
+      "timeSignature": 1,
+      "noteName": "D3",
+      "frequency": 146.83,
+      "volume": 0.95,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "D3 (1♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "sq-4",
+        "timeSignature": 4,
+        "noteName": "A3",
+        "frequency": 220,
+        "volume": 0.93,
+        "expression": "cool",
+        "color": "#39ff14",
+        "name": "A3 (4♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "sq-9",
+        "timeSignature": 9,
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "expression": "sleepy",
+        "color": "#ff007f",
+        "name": "D4 (9♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "sq-16",
+        "timeSignature": 16,
+        "noteName": "F4",
+        "volume": 0.38,
+        "frequency": 349.23,
+        "expression": "sad",
+        "color": "#fffb00",
+        "name": "F4 (16♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "sq-16"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "sq-9"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "sq-4"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "sq-1"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "name": "Catalan Numbers (1, 2, 5, 14)",
+  "title": "Catalan Numbers",
+  "description": "The famous Catalan numbers (1, 2, 5, 14) as a combinatorial polyrhythm in E Minor.",
+  "bars": 20,
+  "barDuration": 2.85,
+  "rhythms": [
+    {
+      "id": "cat-1",
+      "timeSignature": 1,
+      "noteName": "E3",
+      "frequency": 164.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "E3 (1♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "cat-2",
+        "timeSignature": 2,
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "expression": "cool",
+        "color": "#39ff14",
+        "name": "B3 (2♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "cat-5",
+        "timeSignature": 5,
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "sleepy",
+        "color": "#ff007f",
+        "name": "E4 (5♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "cat-14",
+        "timeSignature": 14,
+        "noteName": "G4",
+        "volume": 0.38,
+        "frequency": 392,
+        "expression": "sad",
+        "color": "#fffb00",
+        "name": "G4 (14♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "cat-14"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "cat-5"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "cat-2"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "cat-1"
+    }
+  ]
+}

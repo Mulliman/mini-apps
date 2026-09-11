@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastUpdated": "2026-08-28T09:01:53.635Z",
+  "lastUpdated": "2026-09-07T06:20:29.414Z",
   "uploads": {
     "week2-day5-3vs7": {
       "id": "week2-day5-3vs7",
@@ -385,6 +385,102 @@
       "watchUrl": "https://youtu.be/rRePyKD0k24",
       "publishAt": "2026-09-06T11:00:00.000Z",
       "uploadedAt": "2026-08-28T09:01:53.635Z"
+    },
+    "week-5-math-sequences-compilation": {
+      "id": "week-5-math-sequences-compilation",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "compilation",
+      "dayNum": null,
+      "title": "POLYRIZZEMS: FAMOUS MATH SEQUENCES IN POLYRHYTHM (7 Essential Polyrhythms Compilation)",
+      "videoId": "LnWt5F937uo",
+      "watchUrl": "https://youtu.be/LnWt5F937uo",
+      "publishAt": "2026-09-07T11:00:00.000Z",
+      "uploadedAt": "2026-09-06T19:27:52.942Z"
+    },
+    "week5-day1-powers-of-2": {
+      "id": "week5-day1-powers-of-2",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "short",
+      "dayNum": 1,
+      "title": "Powers of 2 as a Rhythm (1, 2, 4, 8, 16) - POLYRIZZEMS #shorts",
+      "videoId": "n5fkSOiYl78",
+      "watchUrl": "https://youtu.be/n5fkSOiYl78",
+      "publishAt": "2026-09-07T11:00:00.000Z",
+      "uploadedAt": "2026-09-06T19:27:55.298Z"
+    },
+    "week5-day2-square-numbers": {
+      "id": "week5-day2-square-numbers",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "short",
+      "dayNum": 2,
+      "title": "Square Numbers as a Polyrhythm (1, 4, 9, 16) - POLYRIZZEMS #shorts",
+      "videoId": "I4_wQtDGczo",
+      "watchUrl": "https://youtu.be/I4_wQtDGczo",
+      "publishAt": "2026-09-08T11:00:00.000Z",
+      "uploadedAt": "2026-09-06T19:27:57.508Z"
+    },
+    "week5-day3-triangular-numbers": {
+      "id": "week5-day3-triangular-numbers",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "short",
+      "dayNum": 3,
+      "title": "Triangular Numbers as a Polyrhythm (1, 3, 6, 10, 15) - POLYRIZZEMS #shorts",
+      "videoId": "4sik2emQb40",
+      "watchUrl": "https://youtu.be/4sik2emQb40",
+      "publishAt": "2026-09-09T11:00:00.000Z",
+      "uploadedAt": "2026-09-06T19:27:59.938Z"
+    },
+    "week5-day4-fibonacci": {
+      "id": "week5-day4-fibonacci",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "short",
+      "dayNum": 4,
+      "title": "The Fibonacci Sequence as a Polyrhythm (1, 2, 3, 5, 8, 13) - POLYRIZZEMS #shorts",
+      "videoId": "MXCaaYcEWQI",
+      "watchUrl": "https://youtu.be/MXCaaYcEWQI",
+      "publishAt": "2026-09-10T11:00:00.000Z",
+      "uploadedAt": "2026-09-06T19:28:01.887Z"
+    },
+    "week5-day5-tribonacci": {
+      "id": "week5-day5-tribonacci",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "short",
+      "dayNum": 5,
+      "title": "The Tribonacci Sequence as a Polyrhythm (1, 2, 4, 7, 13) - POLYRIZZEMS #shorts",
+      "videoId": "xCF0DRf2Ifc",
+      "watchUrl": "https://youtu.be/xCF0DRf2Ifc",
+      "publishAt": "2026-09-11T11:00:00.000Z",
+      "uploadedAt": "2026-09-07T06:20:24.287Z"
+    },
+    "week5-day6-catalan-numbers": {
+      "id": "week5-day6-catalan-numbers",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "short",
+      "dayNum": 6,
+      "title": "The Catalan Numbers as a Polyrhythm (1, 2, 5, 14) - POLYRIZZEMS #shorts",
+      "videoId": "Sl1ePz-WLwg",
+      "watchUrl": "https://youtu.be/Sl1ePz-WLwg",
+      "publishAt": "2026-09-12T11:00:00.000Z",
+      "uploadedAt": "2026-09-07T06:20:27.081Z"
+    },
+    "week5-day7-prime-numbers": {
+      "id": "week5-day7-prime-numbers",
+      "weekSlug": "week-5-math-sequences",
+      "weekNum": 5,
+      "type": "short",
+      "dayNum": 7,
+      "title": "The Prime Numbers as a Polyrhythm (2, 3, 5, 7, 11, 13) - POLYRIZZEMS #shorts",
+      "videoId": "9lWBTI7Qmoo",
+      "watchUrl": "https://youtu.be/9lWBTI7Qmoo",
+      "publishAt": "2026-09-13T11:00:00.000Z",
+      "uploadedAt": "2026-09-07T06:20:29.414Z"
     }
   }
 }

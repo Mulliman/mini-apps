@@ -1,0 +1,127 @@
+{
+  "name": "Prime Numbers (2, 3, 5, 7, 11, 13)",
+  "title": "Prime Numbers",
+  "description": "The first 6 Prime Numbers (2, 3, 5, 7, 11, 13) transformed into the ultimate mathematical polyrhythm in C Major.",
+  "bars": 22,
+  "barDuration": 2.65,
+  "rhythms": [
+    {
+      "id": "prm-2",
+      "timeSignature": 2,
+      "noteName": "C3",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "C3 (2♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "prm-3",
+        "timeSignature": 3,
+        "noteName": "G3",
+        "frequency": 196,
+        "volume": 0.95,
+        "expression": "cool",
+        "color": "#39ff14",
+        "name": "G3 (3♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "prm-5",
+        "timeSignature": 5,
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "expression": "sleepy",
+        "color": "#ff007f",
+        "name": "C4 (5♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "prm-7",
+        "timeSignature": 7,
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "color": "#fffb00",
+        "name": "E4 (7♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "prm-11",
+        "timeSignature": 11,
+        "noteName": "G4",
+        "volume": 0.42,
+        "frequency": 392,
+        "expression": "cool",
+        "color": "#ff5f00",
+        "name": "G4 (11♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 10,
+      "type": "add",
+      "rhythm": {
+        "id": "prm-13",
+        "timeSignature": 13,
+        "noteName": "B4",
+        "volume": 0.36,
+        "frequency": 493.88,
+        "expression": "dizzy",
+        "color": "#b026ff",
+        "name": "B4 (13♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "prm-13"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "prm-11"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "prm-7"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "prm-5"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "prm-3"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "prm-2"
+    }
+  ]
+}

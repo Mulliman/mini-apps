@@ -1,0 +1,107 @@
+{
+  "name": "Powers of 2 (1, 2, 4, 8, 16)",
+  "title": "Powers of 2",
+  "description": "The pure mathematical sequence of Powers of 2 (1, 2, 4, 8, 16) turned into a rhythm in C Major.",
+  "bars": 20,
+  "barDuration": 2.85,
+  "rhythms": [
+    {
+      "id": "pow-1",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "frequency": 130.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "C3 (1♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "pow-2",
+        "timeSignature": 2,
+        "noteName": "G3",
+        "frequency": 196,
+        "volume": 0.95,
+        "expression": "cool",
+        "color": "#39ff14",
+        "name": "G3 (2♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "pow-4",
+        "timeSignature": 4,
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "expression": "sleepy",
+        "color": "#ff007f",
+        "name": "C4 (4♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "pow-8",
+        "timeSignature": 8,
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "expression": "happy",
+        "color": "#fffb00",
+        "name": "E4 (8♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "pow-16",
+        "timeSignature": 16,
+        "noteName": "G4",
+        "volume": 0.4,
+        "frequency": 392,
+        "expression": "cool",
+        "color": "#ff5f00",
+        "name": "G4 (16♩)",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 15,
+      "type": "remove",
+      "id": "pow-16"
+    },
+    {
+      "at": 16,
+      "type": "remove",
+      "id": "pow-8"
+    },
+    {
+      "at": 17,
+      "type": "remove",
+      "id": "pow-4"
+    },
+    {
+      "at": 18,
+      "type": "remove",
+      "id": "pow-2"
+    },
+    {
+      "at": 19,
+      "type": "remove",
+      "id": "pow-1"
+    }
+  ]
+}
