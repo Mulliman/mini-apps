@@ -151,6 +151,8 @@ function parseArgs(argv) {
       options.privacy = argv[++i];
     } else if (arg === '--client-secrets') {
       options.clientSecretsPath = argv[++i];
+    } else if (arg === '--publish-now') {
+      options.publishNow = true;
     } else if (arg === '--token') {
       options.tokenPath = argv[++i];
     } else if (!arg.startsWith('--')) {
@@ -1079,21 +1081,23 @@ async function main() {
   console.log(
     `#`.padEnd(4) +
     `TYPE`.padEnd(14) +
-    `DATE / TIME`.padEnd(20) +
+    `DATE / TIME`.padEnd(25) +
     `EXISTS`.padEnd(8) +
     `TITLE`
   );
-  console.log(`-`.repeat(95));
+  console.log(`-`.repeat(100));
 
   for (const item of uploadQueue) {
     const numStr = item.dayNum ? `D${item.dayNum}` : `Full`;
     const typeStr = item.type.toUpperCase();
-    const dateTimeStr = `${item.publishDate} ${item.publishTime}`;
+    const isPastOrNow = new Date(item.publishAtIso).getTime() <= Date.now() + 5 * 60 * 1000;
+    const shouldPublishNow = (options.publishNow && (item.type === 'compilation' || item.dayNum === 1)) || isPastOrNow;
+    const dateTimeStr = shouldPublishNow ? 'PUBLISH NOW (Public)' : `${item.publishDate} ${item.publishTime}`;
     const existsStr = item.exists ? ' [OK] ' : ' [MISS] ';
     console.log(
       numStr.padEnd(4) +
       typeStr.padEnd(14) +
-      dateTimeStr.padEnd(20) +
+      dateTimeStr.padEnd(25) +
       existsStr.padEnd(8) +
       item.title
     );
@@ -1140,7 +1144,15 @@ async function main() {
   const results = [];
   for (let i = 0; i < uploadQueue.length; i++) {
     const item = uploadQueue[i];
+    const isPastOrNow = new Date(item.publishAtIso).getTime() <= Date.now() + 5 * 60 * 1000;
+    const shouldPublishNow = (options.publishNow && (item.type === 'compilation' || item.dayNum === 1)) || isPastOrNow;
+    const targetPrivacy = shouldPublishNow ? 'public' : (options.privacy || 'private');
+    const targetPublishAt = shouldPublishNow ? null : item.publishAtIso;
+
     console.log(`\n[${i + 1}/${uploadQueue.length}] Processing ${item.type.toUpperCase()}: ${item.title}`);
+    if (shouldPublishNow) {
+      console.log(`Setting to publish immediately as PUBLIC right now.`);
+    }
 
     try {
       const res = await uploadVideoWithProgress({
@@ -1149,8 +1161,8 @@ async function main() {
         title: item.title,
         description: item.description,
         tags: item.tags,
-        publishAt: item.publishAtIso,
-        privacyStatus: options.privacy,
+        publishAt: targetPublishAt,
+        privacyStatus: targetPrivacy,
       });
 
       // Record to persistent upload history
@@ -1162,7 +1174,7 @@ async function main() {
         dayNum: item.dayNum,
         title: item.title,
         videoId: res.id,
-        publishAt: item.publishAtIso,
+        publishAt: targetPublishAt || new Date().toISOString(),
       });
 
       results.push({ item, success: true, videoId: res.id });

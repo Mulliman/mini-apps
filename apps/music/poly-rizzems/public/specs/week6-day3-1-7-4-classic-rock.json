@@ -1,0 +1,756 @@
+﻿{
+  "name": "week6-day3-1-7-4-classic-rock",
+  "title": "1-7-4 Classic Rock Swagger",
+  "description": "The iconic I-bVII-IV stadium rock progression from Lynyrd Skynyrd \"Sweet Home Alabama\" (also The Rolling Stones \"Sympathy for the Devil\", AC/DC \"You Shook Me All Night Long\") played in its original key of D Mixolydian with grounded cowboy guitar voicings.",
+  "bars": 24,
+  "barDuration": 2.4,
+  "rhythms": [
+    {
+      "timeSignature": 1,
+      "name": "Beat (1♩)",
+      "noteName": "D3",
+      "volume": 1.0,
+      "id": "day3-pulse",
+      "color": "#a1a1aa",
+      "isMuted": false,
+      "expression": "cool",
+      "frequency": 146.83
+    }
+  ],
+  "events": [
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 2,
+      "type": "update"
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "timeSignature": 1,
+        "name": "D3 (1♩)",
+        "noteName": "D3",
+        "volume": 1.0,
+        "id": "day3-lane-1-0",
+        "color": "#fffb00",
+        "isMuted": false,
+        "expression": "cool",
+        "frequency": 146.83
+      }
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "timeSignature": 7,
+        "name": "A3 (7♩)",
+        "noteName": "A3",
+        "volume": 0.93,
+        "id": "day3-lane-7-1",
+        "color": "#ff5f00",
+        "isMuted": false,
+        "expression": "cool",
+        "frequency": 220.0
+      }
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "timeSignature": 4,
+        "name": "F#4 (4♩)",
+        "noteName": "F#4",
+        "volume": 0.71,
+        "id": "day3-lane-4-2",
+        "color": "#ff073a",
+        "isMuted": false,
+        "expression": "cool",
+        "frequency": 369.99
+      }
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 3,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ff007f",
+        "volume": 1.0,
+        "name": "C3 (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 3,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#b026ff",
+        "volume": 0.98,
+        "name": "G3 (7♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 3,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff00ea",
+        "volume": 0.76,
+        "name": "E4 (4♩)",
+        "frequency": 329.63,
+        "noteName": "E4"
+      },
+      "at": 3,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 0.98,
+        "name": "Beat (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 4,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ccff00",
+        "volume": 0.98,
+        "name": "G3 (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 4,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#39ff14",
+        "volume": 0.8,
+        "name": "D4 (7♩)",
+        "frequency": 293.66,
+        "noteName": "D4"
+      },
+      "at": 4,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#00f0ff",
+        "volume": 0.62,
+        "name": "B4 (4♩)",
+        "frequency": 493.88,
+        "noteName": "B4"
+      },
+      "at": 4,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 6,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#fffb00",
+        "volume": 1.0,
+        "name": "D3 (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 6,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#ff5f00",
+        "volume": 0.93,
+        "name": "A3 (7♩)",
+        "frequency": 220.0,
+        "noteName": "A3"
+      },
+      "at": 6,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff073a",
+        "volume": 0.71,
+        "name": "F#4 (4♩)",
+        "frequency": 369.99,
+        "noteName": "F#4"
+      },
+      "at": 6,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 7,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ff007f",
+        "volume": 1.0,
+        "name": "C3 (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 7,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#b026ff",
+        "volume": 0.98,
+        "name": "G3 (7♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 7,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff00ea",
+        "volume": 0.76,
+        "name": "E4 (4♩)",
+        "frequency": 329.63,
+        "noteName": "E4"
+      },
+      "at": 7,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 0.98,
+        "name": "Beat (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 8,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ccff00",
+        "volume": 0.98,
+        "name": "G3 (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 8,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#39ff14",
+        "volume": 0.8,
+        "name": "D4 (7♩)",
+        "frequency": 293.66,
+        "noteName": "D4"
+      },
+      "at": 8,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#00f0ff",
+        "volume": 0.62,
+        "name": "B4 (4♩)",
+        "frequency": 493.88,
+        "noteName": "B4"
+      },
+      "at": 8,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 10,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#fffb00",
+        "volume": 1.0,
+        "name": "D3 (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 10,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#ff5f00",
+        "volume": 0.93,
+        "name": "A3 (7♩)",
+        "frequency": 220.0,
+        "noteName": "A3"
+      },
+      "at": 10,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff073a",
+        "volume": 0.71,
+        "name": "F#4 (4♩)",
+        "frequency": 369.99,
+        "noteName": "F#4"
+      },
+      "at": 10,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 11,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ff007f",
+        "volume": 1.0,
+        "name": "C3 (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 11,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#b026ff",
+        "volume": 0.98,
+        "name": "G3 (7♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 11,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff00ea",
+        "volume": 0.76,
+        "name": "E4 (4♩)",
+        "frequency": 329.63,
+        "noteName": "E4"
+      },
+      "at": 11,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 0.98,
+        "name": "Beat (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 12,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ccff00",
+        "volume": 0.98,
+        "name": "G3 (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 12,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#39ff14",
+        "volume": 0.8,
+        "name": "D4 (7♩)",
+        "frequency": 293.66,
+        "noteName": "D4"
+      },
+      "at": 12,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#00f0ff",
+        "volume": 0.62,
+        "name": "B4 (4♩)",
+        "frequency": 493.88,
+        "noteName": "B4"
+      },
+      "at": 12,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 14,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#fffb00",
+        "volume": 1.0,
+        "name": "D3 (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 14,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#ff5f00",
+        "volume": 0.93,
+        "name": "A3 (7♩)",
+        "frequency": 220.0,
+        "noteName": "A3"
+      },
+      "at": 14,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff073a",
+        "volume": 0.71,
+        "name": "F#4 (4♩)",
+        "frequency": 369.99,
+        "noteName": "F#4"
+      },
+      "at": 14,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 15,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ff007f",
+        "volume": 1.0,
+        "name": "C3 (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 15,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#b026ff",
+        "volume": 0.98,
+        "name": "G3 (7♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 15,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff00ea",
+        "volume": 0.76,
+        "name": "E4 (4♩)",
+        "frequency": 329.63,
+        "noteName": "E4"
+      },
+      "at": 15,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 0.98,
+        "name": "Beat (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 16,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ccff00",
+        "volume": 0.98,
+        "name": "G3 (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 16,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#39ff14",
+        "volume": 0.8,
+        "name": "D4 (7♩)",
+        "frequency": 293.66,
+        "noteName": "D4"
+      },
+      "at": 16,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#00f0ff",
+        "volume": 0.62,
+        "name": "B4 (4♩)",
+        "frequency": 493.88,
+        "noteName": "B4"
+      },
+      "at": 16,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 18,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#fffb00",
+        "volume": 1.0,
+        "name": "D3 (1♩)",
+        "frequency": 146.83,
+        "noteName": "D3"
+      },
+      "at": 18,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#ff5f00",
+        "volume": 0.93,
+        "name": "A3 (7♩)",
+        "frequency": 220.0,
+        "noteName": "A3"
+      },
+      "at": 18,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff073a",
+        "volume": 0.71,
+        "name": "F#4 (4♩)",
+        "frequency": 369.99,
+        "noteName": "F#4"
+      },
+      "at": 18,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 1.0,
+        "name": "Beat (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 19,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ff007f",
+        "volume": 1.0,
+        "name": "C3 (1♩)",
+        "frequency": 130.81,
+        "noteName": "C3"
+      },
+      "at": 19,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#b026ff",
+        "volume": 0.98,
+        "name": "G3 (7♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 19,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#ff00ea",
+        "volume": 0.76,
+        "name": "E4 (4♩)",
+        "frequency": 329.63,
+        "noteName": "E4"
+      },
+      "at": 19,
+      "type": "update"
+    },
+    {
+      "id": "day3-pulse",
+      "patch": {
+        "volume": 0.98,
+        "name": "Beat (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 20,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "patch": {
+        "color": "#ccff00",
+        "volume": 0.98,
+        "name": "G3 (1♩)",
+        "frequency": 196.0,
+        "noteName": "G3"
+      },
+      "at": 20,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "patch": {
+        "color": "#39ff14",
+        "volume": 0.8,
+        "name": "D4 (7♩)",
+        "frequency": 293.66,
+        "noteName": "D4"
+      },
+      "at": 20,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "patch": {
+        "color": "#00f0ff",
+        "volume": 0.62,
+        "name": "B4 (4♩)",
+        "frequency": 493.88,
+        "noteName": "B4"
+      },
+      "at": 20,
+      "type": "update"
+    },
+    {
+      "id": "day3-lane-1-0",
+      "at": 22,
+      "type": "remove"
+    },
+    {
+      "id": "day3-lane-7-1",
+      "at": 22,
+      "type": "remove"
+    },
+    {
+      "id": "day3-lane-4-2",
+      "at": 22,
+      "type": "remove"
+    },
+    {
+      "id": "day3-pulse",
+      "at": 23,
+      "type": "remove"
+    }
+  ]
+}

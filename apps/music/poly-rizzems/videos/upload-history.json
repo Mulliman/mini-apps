@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastUpdated": "2026-09-07T06:20:29.414Z",
+  "lastUpdated": "2026-09-14T12:20:39.980Z",
   "uploads": {
     "week2-day5-3vs7": {
       "id": "week2-day5-3vs7",
@@ -481,6 +481,66 @@
       "watchUrl": "https://youtu.be/9lWBTI7Qmoo",
       "publishAt": "2026-09-13T11:00:00.000Z",
       "uploadedAt": "2026-09-07T06:20:29.414Z"
+    },
+    "week-6-chord-progressions-compilation": {
+      "id": "week-6-chord-progressions-compilation",
+      "weekSlug": "week-6-chord-progressions",
+      "weekNum": 6,
+      "type": "compilation",
+      "dayNum": null,
+      "title": "POLYRIZZEMS: FAMOUS CHORD PROGRESSIONS AS POLYRHYTHMS (7 Essential Polyrhythms Compilation)",
+      "videoId": "WIaAA4fCkAw",
+      "watchUrl": "https://youtu.be/WIaAA4fCkAw",
+      "publishAt": "2026-09-14T12:20:30.994Z",
+      "uploadedAt": "2026-09-14T12:20:30.994Z"
+    },
+    "week6-day1-1-5-6-4-pop": {
+      "id": "week6-day1-1-5-6-4-pop",
+      "weekSlug": "week-6-chord-progressions",
+      "weekNum": 6,
+      "type": "short",
+      "dayNum": 1,
+      "title": "1-5-6-4 The 4 Chords of Pop Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "ybyp_2qnO2w",
+      "watchUrl": "https://youtu.be/ybyp_2qnO2w",
+      "publishAt": "2026-09-14T12:20:32.623Z",
+      "uploadedAt": "2026-09-14T12:20:32.623Z"
+    },
+    "week6-day2-2-5-1-jazz": {
+      "id": "week6-day2-2-5-1-jazz",
+      "weekSlug": "week-6-chord-progressions",
+      "weekNum": 6,
+      "type": "short",
+      "dayNum": 2,
+      "title": "2-5-1 The Jazz-Pop Groove Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "XP0NTWMqZ0U",
+      "watchUrl": "https://youtu.be/XP0NTWMqZ0U",
+      "publishAt": "2026-09-15T11:00:00.000Z",
+      "uploadedAt": "2026-09-14T12:20:34.812Z"
+    },
+    "week6-day3-1-7-4-classic-rock": {
+      "id": "week6-day3-1-7-4-classic-rock",
+      "weekSlug": "week-6-chord-progressions",
+      "weekNum": 6,
+      "type": "short",
+      "dayNum": 3,
+      "title": "1-7-4 Classic Rock Swagger Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "VQfGROT5wgA",
+      "watchUrl": "https://youtu.be/VQfGROT5wgA",
+      "publishAt": "2026-09-16T11:00:00.000Z",
+      "uploadedAt": "2026-09-14T12:20:36.940Z"
+    },
+    "week6-day4-1-6-3-7-minor-anthem": {
+      "id": "week6-day4-1-6-3-7-minor-anthem",
+      "weekSlug": "week-6-chord-progressions",
+      "weekNum": 6,
+      "type": "short",
+      "dayNum": 4,
+      "title": "1-6-3-7 The Minor Anthem Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "v6vggzkxIwg",
+      "watchUrl": "https://youtu.be/v6vggzkxIwg",
+      "publishAt": "2026-09-17T11:00:00.000Z",
+      "uploadedAt": "2026-09-14T12:20:39.980Z"
     }
   }
 }
