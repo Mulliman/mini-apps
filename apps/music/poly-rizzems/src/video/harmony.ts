@@ -117,7 +117,7 @@ export function computeLivePolyrhythm(lanes: SampledLane[]): string {
 /**
  * Quarter-note equivalent BPM.
  */
-export function computeLiveBpm(barDuration: number): number {
+export function computeLiveBpm(barDuration: number, beatsPerBar: number = 4): number {
   if (barDuration <= 0) return 0;
-  return Math.round(240 / barDuration);
+  return Math.round((beatsPerBar * 60) / barDuration);
 }

@@ -1,0 +1,351 @@
+{
+  "name": "week7-day7-fill-13-tridecuplet",
+  "title": "13:4 The Tridecuplet Fill",
+  "description": "Opening high on C4 Major at 125 BPM, this 4/4 groove cascades through Am, F, and G before landing on a thunderous C3 Major. On the 4th bar of each cycle, the quarter notes mute as the 13 tridecuplet fill takes over on the same pitch, accelerating to 150 and 175 BPM across the final phrases.",
+  "bars": 23,
+  "barDuration": 1.92,
+  "bounce": "equalSpeed",
+  "rhythms": [
+    {
+      "id": "lane-1",
+      "timeSignature": 1,
+      "name": "C4 (1♩)",
+      "noteName": "C4",
+      "frequency": 261.63,
+      "volume": 0.85,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "isMuted": false
+    },
+    {
+      "id": "lane-2",
+      "timeSignature": 2,
+      "name": "E4 (2♩)",
+      "noteName": "E4",
+      "frequency": 329.63,
+      "volume": 0.76,
+      "expression": "happy",
+      "color": "#39ff14",
+      "isMuted": false
+    },
+    {
+      "id": "lane-4",
+      "timeSignature": 4,
+      "name": "G4 (4♩)",
+      "noteName": "G4",
+      "frequency": 392,
+      "volume": 0.69,
+      "expression": "cool",
+      "color": "#fffb00",
+      "isMuted": false
+    },
+    {
+      "id": "lane-fill",
+      "timeSignature": 13,
+      "name": "G4 (13♩)",
+      "noteName": "G4",
+      "frequency": 392,
+      "volume": 0.69,
+      "expression": "cool",
+      "color": "#ff007f",
+      "isMuted": true
+    }
+  ],
+  "events": [
+    {
+      "at": 3,
+      "type": "mute",
+      "id": "lane-4"
+    },
+    {
+      "at": 3,
+      "type": "unmute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 4,
+      "type": "unmute",
+      "id": "lane-4"
+    },
+    {
+      "at": 4,
+      "type": "mute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-1",
+      "patch": {
+        "noteName": "A3",
+        "frequency": 220,
+        "name": "A3 (1♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-2",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "name": "C4 (2♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-4",
+      "patch": {
+        "noteName": "E4",
+        "frequency": 329.63,
+        "name": "E4 (4♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-fill",
+      "patch": {
+        "noteName": "E4",
+        "frequency": 329.63,
+        "name": "E4 (13♩)"
+      }
+    },
+    {
+      "at": 7,
+      "type": "mute",
+      "id": "lane-4"
+    },
+    {
+      "at": 7,
+      "type": "unmute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 8,
+      "type": "unmute",
+      "id": "lane-4"
+    },
+    {
+      "at": 8,
+      "type": "mute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-1",
+      "patch": {
+        "noteName": "F3",
+        "frequency": 174.61,
+        "name": "F3 (1♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-2",
+      "patch": {
+        "noteName": "A3",
+        "frequency": 220,
+        "name": "A3 (2♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-4",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "name": "C4 (4♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-fill",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "name": "C4 (13♩)"
+      }
+    },
+    {
+      "at": 11,
+      "type": "mute",
+      "id": "lane-4"
+    },
+    {
+      "at": 11,
+      "type": "unmute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 12,
+      "type": "unmute",
+      "id": "lane-4"
+    },
+    {
+      "at": 12,
+      "type": "mute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 12,
+      "type": "tempo",
+      "barDuration": 1.6
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-1",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196,
+        "name": "G3 (1♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-2",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "name": "B3 (2♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-4",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "name": "D4 (4♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-fill",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "name": "D4 (13♩)"
+      }
+    },
+    {
+      "at": 15,
+      "type": "mute",
+      "id": "lane-4"
+    },
+    {
+      "at": 15,
+      "type": "unmute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 16,
+      "type": "unmute",
+      "id": "lane-4"
+    },
+    {
+      "at": 16,
+      "type": "mute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 16,
+      "type": "tempo",
+      "barDuration": 1.37
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-1",
+      "patch": {
+        "noteName": "C3",
+        "frequency": 130.81,
+        "name": "C3 (1♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-2",
+      "patch": {
+        "noteName": "E3",
+        "frequency": 164.81,
+        "name": "E3 (2♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-4",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196,
+        "name": "G3 (4♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-fill",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196,
+        "name": "G3 (13♩)"
+      }
+    },
+    {
+      "at": 19,
+      "type": "mute",
+      "id": "lane-4"
+    },
+    {
+      "at": 19,
+      "type": "unmute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 20,
+      "type": "mute",
+      "id": "lane-fill"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "lane-fill"
+    },
+    {
+      "at": 20,
+      "type": "remove",
+      "id": "lane-4"
+    },
+    {
+      "at": 21,
+      "type": "mute",
+      "id": "lane-2"
+    },
+    {
+      "at": 21,
+      "type": "remove",
+      "id": "lane-2"
+    },
+    {
+      "at": 22,
+      "type": "mute",
+      "id": "lane-1"
+    },
+    {
+      "at": 22,
+      "type": "remove",
+      "id": "lane-1"
+    }
+  ]
+}

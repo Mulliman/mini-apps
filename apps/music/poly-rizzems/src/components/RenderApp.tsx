@@ -290,7 +290,14 @@ export default function RenderApp({ specName, stepped }: RenderAppProps) {
               className="font-bold text-white tracking-tight leading-none flex items-center"
               style={{ fontSize: '1.4vh' }}
             >
-              {computeLiveBpm(sample.barDuration)} BPM
+              {computeLiveBpm(
+                sample.barDuration,
+                compiled.spec.rhythms.some((r) => r.timeSignature === 3) &&
+                  !compiled.spec.rhythms.some((r) => r.timeSignature === 4)
+                  ? 3
+                  : 4
+              )}{' '}
+              BPM
             </span>
           </div>
         </div>

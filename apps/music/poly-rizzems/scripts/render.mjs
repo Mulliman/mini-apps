@@ -228,7 +228,17 @@ async function renderAspect({ page, aspectName, viewport, scale, fps, frameCount
     '-pix_fmt', 'yuv420p',
     '-r', String(fps),
     '-g', String(fps * 2),
-    ...(audioPath ? ['-c:a', 'aac', '-b:a', '192k', '-shortest'] : []),
+    ...(audioPath
+      ? [
+          '-c:a',
+          'aac',
+          '-b:a',
+          '192k',
+          '-af',
+          'volume=12dB,alimiter=limit=0.98:attack=3:release=30:asc=true',
+          '-shortest',
+        ]
+      : []),
     '-movflags', '+faststart',
     outPath
   );

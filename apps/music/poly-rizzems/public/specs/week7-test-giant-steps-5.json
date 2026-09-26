@@ -1,0 +1,1293 @@
+{
+  "name": "week7-test-giant-steps-5",
+  "title": "Giant Steps in 5 (Authentic Phrasing)",
+  "description": "Giant Steps with authentic harmonic phrasing in 5 meter: passing chords get 1 bar, tonic arrivals get 2 bars.",
+  "bars": 30,
+  "barDuration": 1.8,
+  "rhythms": [
+    {
+      "id": "pulse",
+      "timeSignature": 1,
+      "noteName": "B3",
+      "color": "#a1a1aa",
+      "name": "Beat (1♩)",
+      "frequency": 246.94,
+      "volume": 0.87,
+      "expression": "cool",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "lane-5-0",
+        "timeSignature": 5,
+        "noteName": "B3",
+        "color": "#00f0ff",
+        "name": "B3 (5♩)",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "lane-5-1",
+        "timeSignature": 5,
+        "noteName": "D#4",
+        "color": "#39ff14",
+        "name": "D#4 (5♩)",
+        "frequency": 311.13,
+        "volume": 0.78,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "lane-5-2",
+        "timeSignature": 5,
+        "noteName": "F#4",
+        "color": "#fffb00",
+        "name": "F#4 (5♩)",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "lane-5-3",
+        "timeSignature": 5,
+        "noteName": "A#4",
+        "color": "#ff007f",
+        "name": "A#4 (5♩)",
+        "frequency": 466.16,
+        "volume": 0.64,
+        "expression": "cool",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "D3",
+        "frequency": 146.83,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 3,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "D3",
+        "frequency": 146.83,
+        "volume": 1.0,
+        "color": "#ff5f00",
+        "name": "D3 (5♩)"
+      }
+    },
+    {
+      "at": 3,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#ff073a",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 3,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "A4",
+        "frequency": 440.0,
+        "volume": 0.66,
+        "color": "#b026ff",
+        "name": "A4 (5♩)"
+      }
+    },
+    {
+      "at": 3,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "color": "#00ffd0",
+        "name": "C4 (5♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196.0,
+        "volume": 0.98,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196.0,
+        "volume": 0.98,
+        "color": "#39ff14",
+        "name": "G3 (5♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "color": "#00f0ff",
+        "name": "B3 (5♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#ccff00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#ff00ea",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "Bb3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "Bb3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "color": "#ff073a",
+        "name": "Bb3 (5♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#ff5f00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "F4",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "color": "#fffb00",
+        "name": "F4 (5♩)"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "Ab4",
+        "frequency": 415.3,
+        "volume": 0.67,
+        "color": "#b026ff",
+        "name": "Ab4 (5♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "Eb3",
+        "frequency": 155.56,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "Eb3",
+        "frequency": 155.56,
+        "volume": 1.0,
+        "color": "#00ffd0",
+        "name": "Eb3 (5♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "G4",
+        "frequency": 392.0,
+        "volume": 0.69,
+        "color": "#39ff14",
+        "name": "G4 (5♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "Bb4",
+        "frequency": 466.16,
+        "volume": 0.64,
+        "color": "#00f0ff",
+        "name": "Bb4 (5♩)"
+      }
+    },
+    {
+      "at": 6,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#fffb00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "A3",
+        "frequency": 220.0,
+        "volume": 0.93,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "A3",
+        "frequency": 220.0,
+        "volume": 0.93,
+        "color": "#b026ff",
+        "name": "A3 (5♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "color": "#ff00ea",
+        "name": "C4 (5♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "color": "#ff007f",
+        "name": "E4 (5♩)"
+      }
+    },
+    {
+      "at": 8,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "G4",
+        "frequency": 392.0,
+        "volume": 0.69,
+        "color": "#00f0ff",
+        "name": "G4 (5♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "D3",
+        "frequency": 146.83,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "D3",
+        "frequency": 146.83,
+        "volume": 1.0,
+        "color": "#ff5f00",
+        "name": "D3 (5♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#ff073a",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "A4",
+        "frequency": 440.0,
+        "volume": 0.66,
+        "color": "#b026ff",
+        "name": "A4 (5♩)"
+      }
+    },
+    {
+      "at": 9,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "color": "#00ffd0",
+        "name": "C4 (5♩)"
+      }
+    },
+    {
+      "at": 10,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196.0,
+        "volume": 0.98,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 10,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196.0,
+        "volume": 0.98,
+        "color": "#39ff14",
+        "name": "G3 (5♩)"
+      }
+    },
+    {
+      "at": 10,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "color": "#00f0ff",
+        "name": "B3 (5♩)"
+      }
+    },
+    {
+      "at": 10,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#ccff00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 10,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#ff00ea",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 11,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "Bb3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 11,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "Bb3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "color": "#ff073a",
+        "name": "Bb3 (5♩)"
+      }
+    },
+    {
+      "at": 11,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#ff5f00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 11,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "F4",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "color": "#fffb00",
+        "name": "F4 (5♩)"
+      }
+    },
+    {
+      "at": 11,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "Ab4",
+        "frequency": 415.3,
+        "volume": 0.67,
+        "color": "#b026ff",
+        "name": "Ab4 (5♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "Eb3",
+        "frequency": 155.56,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "Eb3",
+        "frequency": 155.56,
+        "volume": 1.0,
+        "color": "#00ffd0",
+        "name": "Eb3 (5♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "G4",
+        "frequency": 392.0,
+        "volume": 0.69,
+        "color": "#39ff14",
+        "name": "G4 (5♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "Bb4",
+        "frequency": 466.16,
+        "volume": 0.64,
+        "color": "#00f0ff",
+        "name": "Bb4 (5♩)"
+      }
+    },
+    {
+      "at": 12,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#fffb00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 13,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "F#3",
+        "frequency": 185.0,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 13,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "F#3",
+        "frequency": 185.0,
+        "volume": 1.0,
+        "color": "#ff007f",
+        "name": "F#3 (5♩)"
+      }
+    },
+    {
+      "at": 13,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "A#3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "color": "#ff5f00",
+        "name": "A#3 (5♩)"
+      }
+    },
+    {
+      "at": 13,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "C#4",
+        "frequency": 277.18,
+        "volume": 0.83,
+        "color": "#ff073a",
+        "name": "C#4 (5♩)"
+      }
+    },
+    {
+      "at": 13,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "color": "#b026ff",
+        "name": "E4 (5♩)"
+      }
+    },
+    {
+      "at": 14,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 14,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "color": "#00f0ff",
+        "name": "B3 (5♩)"
+      }
+    },
+    {
+      "at": 14,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "D#4",
+        "frequency": 311.13,
+        "volume": 0.78,
+        "color": "#39ff14",
+        "name": "D#4 (5♩)"
+      }
+    },
+    {
+      "at": 14,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#fffb00",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 14,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "A#4",
+        "frequency": 466.16,
+        "volume": 0.64,
+        "color": "#ff007f",
+        "name": "A#4 (5♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "F3",
+        "frequency": 174.61,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "F3",
+        "frequency": 174.61,
+        "volume": 1.0,
+        "color": "#b026ff",
+        "name": "F3 (5♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "Ab3",
+        "frequency": 207.65,
+        "volume": 0.95,
+        "color": "#ff00ea",
+        "name": "Ab3 (5♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "color": "#ff073a",
+        "name": "C4 (5♩)"
+      }
+    },
+    {
+      "at": 16,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "Eb4",
+        "frequency": 311.13,
+        "volume": 0.78,
+        "color": "#00ffd0",
+        "name": "Eb4 (5♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "Bb3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "Bb3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "color": "#ff073a",
+        "name": "Bb3 (5♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#ff5f00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "F4",
+        "frequency": 349.23,
+        "volume": 0.74,
+        "color": "#fffb00",
+        "name": "F4 (5♩)"
+      }
+    },
+    {
+      "at": 17,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "Ab4",
+        "frequency": 415.3,
+        "volume": 0.67,
+        "color": "#b026ff",
+        "name": "Ab4 (5♩)"
+      }
+    },
+    {
+      "at": 18,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "Eb3",
+        "frequency": 155.56,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 18,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "Eb3",
+        "frequency": 155.56,
+        "volume": 1.0,
+        "color": "#00ffd0",
+        "name": "Eb3 (5♩)"
+      }
+    },
+    {
+      "at": 18,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "G4",
+        "frequency": 392.0,
+        "volume": 0.69,
+        "color": "#39ff14",
+        "name": "G4 (5♩)"
+      }
+    },
+    {
+      "at": 18,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "Bb4",
+        "frequency": 466.16,
+        "volume": 0.64,
+        "color": "#00f0ff",
+        "name": "Bb4 (5♩)"
+      }
+    },
+    {
+      "at": 18,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#fffb00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 20,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "A3",
+        "frequency": 220.0,
+        "volume": 0.93,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 20,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "A3",
+        "frequency": 220.0,
+        "volume": 0.93,
+        "color": "#b026ff",
+        "name": "A3 (5♩)"
+      }
+    },
+    {
+      "at": 20,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "color": "#ff00ea",
+        "name": "C4 (5♩)"
+      }
+    },
+    {
+      "at": 20,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "color": "#ff007f",
+        "name": "E4 (5♩)"
+      }
+    },
+    {
+      "at": 20,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "G4",
+        "frequency": 392.0,
+        "volume": 0.69,
+        "color": "#00f0ff",
+        "name": "G4 (5♩)"
+      }
+    },
+    {
+      "at": 21,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "D3",
+        "frequency": 146.83,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 21,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "D3",
+        "frequency": 146.83,
+        "volume": 1.0,
+        "color": "#ff5f00",
+        "name": "D3 (5♩)"
+      }
+    },
+    {
+      "at": 21,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#ff073a",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 21,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "A4",
+        "frequency": 440.0,
+        "volume": 0.66,
+        "color": "#b026ff",
+        "name": "A4 (5♩)"
+      }
+    },
+    {
+      "at": 21,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "C4",
+        "frequency": 261.63,
+        "volume": 0.85,
+        "color": "#00ffd0",
+        "name": "C4 (5♩)"
+      }
+    },
+    {
+      "at": 22,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196.0,
+        "volume": 0.98,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 22,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "G3",
+        "frequency": 196.0,
+        "volume": 0.98,
+        "color": "#39ff14",
+        "name": "G3 (5♩)"
+      }
+    },
+    {
+      "at": 22,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "color": "#00f0ff",
+        "name": "B3 (5♩)"
+      }
+    },
+    {
+      "at": 22,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "D4",
+        "frequency": 293.66,
+        "volume": 0.8,
+        "color": "#ccff00",
+        "name": "D4 (5♩)"
+      }
+    },
+    {
+      "at": 22,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#ff00ea",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 24,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "C#3",
+        "frequency": 138.59,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 24,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "C#3",
+        "frequency": 138.59,
+        "volume": 1.0,
+        "color": "#ff00ea",
+        "name": "C#3 (5♩)"
+      }
+    },
+    {
+      "at": 24,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "color": "#b026ff",
+        "name": "E4 (5♩)"
+      }
+    },
+    {
+      "at": 24,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "G#3",
+        "frequency": 207.65,
+        "volume": 0.95,
+        "color": "#ff007f",
+        "name": "G#3 (5♩)"
+      }
+    },
+    {
+      "at": 24,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "color": "#00f0ff",
+        "name": "B3 (5♩)"
+      }
+    },
+    {
+      "at": 25,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "F#3",
+        "frequency": 185.0,
+        "volume": 1.0,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 25,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "F#3",
+        "frequency": 185.0,
+        "volume": 1.0,
+        "color": "#ff007f",
+        "name": "F#3 (5♩)"
+      }
+    },
+    {
+      "at": 25,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "A#3",
+        "frequency": 233.08,
+        "volume": 0.9,
+        "color": "#ff5f00",
+        "name": "A#3 (5♩)"
+      }
+    },
+    {
+      "at": 25,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "C#4",
+        "frequency": 277.18,
+        "volume": 0.83,
+        "color": "#ff073a",
+        "name": "C#4 (5♩)"
+      }
+    },
+    {
+      "at": 25,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "E4",
+        "frequency": 329.63,
+        "volume": 0.76,
+        "color": "#b026ff",
+        "name": "E4 (5♩)"
+      }
+    },
+    {
+      "at": 26,
+      "type": "update",
+      "id": "pulse",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "name": "Beat (1♩)"
+      }
+    },
+    {
+      "at": 26,
+      "type": "update",
+      "id": "lane-5-0",
+      "patch": {
+        "noteName": "B3",
+        "frequency": 246.94,
+        "volume": 0.87,
+        "color": "#00f0ff",
+        "name": "B3 (5♩)"
+      }
+    },
+    {
+      "at": 26,
+      "type": "update",
+      "id": "lane-5-1",
+      "patch": {
+        "noteName": "D#4",
+        "frequency": 311.13,
+        "volume": 0.78,
+        "color": "#39ff14",
+        "name": "D#4 (5♩)"
+      }
+    },
+    {
+      "at": 26,
+      "type": "update",
+      "id": "lane-5-2",
+      "patch": {
+        "noteName": "F#4",
+        "frequency": 369.99,
+        "volume": 0.71,
+        "color": "#fffb00",
+        "name": "F#4 (5♩)"
+      }
+    },
+    {
+      "at": 26,
+      "type": "update",
+      "id": "lane-5-3",
+      "patch": {
+        "noteName": "A#4",
+        "frequency": 466.16,
+        "volume": 0.64,
+        "color": "#ff007f",
+        "name": "A#4 (5♩)"
+      }
+    },
+    {
+      "at": 28,
+      "type": "remove",
+      "id": "lane-5-0"
+    },
+    {
+      "at": 28,
+      "type": "remove",
+      "id": "lane-5-1"
+    },
+    {
+      "at": 28,
+      "type": "remove",
+      "id": "lane-5-2"
+    },
+    {
+      "at": 28,
+      "type": "remove",
+      "id": "lane-5-3"
+    }
+  ]
+}

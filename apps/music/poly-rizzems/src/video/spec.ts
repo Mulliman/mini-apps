@@ -12,7 +12,7 @@
  * therefore what makes deterministic rendering possible at all.
  */
 
-import { ExpressionType, Rhythm } from '../types';
+import { ExpressionType, NOTE_PRESETS, Rhythm } from '../types';
 
 /**
  * Durations, in seconds, of the transitions that used to be motion/react springs.
@@ -320,9 +320,15 @@ export function compileSpec(spec: VideoSpec): CompiledSpec {
       }
       case 'update': {
         const lane = laneFor(event.id, event.at);
+        const curr = currentRhythm(lane);
+        const updated = { ...curr, ...event.patch, id: lane.id };
+        if (event.patch.noteName && (!event.patch.frequency || !Number.isFinite(event.patch.frequency))) {
+          const preset = NOTE_PRESETS.find((p) => p.name === event.patch.noteName);
+          if (preset) updated.frequency = preset.frequency;
+        }
         lane.keyframes.push({
           time,
-          rhythm: { ...currentRhythm(lane), ...event.patch, id: lane.id },
+          rhythm: updated,
         });
         break;
       }
@@ -343,7 +349,12 @@ function normaliseRhythm(rhythm: SpecRhythm): SpecRhythm {
   }
   const defaultColor = sig === 0 ? '#808080' : '#00f0ff';
   const defaultExpression = sig === 0 ? 'sleepy' : 'happy';
+  const preset = NOTE_PRESETS.find((p) => p.name === rhythm.noteName);
+  const defaultFrequency = (typeof rhythm.frequency === 'number' && Number.isFinite(rhythm.frequency))
+    ? rhythm.frequency
+    : (preset?.frequency ?? 261.63);
   return {
+    frequency: defaultFrequency,
     volume: 0.8,
     isMuted: false,
     expression: defaultExpression,

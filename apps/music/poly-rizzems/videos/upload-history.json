@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastUpdated": "2026-09-14T12:20:39.980Z",
+  "lastUpdated": "2026-09-26T12:57:04.880Z",
   "uploads": {
     "week2-day5-3vs7": {
       "id": "week2-day5-3vs7",
@@ -541,6 +541,126 @@
       "watchUrl": "https://youtu.be/v6vggzkxIwg",
       "publishAt": "2026-09-17T11:00:00.000Z",
       "uploadedAt": "2026-09-14T12:20:39.980Z"
+    },
+    "week-7-polyrhythmic-fills-compilation": {
+      "id": "week-7-polyrhythmic-fills-compilation",
+      "weekSlug": "week-7-polyrhythmic-fills",
+      "weekNum": 7,
+      "type": "compilation",
+      "dayNum": null,
+      "title": "POLYRIZZEMS: POLYRHYTHMIC FILLS IN 4 (7 Essential Polyrhythms Compilation)",
+      "videoId": "DnfYhyZy_Rw",
+      "watchUrl": "https://youtu.be/DnfYhyZy_Rw",
+      "publishAt": "2026-09-21T12:35:34.271Z",
+      "uploadedAt": "2026-09-21T12:35:34.271Z"
+    },
+    "week7-day1-fill-3-triplet": {
+      "id": "week7-day1-fill-3-triplet",
+      "weekSlug": "week-7-polyrhythmic-fills",
+      "weekNum": 7,
+      "type": "short",
+      "dayNum": 1,
+      "title": "3:4 The Triplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "6cgwoMyL0Wk",
+      "watchUrl": "https://youtu.be/6cgwoMyL0Wk",
+      "publishAt": "2026-09-21T12:35:35.918Z",
+      "uploadedAt": "2026-09-21T12:35:35.918Z"
+    },
+    "week7-day2-fill-5-quintuplet": {
+      "id": "week7-day2-fill-5-quintuplet",
+      "weekSlug": "week-7-polyrhythmic-fills",
+      "weekNum": 7,
+      "type": "short",
+      "dayNum": 2,
+      "title": "5:4 The Quintuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "wnAfBV8mtxU",
+      "watchUrl": "https://youtu.be/wnAfBV8mtxU",
+      "publishAt": "2026-09-22T11:00:00.000Z",
+      "uploadedAt": "2026-09-21T12:35:38.430Z"
+    },
+    "week7-day3-fill-6-sextuplet": {
+      "id": "week7-day3-fill-6-sextuplet",
+      "weekSlug": "week-7-polyrhythmic-fills",
+      "weekNum": 7,
+      "type": "short",
+      "dayNum": 3,
+      "title": "6:4 The Sextuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "9jZNWoFYJl8",
+      "watchUrl": "https://youtu.be/9jZNWoFYJl8",
+      "publishAt": "2026-09-23T11:00:00.000Z",
+      "uploadedAt": "2026-09-21T12:35:41.459Z"
+    },
+    "week7-day4-fill-7-septuplet": {
+      "id": "week7-day4-fill-7-septuplet",
+      "weekSlug": "week-7-polyrhythmic-fills",
+      "weekNum": 7,
+      "type": "short",
+      "dayNum": 4,
+      "title": "7:4 The Septuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "FjSlkby0Fcc",
+      "watchUrl": "https://youtu.be/FjSlkby0Fcc",
+      "publishAt": "2026-09-24T11:00:00.000Z",
+      "uploadedAt": "2026-09-21T12:35:43.345Z"
+    },
+    "week-8-polyrhythmic-fills-in-3-compilation": {
+      "id": "week-8-polyrhythmic-fills-in-3-compilation",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "compilation",
+      "dayNum": null,
+      "title": "POLYRIZZEMS: POLYRHYTHMIC FILLS IN 3/4 (7 Essential Polyrhythms Compilation)",
+      "videoId": "yzdp_2RoApY",
+      "watchUrl": "https://youtu.be/yzdp_2RoApY",
+      "publishAt": "2026-09-28T11:00:00.000Z",
+      "uploadedAt": "2026-09-26T12:56:54.990Z"
+    },
+    "week8-day1-fill-4-quadruplet": {
+      "id": "week8-day1-fill-4-quadruplet",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "short",
+      "dayNum": 1,
+      "title": "4:3 The Quadruplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "S3dHddccY8M",
+      "watchUrl": "https://youtu.be/S3dHddccY8M",
+      "publishAt": "2026-09-28T11:00:00.000Z",
+      "uploadedAt": "2026-09-26T12:56:57.610Z"
+    },
+    "week8-day2-fill-5-quintuplet": {
+      "id": "week8-day2-fill-5-quintuplet",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "short",
+      "dayNum": 2,
+      "title": "5:3 The Quintuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "3AhuR319pH0",
+      "watchUrl": "https://youtu.be/3AhuR319pH0",
+      "publishAt": "2026-09-29T11:00:00.000Z",
+      "uploadedAt": "2026-09-26T12:57:00.200Z"
+    },
+    "week8-day3-fill-6-sextuplet": {
+      "id": "week8-day3-fill-6-sextuplet",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "short",
+      "dayNum": 3,
+      "title": "6:3 The Sextuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "Q_PmVfHXbLQ",
+      "watchUrl": "https://youtu.be/Q_PmVfHXbLQ",
+      "publishAt": "2026-09-30T11:00:00.000Z",
+      "uploadedAt": "2026-09-26T12:57:02.378Z"
+    },
+    "week8-day4-fill-7-septuplet": {
+      "id": "week8-day4-fill-7-septuplet",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "short",
+      "dayNum": 4,
+      "title": "7:3 The Septuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "pzmLTio-NEY",
+      "watchUrl": "https://youtu.be/pzmLTio-NEY",
+      "publishAt": "2026-10-01T11:00:00.000Z",
+      "uploadedAt": "2026-09-26T12:57:04.880Z"
     }
   }
 }

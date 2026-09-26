@@ -64,6 +64,7 @@ export function scheduleSynthNote(
   isFirstBeatOfBar: boolean,
   individualVolume: number = 0.8
 ) {
+  if (!Number.isFinite(frequency) || frequency <= 0) return;
   const oscBase = ctx.createOscillator();
   const oscHarmonic = ctx.createOscillator();
   const nodeGain = ctx.createGain();
@@ -122,6 +123,7 @@ export const MAX_STRIKE_TAIL = 0.5;
  * frame isn't quantised to whenever that frame happened to run.
  */
 export function playSynthNote(frequency: number, isFirstBeatOfBar: boolean, individualVolume: number = 0.8) {
+  if (!Number.isFinite(frequency) || frequency <= 0) return;
   const ctx = initAudio();
   if (!ctx) return;
 
