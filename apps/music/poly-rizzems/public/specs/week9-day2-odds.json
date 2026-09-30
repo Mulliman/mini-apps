@@ -1,0 +1,361 @@
+{
+  "name": "The Odds",
+  "title": "The Odds",
+  "description": "All 10 odd numbers active from bar 1 at 24 BPM: zero binary subdivisions creating an asymmetric polyrhythmic cascade in A Minor.",
+  "bars": 6,
+  "barDuration": 9.8,
+  "rhythms": [
+    {
+      "id": "w9d2-1",
+      "timeSignature": 1,
+      "noteName": "A3",
+      "frequency": 220,
+      "volume": 0.93,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "A3 (1♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-3",
+      "timeSignature": 3,
+      "noteName": "C4",
+      "frequency": 261.63,
+      "volume": 0.85,
+      "expression": "sad",
+      "color": "#39ff14",
+      "name": "C4 (3♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-5",
+      "timeSignature": 5,
+      "noteName": "E4",
+      "frequency": 329.63,
+      "volume": 0.76,
+      "expression": "cool",
+      "color": "#ff007f",
+      "name": "E4 (5♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-7",
+      "timeSignature": 7,
+      "noteName": "G4",
+      "frequency": 392,
+      "volume": 0.69,
+      "expression": "surprised",
+      "color": "#fffb00",
+      "name": "G4 (7♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-9",
+      "timeSignature": 9,
+      "noteName": "A4",
+      "frequency": 440,
+      "volume": 0.66,
+      "expression": "angry",
+      "color": "#ff5f00",
+      "name": "A4 (9♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-11",
+      "timeSignature": 11,
+      "noteName": "B4",
+      "frequency": 493.88,
+      "volume": 0.62,
+      "expression": "angry",
+      "color": "#b026ff",
+      "name": "B4 (11♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-13",
+      "timeSignature": 13,
+      "noteName": "C5",
+      "frequency": 523.25,
+      "volume": 0.6,
+      "expression": "angry",
+      "color": "#ff073a",
+      "name": "C5 (13♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-15",
+      "timeSignature": 15,
+      "noteName": "D5",
+      "frequency": 587.33,
+      "volume": 0.57,
+      "expression": "angry",
+      "color": "#ccff00",
+      "name": "D5 (15♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-17",
+      "timeSignature": 17,
+      "noteName": "E5",
+      "frequency": 659.25,
+      "volume": 0.54,
+      "expression": "angry",
+      "color": "#00ffd0",
+      "name": "E5 (17♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d2-19",
+      "timeSignature": 19,
+      "noteName": "A5",
+      "frequency": 880,
+      "volume": 0.46,
+      "expression": "sleepy",
+      "color": "#ff00ea",
+      "name": "A5 (19♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-1",
+      "patch": {
+        "noteName": "D3"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-3",
+      "patch": {
+        "noteName": "A3"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-5",
+      "patch": {
+        "noteName": "D4"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-7",
+      "patch": {
+        "noteName": "F4"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-9",
+      "patch": {
+        "noteName": "A4"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-11",
+      "patch": {
+        "noteName": "C5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-13",
+      "patch": {
+        "noteName": "E5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-15",
+      "patch": {
+        "noteName": "G5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-17",
+      "patch": {
+        "noteName": "B5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d2-19",
+      "patch": {
+        "noteName": "C6"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-1",
+      "patch": {
+        "noteName": "E3"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-3",
+      "patch": {
+        "noteName": "B3"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-5",
+      "patch": {
+        "noteName": "E4"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-7",
+      "patch": {
+        "noteName": "G4"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-9",
+      "patch": {
+        "noteName": "A4"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-11",
+      "patch": {
+        "noteName": "B4"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-13",
+      "patch": {
+        "noteName": "C5"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-15",
+      "patch": {
+        "noteName": "D5"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-17",
+      "patch": {
+        "noteName": "E5"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d2-19",
+      "patch": {
+        "noteName": "G5"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-1",
+      "patch": {
+        "noteName": "A3"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-3",
+      "patch": {
+        "noteName": "C4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-5",
+      "patch": {
+        "noteName": "E4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-7",
+      "patch": {
+        "noteName": "G4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-9",
+      "patch": {
+        "noteName": "A4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-11",
+      "patch": {
+        "noteName": "B4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-13",
+      "patch": {
+        "noteName": "C5"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-15",
+      "patch": {
+        "noteName": "D5"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-17",
+      "patch": {
+        "noteName": "E5"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d2-19",
+      "patch": {
+        "noteName": "A5"
+      }
+    }
+  ]
+}

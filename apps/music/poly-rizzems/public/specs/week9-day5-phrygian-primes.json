@@ -1,0 +1,361 @@
+{
+  "name": "The Phrygian Primes",
+  "title": "The Phrygian Primes (1:5:7:11:12:13:14:16:17:19)",
+  "description": "All 10 lanes active from bar 1 at 24 BPM: high prime collisions and dark modal shifts resolving onto the downbeat.",
+  "bars": 6,
+  "barDuration": 9.8,
+  "rhythms": [
+    {
+      "id": "w9d5-1",
+      "timeSignature": 1,
+      "noteName": "E3",
+      "frequency": 164.81,
+      "volume": 0.95,
+      "expression": "cool",
+      "color": "#00f0ff",
+      "name": "E3 (1♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-5",
+      "timeSignature": 5,
+      "noteName": "B3",
+      "frequency": 246.94,
+      "volume": 0.87,
+      "expression": "cool",
+      "color": "#39ff14",
+      "name": "B3 (5♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-7",
+      "timeSignature": 7,
+      "noteName": "E4",
+      "frequency": 329.63,
+      "volume": 0.76,
+      "expression": "sleepy",
+      "color": "#ff007f",
+      "name": "E4 (7♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-11",
+      "timeSignature": 11,
+      "noteName": "G4",
+      "frequency": 392,
+      "volume": 0.69,
+      "expression": "sad",
+      "color": "#fffb00",
+      "name": "G4 (11♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-12",
+      "timeSignature": 12,
+      "noteName": "A4",
+      "frequency": 440,
+      "volume": 0.66,
+      "expression": "angry",
+      "color": "#ff5f00",
+      "name": "A4 (12♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-13",
+      "timeSignature": 13,
+      "noteName": "B4",
+      "frequency": 493.88,
+      "volume": 0.62,
+      "expression": "angry",
+      "color": "#b026ff",
+      "name": "B4 (13♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-14",
+      "timeSignature": 14,
+      "noteName": "C5",
+      "frequency": 523.25,
+      "volume": 0.6,
+      "expression": "angry",
+      "color": "#ff073a",
+      "name": "C5 (14♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-16",
+      "timeSignature": 16,
+      "noteName": "D5",
+      "frequency": 587.33,
+      "volume": 0.57,
+      "expression": "angry",
+      "color": "#ccff00",
+      "name": "D5 (16♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-17",
+      "timeSignature": 17,
+      "noteName": "E5",
+      "frequency": 659.25,
+      "volume": 0.54,
+      "expression": "angry",
+      "color": "#00ffd0",
+      "name": "E5 (17♩)",
+      "isMuted": false
+    },
+    {
+      "id": "w9d5-19",
+      "timeSignature": 19,
+      "noteName": "G5",
+      "frequency": 783.99,
+      "volume": 0.49,
+      "expression": "sad",
+      "color": "#ff00ea",
+      "name": "G5 (19♩)",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-1",
+      "patch": {
+        "noteName": "A3"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-5",
+      "patch": {
+        "noteName": "E4"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-7",
+      "patch": {
+        "noteName": "A4"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-11",
+      "patch": {
+        "noteName": "C5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-12",
+      "patch": {
+        "noteName": "D5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-13",
+      "patch": {
+        "noteName": "E5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-14",
+      "patch": {
+        "noteName": "G5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-16",
+      "patch": {
+        "noteName": "A5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-17",
+      "patch": {
+        "noteName": "B5"
+      }
+    },
+    {
+      "at": 2,
+      "type": "update",
+      "id": "w9d5-19",
+      "patch": {
+        "noteName": "C6"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-1",
+      "patch": {
+        "noteName": "D3"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-5",
+      "patch": {
+        "noteName": "A3"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-7",
+      "patch": {
+        "noteName": "D4"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-11",
+      "patch": {
+        "noteName": "F4"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-12",
+      "patch": {
+        "noteName": "A4"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-13",
+      "patch": {
+        "noteName": "C5"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-14",
+      "patch": {
+        "noteName": "E5"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-16",
+      "patch": {
+        "noteName": "G5"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-17",
+      "patch": {
+        "noteName": "B5"
+      }
+    },
+    {
+      "at": 4,
+      "type": "update",
+      "id": "w9d5-19",
+      "patch": {
+        "noteName": "C6"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-1",
+      "patch": {
+        "noteName": "E3"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-5",
+      "patch": {
+        "noteName": "B3"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-7",
+      "patch": {
+        "noteName": "E4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-11",
+      "patch": {
+        "noteName": "G4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-12",
+      "patch": {
+        "noteName": "A4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-13",
+      "patch": {
+        "noteName": "B4"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-14",
+      "patch": {
+        "noteName": "C5"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-16",
+      "patch": {
+        "noteName": "D5"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-17",
+      "patch": {
+        "noteName": "E5"
+      }
+    },
+    {
+      "at": 5,
+      "type": "update",
+      "id": "w9d5-19",
+      "patch": {
+        "noteName": "G5"
+      }
+    }
+  ]
+}

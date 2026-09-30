@@ -1,0 +1,301 @@
+{
+  "name": "Faster and Higher",
+  "title": "Faster and Higher",
+  "description": "A 10-lane sliding window from 1-10 up to 10-19 voiced in C Major Pentatonic across octaves. Every bar the lowest meter drops and the next higher, faster lane enters — climbing in pitch and speed.",
+  "bars": 10,
+  "barDuration": 9.8,
+  "rhythms": [
+    {
+      "id": "w9d7-1",
+      "timeSignature": 1,
+      "noteName": "C3",
+      "color": "#00f0ff",
+      "expression": "cool",
+      "frequency": 130.81,
+      "volume": 1.0,
+      "name": "1",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-2",
+      "timeSignature": 2,
+      "noteName": "D3",
+      "color": "#39ff14",
+      "expression": "cool",
+      "frequency": 146.83,
+      "volume": 0.97,
+      "name": "2",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-3",
+      "timeSignature": 3,
+      "noteName": "E3",
+      "color": "#ff007f",
+      "expression": "happy",
+      "frequency": 164.81,
+      "volume": 0.94,
+      "name": "3",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-4",
+      "timeSignature": 4,
+      "noteName": "G3",
+      "color": "#fffb00",
+      "expression": "happy",
+      "frequency": 196.0,
+      "volume": 0.91,
+      "name": "4",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-5",
+      "timeSignature": 5,
+      "noteName": "A3",
+      "color": "#ff5f00",
+      "expression": "excited",
+      "frequency": 220.0,
+      "volume": 0.88,
+      "name": "5",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-6",
+      "timeSignature": 6,
+      "noteName": "C4",
+      "color": "#b026ff",
+      "expression": "cool",
+      "frequency": 261.63,
+      "volume": 0.85,
+      "name": "6",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-7",
+      "timeSignature": 7,
+      "noteName": "D4",
+      "color": "#ff073a",
+      "expression": "cool",
+      "frequency": 293.66,
+      "volume": 0.82,
+      "name": "7",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-8",
+      "timeSignature": 8,
+      "noteName": "E4",
+      "color": "#ccff00",
+      "expression": "happy",
+      "frequency": 329.63,
+      "volume": 0.79,
+      "name": "8",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-9",
+      "timeSignature": 9,
+      "noteName": "G4",
+      "color": "#00ffd0",
+      "expression": "happy",
+      "frequency": 392.0,
+      "volume": 0.76,
+      "name": "9",
+      "isMuted": false
+    },
+    {
+      "id": "w9d7-10",
+      "timeSignature": 10,
+      "noteName": "A4",
+      "color": "#ff00ea",
+      "expression": "excited",
+      "frequency": 440.0,
+      "volume": 0.73,
+      "name": "10",
+      "isMuted": false
+    }
+  ],
+  "events": [
+    {
+      "at": 1,
+      "type": "remove",
+      "id": "w9d7-1"
+    },
+    {
+      "at": 1,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-11",
+        "timeSignature": 11,
+        "noteName": "C5",
+        "color": "#00f0ff",
+        "expression": "cool",
+        "frequency": 523.25,
+        "volume": 0.70,
+        "name": "11",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 2,
+      "type": "remove",
+      "id": "w9d7-2"
+    },
+    {
+      "at": 2,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-12",
+        "timeSignature": 12,
+        "noteName": "D5",
+        "color": "#39ff14",
+        "expression": "cool",
+        "frequency": 587.33,
+        "volume": 0.67,
+        "name": "12",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 3,
+      "type": "remove",
+      "id": "w9d7-3"
+    },
+    {
+      "at": 3,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-13",
+        "timeSignature": 13,
+        "noteName": "E5",
+        "color": "#ff007f",
+        "expression": "happy",
+        "frequency": 659.25,
+        "volume": 0.64,
+        "name": "13",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 4,
+      "type": "remove",
+      "id": "w9d7-4"
+    },
+    {
+      "at": 4,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-14",
+        "timeSignature": 14,
+        "noteName": "G5",
+        "color": "#fffb00",
+        "expression": "happy",
+        "frequency": 783.99,
+        "volume": 0.61,
+        "name": "14",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 5,
+      "type": "remove",
+      "id": "w9d7-5"
+    },
+    {
+      "at": 5,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-15",
+        "timeSignature": 15,
+        "noteName": "A5",
+        "color": "#ff5f00",
+        "expression": "excited",
+        "frequency": 880.0,
+        "volume": 0.58,
+        "name": "15",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 6,
+      "type": "remove",
+      "id": "w9d7-6"
+    },
+    {
+      "at": 6,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-16",
+        "timeSignature": 16,
+        "noteName": "C6",
+        "color": "#b026ff",
+        "expression": "cool",
+        "frequency": 1046.5,
+        "volume": 0.55,
+        "name": "16",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 7,
+      "type": "remove",
+      "id": "w9d7-7"
+    },
+    {
+      "at": 7,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-17",
+        "timeSignature": 17,
+        "noteName": "D6",
+        "color": "#ff073a",
+        "expression": "cool",
+        "frequency": 1174.66,
+        "volume": 0.52,
+        "name": "17",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 8,
+      "type": "remove",
+      "id": "w9d7-8"
+    },
+    {
+      "at": 8,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-18",
+        "timeSignature": 18,
+        "noteName": "E6",
+        "color": "#ccff00",
+        "expression": "happy",
+        "frequency": 1318.51,
+        "volume": 0.49,
+        "name": "18",
+        "isMuted": false
+      }
+    },
+    {
+      "at": 9,
+      "type": "remove",
+      "id": "w9d7-9"
+    },
+    {
+      "at": 9,
+      "type": "add",
+      "rhythm": {
+        "id": "w9d7-19",
+        "timeSignature": 19,
+        "noteName": "G6",
+        "color": "#00ffd0",
+        "expression": "happy",
+        "frequency": 1567.98,
+        "volume": 0.46,
+        "name": "19",
+        "isMuted": false
+      }
+    }
+  ]
+}

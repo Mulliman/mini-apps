@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastUpdated": "2026-09-26T12:57:04.880Z",
+  "lastUpdated": "2026-09-27T08:27:22.525Z",
   "uploads": {
     "week2-day5-3vs7": {
       "id": "week2-day5-3vs7",
@@ -661,6 +661,42 @@
       "watchUrl": "https://youtu.be/pzmLTio-NEY",
       "publishAt": "2026-10-01T11:00:00.000Z",
       "uploadedAt": "2026-09-26T12:57:04.880Z"
+    },
+    "week8-day5-fill-8-octuplet": {
+      "id": "week8-day5-fill-8-octuplet",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "short",
+      "dayNum": 5,
+      "title": "8:3 The Octuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "cIChTJo308E",
+      "watchUrl": "https://youtu.be/cIChTJo308E",
+      "publishAt": "2026-10-02T11:00:00.000Z",
+      "uploadedAt": "2026-09-27T08:27:17.725Z"
+    },
+    "week8-day6-fill-12-dodecuplet": {
+      "id": "week8-day6-fill-12-dodecuplet",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "short",
+      "dayNum": 6,
+      "title": "12:3 The Dodecuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "7kcMuYHB0UM",
+      "watchUrl": "https://youtu.be/7kcMuYHB0UM",
+      "publishAt": "2026-10-03T11:00:00.000Z",
+      "uploadedAt": "2026-09-27T08:27:19.869Z"
+    },
+    "week8-day7-fill-16-sedecuplet": {
+      "id": "week8-day7-fill-16-sedecuplet",
+      "weekSlug": "week-8-polyrhythmic-fills-in-3",
+      "weekNum": 8,
+      "type": "short",
+      "dayNum": 7,
+      "title": "16:3 The Sedecuplet Fill Polyrhythm - POLYRIZZEMS #shorts",
+      "videoId": "gPD-UBNHaKg",
+      "watchUrl": "https://youtu.be/gPD-UBNHaKg",
+      "publishAt": "2026-10-04T11:00:00.000Z",
+      "uploadedAt": "2026-09-27T08:27:22.525Z"
     }
   }
 }
